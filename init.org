@@ -1,0 +1,428 @@
+;-*- eval: (load-file "./init-dev.el");   -*-
+#+title: My Emacs Configuration
+#+property: header-args :mkdirp yes :tangle yes :tangle-mode (identity #o444) :results silent :noweb yes
+#+startup: indent
+
+* TODO
+- remove C-k default binding and bind in to helm-prev-line
+
+* An Explanation
+This is a literate configuration for =Emacs=.
+Tangling this file creates an Elisp file, =~/.emacs.d/lisp/init.el=.
+* Bootstrapping
+** early-init
+:PROPERTIES:
+:header-args: :tangle-mode (identity #o444) :results silent :tangle ~/.emacs.d/early-init.el
+:END:
+Emacs 27.0 introduced an early-init file. It allows customization before package and UI initialization.
+#+begin_src emacs-lisp
+;;; early-init.el --- Emacs pre package.el & GUI configuration -*- lexical-binding: t; -*-
+;;; Code:
+#+end_src
+
+We want the latest version of Org mode.
+Removing the Emacs bundled version from the load-path *should* prevent loading mixed Org versions.
+e.g. After updating Org mode.
+#+begin_src emacs-lisp
+(when-let (orglib (locate-library "org" nil load-path))
+  (setq-default load-path (delete (substring (file-name-directory orglib) 0 -1)
+                                  load-path)))
+#+end_src
+
+Save some time at startup.
+#+begin_src emacs-lisp
+(setq package-enable-at-startup nil)
+#+end_src
+
+*** Debugging
+Running this form will launch the debugger after loading a package.
+This is useful for finding out when a dependency is requiring a package (perhaps earlier than you want).
+Use by tangling this block and launching Emacs with =emacs --debug-init=.
+#+begin_src emacs-lisp :var file="" :results silent :tangle no
+(unless (string-empty-p file)
+  (eval-after-load file
+    '(debug)))
+#+end_src
+
+Similarly, this variable will hit the debugger when a message matches its regexp.
+#+begin_src emacs-lisp :tangle no
+(setq debug-on-message "")
+#+end_src
+
+Adding a variable watcher can be a useful way to track down initialization and mutation of a variable.
+#+begin_src emacs-lisp :tangle no
+(add-variable-watcher 'org-capture-after-finalize-hook
+                      (lambda (symbol newval operation where)
+                        (debug)
+                        (message "%s set to %s" symbol newval)))
+#+end_src
+
+*** initial-major-mode
+Prevent the \*scratch* buffer from loading a mode.
+#+begin_src emacs-lisp :tangle no
+(setq initial-major-mode 'fundamental-mode)
+#+end_src
+
+*** file-name-handler-alist
+Skipping a bunch of regular expression searching in the =file-name-handler-alist= should improve start time.
+#+begin_src emacs-lisp
+(defvar default-file-name-handler-alist file-name-handler-alist)
+(setq file-name-handler-alist nil)
+#+end_src
+
+*** gc-cons threshold
+Emacs collects garbage every 800KB.
+This is overly aggressive on a modern machine during our init.
+Temporarily turning it off should decrease startup times.
+Resetting it afterward will ensure that normal operations don't suffer from a large GC period.
+
+I'm still not sure on the optimal gc-cons-threshold value. The following is a
+table of values from popular Emacs configurations.
+
+| Distribution | gc-cons-threshold |
+|--------------+-------------------|
+| Default      |            800000 |
+| Doom         |          16777216 |
+| Spacemacs    |         100000000 |
+
+#+begin_src emacs-lisp
+(setq gc-cons-threshold most-positive-fixnum)
+
+(defun +gc-after-focus-change ()
+  "Run GC when frame loses focus."
+  (run-with-idle-timer
+   5 nil
+   (lambda () (unless (frame-focus-state) (garbage-collect)))))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun +reset-init-values ()
+  (run-with-idle-timer
+   5 nil
+   (lambda ()
+     (setq file-name-handler-alist default-file-name-handler-alist
+           gc-cons-threshold 100000000)
+     (message "gc-cons-threshold & file-name-handler-alist restored")
+     (when (boundp 'after-focus-change-function)
+       (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
+
+(add-hook 'emacs-startup-hook '+reset-init-values)
+#+end_src
+
+*** UI
+Turning off these visual elements before UI initialization should speed up init.
+#+begin_src emacs-lisp
+(push '(menu-bar-lines . 0) default-frame-alist)
+(push '(tool-bar-lines . 0) default-frame-alist)
+(push '(vertical-scroll-bars) default-frame-alist)
+#+end_src
+
+Implicitly resizing the Emacs frame adds to init time.
+Fonts larger than the system default can cause frame resizing, which adds to startup time.
+#+begin_src emacs-lisp
+(setq frame-inhibit-implied-resize t)
+#+end_src
+
+Set default and backup fonts
+#+begin_src emacs-lisp
+(push '(font . "Source Code Pro") default-frame-alist)
+(set-face-font 'default "Source Code Pro")
+(set-face-font 'variable-pitch "DejaVu Sans")
+(copy-face 'default 'fixed-pitch)
+#+end_src
+Ignore X resources.
+#+begin_src emacs-lisp
+(advice-add #'x-apply-session-resources :override #'ignore)
+#+end_src
+
+
+Taken from:
+
+[[https://github.com/vsemyonoff/emacsrc/blob/14649a5bafea99cc7e13e7d048e9d15aed7926ce/early-init.el]]
+
+This helps with a bug I was hitting when using =desktop-save-mode='s =desktop-read=.
+#+begin_src emacs-lisp
+(setq desktop-restore-forces-onscreen nil)
+#+end_src
+
+*** provide early-init
+#+begin_src emacs-lisp
+(provide 'early-init)
+;;; early-init.el ends here
+#+end_src
+
+** lexical binding
+The following line turns on lexical binding for performance reasons.
+#+begin_src emacs-lisp
+;; -*- lexical-binding: t; -*-
+#+end_src
+
+** Straight package manager
+#+begin_quote
+straight.el: next-generation, purely functional package manager for the Emacs hacker.
+
+https://github.com/raxod502/straight.el
+#+end_quote
+
+Bootstrap straight
+#+begin_src emacs-lisp
+(setq straight-repository-branch "develop")
+(setq straight-check-for-modifications '(watch-files))
+(setq straight-use-package-by-default t)
+(setq straight-vc-git-default-protocol 'https)
+(setq straight-vc-git-force-protocol nil)
+(defvar bootstrap-version)
+(setq straight-host-usernames '((github . "progfolio")
+                                (gitlab . "iarchivedmywholelife")))
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+#+end_src
+
+[[https://www.funtoo.org/Keychain][Keychain]] is a gpg/ssh agent that allows me to cache my credentials.
+This package gets the correct environment variables so straight can use the ssh protocol.
+
+#+begin_src emacs-lisp
+(straight-use-package 'keychain-environment)
+(require 'keychain-environment)
+(keychain-refresh-environment)
+(setq straight-vc-git-default-protocol 'ssh)
+#+end_src
+
+*** Install org-contrib
+Installing it this early *should* prevent mixed Org installations.
+#+begin_src emacs-lisp
+(straight-use-package 'org-contrib)
+#+end_src
+
+** profiling
+This function displays how long Emacs took to start.
+It's a rough way of knowing when/if I need to optimize my init file.
+#+begin_src emacs-lisp
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (message "Emacs loaded in %s with %d garbage collecitons."
+                     (format "%.2f seconds"
+                             (float-time
+                              (time-subtract after-init-time before-init-time)))
+                     gcs-done)))
+#+end_src
+** packaging
+*** use-package
+#+begin_src emacs-lisp
+(defmacro use-feature (name &rest args)
+  "Like `use-package' but with `straight-use-package-by-default' disabled.
+NAME and ARGS are in `use-package'."
+  (declare (indent defun))
+  `(use-package ,name
+     :straight nil
+     :ensure nil
+     ,@args))
+#+end_src
+
+#+begin_src emacs-lisp
+(straight-use-package 'use-package)
+(eval-when-compile
+  (require 'use-package))
+#+end_src
+
+#+begin_src emacs-lisp
+(setq init-file-debug nil)
+(if init-file-debug
+    (setq use-package-verbose t
+          use-package-expand-minimally nil
+          use-package-compute-statistics t
+          debug-on-error t)
+  (setq use-package-verbose nil
+        use-package-expand-minimally t))
+#+end_src
+
+* Packages
+** evil
+#+begin_quote
+Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions.
+
+https://github.com/emacs-evil/evil
+#+end_quote
+#+begin_src emacs-lisp
+  (use-package evil
+    :demand t
+    :preface (setq evil-want-keybinding nil)
+    :hook (after-init . evil-mode))
+#+end_src
+
+*** evil-collection
+#+begin_quote
+This is a collection of Evil bindings for the parts of Emacs that Evil does not cover properly by default.
+
+https://github.com/emacs-evil/evil-collection
+#+end_quote
+#+begin_src emacs-lisp
+  (use-package evil-collection
+    :after (evil)
+    :config (evil-collection-init)
+    :custom
+    (evil-collection-setup-minibuffer t "Add evil bindings to minibuffer")
+  )
+#+end_src
+
+** general (key-bindings)
+#+begin_quote
+general.el provides a more convenient method for binding keys in emacs (for both evil and non-evil users).
+
+https://github.com/noctuid/general.el#about
+#+end_quote
+
+Load general before the remaining packages so they can make use of the ~:general~ keyword in their declarations.
+
+#+begin_src emacs-lisp
+(use-package general
+  :demand t)
+#+end_src
+
+*** config key-bindings
+
+#+begin_src emacs-lisp
+(general-create-definer global-definer
+  :keymaps 'override
+  :states  '(normal)
+  :prefix  "SPC"
+  )
+ 
+(global-definer
+  "!"   'shell-command
+  ":"   'eval-expression)
+#+end_src
+
+We define a global-leader definer to access major-mode specific bindings:
+
+#+begin_src emacs-lisp
+(general-create-definer global-leader
+  :keymaps 'override
+  :states '(normal)
+  :prefix "SPC m"
+  :non-normal-prefix "C-SPC m"
+  "" '( :ignore t
+        :which-key
+        (lambda (arg)
+          (cons (cadr (split-string (car arg) " "))
+                (replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
+#+end_src
+
+And a macro to ease the creation of nested menu bindings:
+
+#+begin_src emacs-lisp
+(defmacro +general-global-menu! (name infix-key &rest body)
+  "Create a definer named +general-global-NAME wrapping global-definer.
+Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY."
+  (declare (indent 2))
+  `(progn
+     (general-create-definer ,(intern (concat "+general-global-" name))
+       :wrapping global-definer
+       :prefix-map (quote ,(intern (concat "+general-global-" name "-map")))
+       :infix ,infix-key
+       :wk-full-keys nil
+       "" '(:ignore t :which-key ,name))
+     (,(intern (concat "+general-global-" name))
+      ,@body)))
+#+end_src
+
+**** buffer
+#+begin_src emacs-lisp
+(+general-global-menu! "buffer" "b"
+  "d"  'kill-current-buffer
+  "o" '((lambda () (interactive) (switch-to-buffer nil))
+        :which-key "other-buffer")
+  "p"  'previous-buffer
+  "r"  'rename-buffer
+  "R"  'revert-buffer
+  "M" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
+        :which-key "messages-buffer")
+  "n"  'next-buffer
+  "s" '((lambda () (interactive) (switch-to-buffer "*scratch*"))
+        :which-key "scratch-buffer")
+  "TAB" '((lambda () (interactive) (switch-to-buffer nil))
+          :which-key "other-buffer"))
+#+end_src
+
+**** files
+#+begin_src emacs-lisp
+  (+general-global-menu! "file" "f"
+    )
+#+end_src
+
+** which-key
+#+begin_quote
+which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
+
+https://github.com/justbur/emacs-which-key
+#+end_quote
+#+begin_src emacs-lisp
+(use-package which-key
+  :demand t
+  :init
+  (setq which-key-enable-extended-define-key t)
+  :config
+  (which-key-mode)
+  :custom
+  (which-key-side-window-location 'bottom)
+  (which-key-sort-order 'which-key-key-order-alpha)
+  (which-key-side-window-max-width 0.33)
+  (which-key-idle-delay 0.05)
+  :diminish which-key-mode)
+#+end_src
+
+** magit
+#+begin_quote
+Magit is an interface to the version control system Git, implemented as an Emacs package.
+
+https://magit.vc/
+#+end_quote
+#+begin_src emacs-lisp
+(use-package magit
+  :defer t
+  :after (general)
+  :init
+  :config
+  (transient-bind-q-to-quit))
+#+end_src
+
+** helm
+#+begin_quote
+Helm is an Emacs framework for incremental completions and narrowing selections.
+
+https://github.com/emacs-helm/helm
+#+end_quote
+#+begin_src emacs-lisp
+      (use-package helm
+        :init (require 'helm-config)
+        :defer 1
+        :config
+        (add-hook 'helm-after-initialize-hook (lambda () (with-helm-buffer (visual-line-mode))))
+        (helm-mode)
+        :general
+        (:keymaps 'helm-map
+                  "TAB"   #'helm-execute-persistent-action
+                  "<tab>" #'helm-execute-persistent-action
+                  "C-a"   #'helm-select-action
+                  "C-h"   #'helm-find-files-up-one-level
+                  "C-j"   #'helm-next-line
+                  "C-k"   #'helm-previous-line)
+        (global-definer
+          "SPC" '(helm-M-x :which-key "M-x")
+          "/"   'helm-occur))
+        (+general-global-file
+        "f" 'helm-find-files
+        "F" 'helm-find
+        "r" 'helm-recentf)
+       (+general-global-buffer
+        "b" 'helm-mini)
+#+end_src
