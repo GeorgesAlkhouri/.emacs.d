@@ -5,7 +5,8 @@
 
 * TODO
 - remove C-k default binding and bind in to helm-prev-line
-
+- add development setup (python, completition)
+- add ispell
 * An Explanation
 This is a literate configuration for =Emacs=.
 Tangling this file creates an Elisp file, =~/.emacs.d/lisp/init.el=.
@@ -249,13 +250,16 @@ NAME and ARGS are in `use-package'."
 ** evil
 #+begin_quote
 Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions.
-
+[...] evil-collection assumes evil-want-keybinding is set to nil and evil-want-integration is set to t before loading evil and evil-collection.
 https://github.com/emacs-evil/evil
 #+end_quote
 #+begin_src emacs-lisp
   (use-package evil
     :demand t
     :preface (setq evil-want-keybinding nil)
+    :custom
+    (evil-want-integration t)
+    (evil-undo-system 'undo-redo)
     :hook (after-init . evil-mode))
 #+end_src
 
@@ -353,10 +357,49 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
           :which-key "other-buffer"))
 #+end_src
 
+
+**** jumping/ joining / spliting
+#+begin_src emacs-lisp
+  (+general-global-menu! "jump" "j"
+    )
+#+end_src
+
 **** files
 #+begin_src emacs-lisp
   (+general-global-menu! "file" "f"
     )
+#+end_src
+
+
+**** git
+#+begin_src emacs-lisp
+(+general-global-menu! "git" "g")
+#+end_src
+
+**** windows
+#+begin_src emacs-lisp
+(+general-global-menu! "window" "w"
+  "?" 'split-window-vertically
+  "=" 'balance-windows-area
+  "/" 'split-window-horizontally
+  "O" 'delete-other-windows
+  "X" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
+        :which-key "kill-other-buffer-and-window")
+  "H" 'evil-window-move-far-left
+  "J" 'evil-window-move-very-bottom
+  "K" 'evil-window-move-very-top
+  "L" 'evil-window-move-far-right
+  "d" 'delete-window
+  "h" 'windmove-left
+  "j" 'windmove-down
+  "k" 'windmove-up
+  "l" 'windmove-right
+  "o" 'other-window
+  "t" '((lambda () (interactive)
+          "toggle window dedication"
+          (set-window-dedicated-p (selected-window) (not (window-dedicated-p))))
+        :which-key "toggle window dedication")
+  "x" 'kill-buffer-and-window)
 #+end_src
 
 ** which-key
@@ -387,12 +430,26 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 https://magit.vc/
 #+end_quote
 #+begin_src emacs-lisp
-(use-package magit
-  :defer t
-  :after (general)
-  :init
-  :config
-  (transient-bind-q-to-quit))
+  (use-package magit
+    :defer t
+    :after (general)
+    :general
+    (+general-global-git
+        "b"  'magit-branch
+        "B"  'magit-blame
+        "c"  'magit-clone
+        "f"  '(:ignore t :which-key "file")
+        "ff" 'magit-find-file
+        "fh" 'magit-log-buffer-file
+        "i"  'magit-init
+        "L"  'magit-list-repositories
+        "m"  'magit-dispatch
+        "S"  'magit-stage-file
+        "s"  'magit-status
+        "U"  'magit-unstage-file)
+    :init
+    :config
+    (transient-bind-q-to-quit))
 #+end_src
 
 ** helm
@@ -402,27 +459,29 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 https://github.com/emacs-helm/helm
 #+end_quote
 #+begin_src emacs-lisp
-      (use-package helm
-        :init (require 'helm-config)
-        :defer 1
-        :config
-        (add-hook 'helm-after-initialize-hook (lambda () (with-helm-buffer (visual-line-mode))))
-        (helm-mode)
-        :general
-        (:keymaps 'helm-map
-                  "TAB"   #'helm-execute-persistent-action
-                  "<tab>" #'helm-execute-persistent-action
-                  "C-a"   #'helm-select-action
-                  "C-h"   #'helm-find-files-up-one-level
-                  "C-j"   #'helm-next-line
-                  "C-k"   #'helm-previous-line)
-        (global-definer
-          "SPC" '(helm-M-x :which-key "M-x")
-          "/"   'helm-occur))
-        (+general-global-file
-        "f" 'helm-find-files
-        "F" 'helm-find
-        "r" 'helm-recentf)
-       (+general-global-buffer
-        "b" 'helm-mini)
+    (use-package helm
+    :init (require 'helm-config)
+    :defer 1
+    :config
+    (add-hook 'helm-after-initialize-hook (lambda () (with-helm-buffer (visual-line-mode))))
+    (helm-mode)
+    :general
+    (:keymaps 'helm-map
+              "TAB"   #'helm-execute-persistent-action
+              "<tab>" #'helm-execute-persistent-action
+              "C-a"   #'helm-select-action
+              "C-h"   #'helm-find-files-up-one-level
+              "C-j"   #'helm-next-line
+              "C-k"   #'helm-previous-line)
+    (global-definer
+      "SPC" '(helm-M-x :which-key "M-x")
+      "/"   'helm-occur)
+    (+general-global-file
+    "f" 'helm-find-files
+    "F" 'helm-find
+    "r" 'helm-recentf)
+    (+general-global-buffer
+      "b" 'helm-mini)
+    (+general-global-jump
+        "i" 'helm-imenu))
 #+end_src

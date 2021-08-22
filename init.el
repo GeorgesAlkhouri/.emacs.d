@@ -60,6 +60,9 @@ NAME and ARGS are in `use-package'."
 (use-package evil
   :demand t
   :preface (setq evil-want-keybinding nil)
+  :custom
+  (evil-want-integration t)
+  (evil-undo-system 'undo-redo)
   :hook (after-init . evil-mode))
 
 (use-package evil-collection
@@ -122,8 +125,36 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
   "TAB" '((lambda () (interactive) (switch-to-buffer nil))
           :which-key "other-buffer"))
 
+(+general-global-menu! "jump" "j"
+  )
+
 (+general-global-menu! "file" "f"
   )
+
+(+general-global-menu! "git" "g")
+
+(+general-global-menu! "window" "w"
+  "?" 'split-window-vertically
+  "=" 'balance-windows-area
+  "/" 'split-window-horizontally
+  "O" 'delete-other-windows
+  "X" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
+        :which-key "kill-other-buffer-and-window")
+  "H" 'evil-window-move-far-left
+  "J" 'evil-window-move-very-bottom
+  "K" 'evil-window-move-very-top
+  "L" 'evil-window-move-far-right
+  "d" 'delete-window
+  "h" 'windmove-left
+  "j" 'windmove-down
+  "k" 'windmove-up
+  "l" 'windmove-right
+  "o" 'other-window
+  "t" '((lambda () (interactive)
+          "toggle window dedication"
+          (set-window-dedicated-p (selected-window) (not (window-dedicated-p))))
+        :which-key "toggle window dedication")
+  "x" 'kill-buffer-and-window)
 
 (use-package which-key
   :demand t
@@ -141,30 +172,46 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
 (use-package magit
   :defer t
   :after (general)
+  :general
+  (+general-global-git
+      "b"  'magit-branch
+      "B"  'magit-blame
+      "c"  'magit-clone
+      "f"  '(:ignore t :which-key "file")
+      "ff" 'magit-find-file
+      "fh" 'magit-log-buffer-file
+      "i"  'magit-init
+      "L"  'magit-list-repositories
+      "m"  'magit-dispatch
+      "S"  'magit-stage-file
+      "s"  'magit-status
+      "U"  'magit-unstage-file)
   :init
   :config
   (transient-bind-q-to-quit))
 
 (use-package helm
-  :init (require 'helm-config)
-  :defer 1
-  :config
-  (add-hook 'helm-after-initialize-hook (lambda () (with-helm-buffer (visual-line-mode))))
-  (helm-mode)
-  :general
-  (:keymaps 'helm-map
-            "TAB"   #'helm-execute-persistent-action
-            "<tab>" #'helm-execute-persistent-action
-            "C-a"   #'helm-select-action
-            "C-h"   #'helm-find-files-up-one-level
-            "C-j"   #'helm-next-line
-            "C-k"   #'helm-previous-line)
-  (global-definer
-    "SPC" '(helm-M-x :which-key "M-x")
-    "/"   'helm-occur))
-  (+general-global-file
-  "f" 'helm-find-files
-  "F" 'helm-find
-  "r" 'helm-recentf)
- (+general-global-buffer
+:init (require 'helm-config)
+:defer 1
+:config
+(add-hook 'helm-after-initialize-hook (lambda () (with-helm-buffer (visual-line-mode))))
+(helm-mode)
+:general
+(:keymaps 'helm-map
+          "TAB"   #'helm-execute-persistent-action
+          "<tab>" #'helm-execute-persistent-action
+          "C-a"   #'helm-select-action
+          "C-h"   #'helm-find-files-up-one-level
+          "C-j"   #'helm-next-line
+          "C-k"   #'helm-previous-line)
+(global-definer
+  "SPC" '(helm-M-x :which-key "M-x")
+  "/"   'helm-occur)
+(+general-global-file
+"f" 'helm-find-files
+"F" 'helm-find
+"r" 'helm-recentf)
+(+general-global-buffer
   "b" 'helm-mini)
+(+general-global-jump
+    "i" 'helm-imenu))
