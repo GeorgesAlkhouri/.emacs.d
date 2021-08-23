@@ -80,10 +80,13 @@ NAME and ARGS are in `use-package'."
   :states  '(normal)
   :prefix  "SPC"
   )
- 
+
 (global-definer
   "!"   'shell-command
-  ":"   'eval-expression)
+  ":"   'eval-expression
+  "TAB" '((lambda () (interactive) (switch-to-buffer nil))
+      :which-key "other-buffer")
+)
 
 (general-create-definer global-leader
   :keymaps 'override
@@ -110,6 +113,8 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
      (,(intern (concat "+general-global-" name))
       ,@body)))
 
+(+general-global-menu! "application" "a")
+
 (+general-global-menu! "buffer" "b"
   "d"  'kill-current-buffer
   "o" '((lambda () (interactive) (switch-to-buffer nil))
@@ -122,8 +127,7 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
   "n"  'next-buffer
   "s" '((lambda () (interactive) (switch-to-buffer "*scratch*"))
         :which-key "scratch-buffer")
-  "TAB" '((lambda () (interactive) (switch-to-buffer nil))
-          :which-key "other-buffer"))
+)
 
 (+general-global-menu! "jump" "j"
   )
@@ -156,6 +160,9 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
         :which-key "toggle window dedication")
   "x" 'kill-buffer-and-window)
 
+(+general-global-menu! "project" "p"
+  "b" '(:ignore t :which-key "buffer"))
+
 (use-package which-key
   :demand t
   :init
@@ -174,18 +181,9 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
   :after (general)
   :general
   (+general-global-git
-      "b"  'magit-branch
-      "B"  'magit-blame
-      "c"  'magit-clone
-      "f"  '(:ignore t :which-key "file")
-      "ff" 'magit-find-file
-      "fh" 'magit-log-buffer-file
+      "b"  'magit-blame
       "i"  'magit-init
-      "L"  'magit-list-repositories
-      "m"  'magit-dispatch
-      "S"  'magit-stage-file
-      "s"  'magit-status
-      "U"  'magit-unstage-file)
+      "s"  'magit-status)
   :init
   :config
   (transient-bind-q-to-quit))
@@ -215,3 +213,41 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
   "b" 'helm-mini)
 (+general-global-jump
     "i" 'helm-imenu))
+
+(use-package helm-projectile
+  :after (helm)
+  :general
+  (+general-global-project
+    "d" 'helm-projectile-find-dir
+    "f" 'helm-projectile-find-file
+    "p" 'helm-projectile-switch-project
+    "r" 'helm-projectile-recentf))
+
+(use-package projectile
+  :after (general)
+  :general
+  (+general-global-project
+    "!" 'projectile-run-shell-command-in-root
+    "%" 'projectile-replace-regexp
+    "D" 'projectile-dired
+    "e" 'projectile-edit-dir-locals
+    "g" 'projectile-find-tag
+    "G" 'projectile-regenerate-tags
+    "R" 'projectile-replace
+    "v" 'projectile-vc)
+  :config
+  (projectile-mode))
+
+(use-package vterm
+  :straight (:post-build (cl-letf (((symbol-function #'pop-to-buffer)
+                                    (lambda (buffer) (with-current-buffer buffer (message (buffer-string))))))
+                           (setq vterm-always-compile-module t)
+                           (require 'vterm)))
+  :commands (vterm vterm-other-window)
+  :general
+  (+general-global-application
+    "t" '(:ignore t :which-key "terminal")
+    "tt" 'vterm-other-window
+    "t." 'vterm)
+  :config
+  (evil-set-initial-state 'vterm-mode 'emacs))

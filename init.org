@@ -7,6 +7,8 @@
 - remove C-k default binding and bind in to helm-prev-line
 - add development setup (python, completition)
 - add ispell
+- env variable
+- better shell integration
 * An Explanation
 This is a literate configuration for =Emacs=.
 Tangling this file creates an Elisp file, =~/.emacs.d/lisp/init.el=.
@@ -295,15 +297,18 @@ Load general before the remaining packages so they can make use of the ~:general
 *** config key-bindings
 
 #+begin_src emacs-lisp
-(general-create-definer global-definer
-  :keymaps 'override
-  :states  '(normal)
-  :prefix  "SPC"
+  (general-create-definer global-definer
+    :keymaps 'override
+    :states  '(normal)
+    :prefix  "SPC"
+    )
+  
+  (global-definer
+    "!"   'shell-command
+    ":"   'eval-expression
+    "TAB" '((lambda () (interactive) (switch-to-buffer nil))
+        :which-key "other-buffer")
   )
- 
-(global-definer
-  "!"   'shell-command
-  ":"   'eval-expression)
 #+end_src
 
 We define a global-leader definer to access major-mode specific bindings:
@@ -339,22 +344,26 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
       ,@body)))
 #+end_src
 
+**** applications
+#+begin_src emacs-lisp
+(+general-global-menu! "application" "a")
+#+end_src
+
 **** buffer
 #+begin_src emacs-lisp
-(+general-global-menu! "buffer" "b"
-  "d"  'kill-current-buffer
-  "o" '((lambda () (interactive) (switch-to-buffer nil))
-        :which-key "other-buffer")
-  "p"  'previous-buffer
-  "r"  'rename-buffer
-  "R"  'revert-buffer
-  "M" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
-        :which-key "messages-buffer")
-  "n"  'next-buffer
-  "s" '((lambda () (interactive) (switch-to-buffer "*scratch*"))
-        :which-key "scratch-buffer")
-  "TAB" '((lambda () (interactive) (switch-to-buffer nil))
-          :which-key "other-buffer"))
+  (+general-global-menu! "buffer" "b"
+    "d"  'kill-current-buffer
+    "o" '((lambda () (interactive) (switch-to-buffer nil))
+          :which-key "other-buffer")
+    "p"  'previous-buffer
+    "r"  'rename-buffer
+    "R"  'revert-buffer
+    "M" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
+          :which-key "messages-buffer")
+    "n"  'next-buffer
+    "s" '((lambda () (interactive) (switch-to-buffer "*scratch*"))
+          :which-key "scratch-buffer")
+  )
 #+end_src
 
 
@@ -402,6 +411,12 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
   "x" 'kill-buffer-and-window)
 #+end_src
 
+**** projects
+#+begin_src emacs-lisp
+(+general-global-menu! "project" "p"
+  "b" '(:ignore t :which-key "buffer"))
+#+end_src
+
 ** which-key
 #+begin_quote
 which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
@@ -435,18 +450,9 @@ https://magit.vc/
     :after (general)
     :general
     (+general-global-git
-        "b"  'magit-branch
-        "B"  'magit-blame
-        "c"  'magit-clone
-        "f"  '(:ignore t :which-key "file")
-        "ff" 'magit-find-file
-        "fh" 'magit-log-buffer-file
+        "b"  'magit-blame
         "i"  'magit-init
-        "L"  'magit-list-repositories
-        "m"  'magit-dispatch
-        "S"  'magit-stage-file
-        "s"  'magit-status
-        "U"  'magit-unstage-file)
+        "s"  'magit-status)
     :init
     :config
     (transient-bind-q-to-quit))
@@ -485,3 +491,62 @@ https://github.com/emacs-helm/helm
     (+general-global-jump
         "i" 'helm-imenu))
 #+end_src
+
+#+end_src
+*** helm-projectile
+#+begin_src emacs-lisp
+(use-package helm-projectile
+  :after (helm)
+  :general
+  (+general-global-project
+    "d" 'helm-projectile-find-dir
+    "f" 'helm-projectile-find-file
+    "p" 'helm-projectile-switch-project
+    "r" 'helm-projectile-recentf))
+#+end_src
+
+** projectile
+#+begin_quote
+Projectile is a project interaction library for Emacs.
+Its goal is to provide a nice set of features operating on a project level without introducing external dependencies (when feasible).
+
+https://github.com/bbatsov/projectile
+#+end_quote
+#+begin_src emacs-lisp
+(use-package projectile
+  :after (general)
+  :general
+  (+general-global-project
+    "!" 'projectile-run-shell-command-in-root
+    "%" 'projectile-replace-regexp
+    "D" 'projectile-dired
+    "e" 'projectile-edit-dir-locals
+    "g" 'projectile-find-tag
+    "G" 'projectile-regenerate-tags
+    "R" 'projectile-replace
+    "v" 'projectile-vc)
+  :config
+  (projectile-mode))
+#+end_src
+
+** vterm
+#+begin_quote
+Emacs-libvterm (vterm) is fully-fledged terminal emulator inside GNU Emacs based on libvterm, a C library.
+
+https://github.com/akermu/emacs-libvterm
+#+end_quote
+#+begin_src emacs-lisp
+(use-package vterm
+  :straight (:post-build (cl-letf (((symbol-function #'pop-to-buffer)
+                                    (lambda (buffer) (with-current-buffer buffer (message (buffer-string))))))
+                           (setq vterm-always-compile-module t)
+                           (require 'vterm)))
+  :commands (vterm vterm-other-window)
+  :general
+  (+general-global-application
+    "t" '(:ignore t :which-key "terminal")
+    "tt" 'vterm-other-window
+    "t." 'vterm)
+  :config
+  (evil-set-initial-state 'vterm-mode 'emacs))
+  #+end_src
