@@ -195,7 +195,7 @@ check out your desired revision/branch.
 
 #+begin_src emacs-lisp
 (setq straight-repository-branch "develop")
-;;(setq straight-check-for-modifications '(watch-files))
+(setq straight-check-for-modifications '(check-on-save))
 (setq straight-use-package-by-default t)
 (setq straight-vc-git-default-protocol 'https)
 (setq straight-vc-git-force-protocol nil)
