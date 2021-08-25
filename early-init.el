@@ -30,6 +30,8 @@
 
 (add-hook 'emacs-startup-hook '+reset-init-values)
 
+(setq read-process-output-max (* 1024 1024)) ;; 1mb
+
 (push '(menu-bar-lines . 0) default-frame-alist)
 (push '(tool-bar-lines . 0) default-frame-alist)
 (push '(vertical-scroll-bars) default-frame-alist)

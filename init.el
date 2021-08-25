@@ -251,3 +251,23 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
     "t." 'vterm)
   :config
   (evil-set-initial-state 'vterm-mode 'emacs))
+
+(use-package lsp-mode
+:hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+       (lsp-mode . lsp-enable-which-key-integration))
+:commands lsp-deferred)
+
+(use-package lsp-ui
+  :commands lsp-ui-mode)
+(use-package helm-lsp
+  :commands helm-lsp-workspace-symbol)
+
+(use-package flycheck
+:init (global-flycheck-mode)
+:custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el"))
+
+(use-package lsp-pyright
+:defer t
+:hook (python-mode . (lambda ()
+                        (require 'lsp-pyright)
+                        (lsp-deferred))))

@@ -3,12 +3,16 @@
 #+property: header-args :mkdirp yes :tangle yes :tangle-mode (identity #o444) :results silent :noweb yes
 #+startup: indent
 
+From https://github.com/progfolio/.emacs.d
+
 * TODO
 - remove C-k default binding and bind in to helm-prev-line
 - add development setup (python, completition)
+  - lsp, flycheck, pyright, etc.
 - add ispell
 - env variable
 - better shell integration
+  
 * An Explanation
 This is a literate configuration for =Emacs=.
 Tangling this file creates an Elisp file, =~/.emacs.d/lisp/init.el=.
@@ -110,6 +114,14 @@ table of values from popular Emacs configurations.
        (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
 
 (add-hook 'emacs-startup-hook '+reset-init-values)
+#+end_src
+
+*** read process output max value
+Enlargen the maximum number of bytes to read from subprocess in a single chunk.
+Good for speeding up language servers.
+
+#+begin_src emacs-lisp
+  (setq read-process-output-max (* 1024 1024)) ;; 1mb
 #+end_src
 
 *** UI
@@ -550,3 +562,52 @@ https://github.com/akermu/emacs-libvterm
   :config
   (evil-set-initial-state 'vterm-mode 'emacs))
   #+end_src
+
+** Development
+Fowlling packages are used majorly for programming
+
+*** lsp-mode
+#+begin_quote
+Client for Language Server Protocol.
+lsp-mode aims to provide IDE-like experience by providing optional integration with the most popular Emacs packages like company, flycheck and projectile.
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package lsp-mode
+  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
+         (lsp-mode . lsp-enable-which-key-integration))
+  :commands lsp-deferred)
+  
+  (use-package lsp-ui
+    :commands lsp-ui-mode)
+  (use-package helm-lsp
+    :commands helm-lsp-workspace-symbol)
+#+end_src
+
+*** flycheck
+#+begin_quote
+Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intended as replacement for the older Flymake extension which is part of GNU Emacs.
+
+https://www.flycheck.org/en/latest/
+#+end_quote
+#+begin_src emacs-lisp
+  (use-package flycheck
+  :init (global-flycheck-mode)
+  :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el"))
+#+end_src
+
+*** Python
+
+**** lsp-pyright
+#+begin_src emacs-lisp
+  (use-package lsp-pyright
+  :defer t
+  :hook (python-mode . (lambda ()
+                          (require 'lsp-pyright)
+                          (lsp-deferred))))
+#+end_src
+
+
+
+
+ 
