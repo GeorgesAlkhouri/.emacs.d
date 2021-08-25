@@ -1,4 +1,11 @@
 # -*- mode: gitignore; -*-
+
+eln-cache
+straight
+init.el
+early-init.el
+projectile-bookmarks.eld
+
 *~
 \#*\#
 /.emacs.desktop
