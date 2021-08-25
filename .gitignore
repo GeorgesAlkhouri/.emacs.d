@@ -1,55 +1,16 @@
 # -*- mode: gitignore; -*-
 
-eln-cache
-straight
-init.el
-early-init.el
-projectile-bookmarks.eld
+# ignore everthing
 
-*~
-\#*\#
-/.emacs.desktop
-/.emacs.desktop.lock
-*.elc
-auto-save-list
-tramp
-.\#*
+*
 
-# Org-mode
-.org-id-locations
-*_archive
+# and then whitelist
 
-# flymake-mode
-*_flymake.*
+!*/
+!init.org
+!init-dev.el
+!README.org
+!emacs-batch-tangle.sh
+!Makefile
 
-# eshell files
-/eshell/history
-/eshell/lastdir
-
-# elpa packages
-/elpa/
-
-# reftex files
-*.rel
-
-# AUCTeX auto folder
-/auto/
-
-# cask packages
-.cask/
-dist/
-
-# Flycheck
-flycheck_*.el
-
-# server auth directory
-/server/
-
-# projectiles files
-.projectile
-
-# directory configuration
-.dir-locals.el
-
-# network security
-/network-security.data
+/straight/**
