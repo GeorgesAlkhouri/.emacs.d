@@ -620,6 +620,19 @@ https://www.flycheck.org/en/latest/
                           (lsp-deferred))))
 #+end_src
 
+**** pyvenv
+#+begin_src emacs-lisp
+  (use-package pyvenv
+  :defer t
+  :diminish
+  ;;:config
+  ;;(setenv "WORKON_HOME" <your-pyworkon-venvs-folder>)
+  ; Show python venv name in modeline
+  ;;(setq pyvenv-mode-line-indicator '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
+  ;;(pyvenv-mode t)
+  )
+#+end_src
+
 
 
 
