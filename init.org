@@ -12,7 +12,10 @@ From https://github.com/progfolio/.emacs.d
 - add ispell
 - env variable
 - better shell integration
-  
+* Usage
+
+Start with *make tangle* to create the init.el from this org file.
+
 * An Explanation
 This is a literate configuration for =Emacs=.
 Tangling this file creates an Elisp file, =~/.emacs.d/lisp/init.el=.
@@ -178,17 +181,27 @@ straight.el: next-generation, purely functional package manager for the Emacs ha
 
 https://github.com/raxod502/straight.el
 #+end_quote
+Straight installs packages directly from there git repository.
 
 Bootstrap straight
+Caveat:
+
+#+begin_quote
+Sometimes, in a corporate environment, url-retrieve-synchronously may not work and straight.el
+will be unable to download the installation script mentioned in the bootstrap snippet.
+In this case, you may simply clone this repository into ~/.emacs.d/straight/repos/straight.el and
+check out your desired revision/branch.
+#+end_quote
+
 #+begin_src emacs-lisp
 (setq straight-repository-branch "develop")
-(setq straight-check-for-modifications '(watch-files))
+;;(setq straight-check-for-modifications '(watch-files))
 (setq straight-use-package-by-default t)
 (setq straight-vc-git-default-protocol 'https)
 (setq straight-vc-git-force-protocol nil)
 (defvar bootstrap-version)
-(setq straight-host-usernames '((github . "progfolio")
-                                (gitlab . "iarchivedmywholelife")))
+;;(setq straight-host-usernames '((github . "progfolio")
+;;                                (gitlab . "iarchivedmywholelife")))
 (let ((bootstrap-file
        (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
       (bootstrap-version 5))
@@ -206,10 +219,10 @@ Bootstrap straight
 This package gets the correct environment variables so straight can use the ssh protocol.
 
 #+begin_src emacs-lisp
-(straight-use-package 'keychain-environment)
-(require 'keychain-environment)
-(keychain-refresh-environment)
-(setq straight-vc-git-default-protocol 'ssh)
+;;(straight-use-package 'keychain-environment)
+;;(require 'keychain-environment)
+;;(keychain-refresh-environment)
+;;(setq straight-vc-git-default-protocol 'ssh)
 #+end_src
 
 *** Install org-contrib
@@ -552,7 +565,7 @@ https://github.com/akermu/emacs-libvterm
   :straight (:post-build (cl-letf (((symbol-function #'pop-to-buffer)
                                     (lambda (buffer) (with-current-buffer buffer (message (buffer-string))))))
                            (setq vterm-always-compile-module t)
-                           (require 'vterm)))
+                          (require 'vterm)))
   :commands (vterm vterm-other-window)
   :general
   (+general-global-application
@@ -561,7 +574,7 @@ https://github.com/akermu/emacs-libvterm
     "t." 'vterm)
   :config
   (evil-set-initial-state 'vterm-mode 'emacs))
-  #+end_src
+#+end_src
 
 ** Development
 Fowlling packages are used majorly for programming
