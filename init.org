@@ -374,6 +374,11 @@ Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY.
 (+general-global-menu! "application" "a")
 #+end_src
 
+**** search
+#+begin_src emacs-lisp
+(+general-global-menu! "search" "s")
+#+end_src
+
 **** buffer
 #+begin_src emacs-lisp
   (+general-global-menu! "buffer" "b"
@@ -478,7 +483,6 @@ https://magit.vc/
         "b"  'magit-blame
         "i"  'magit-init
         "s"  'magit-status)
-    :init
     :config
     (transient-bind-q-to-quit))
 #+end_src
@@ -517,31 +521,33 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 https://github.com/emacs-helm/helm
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package helm
-  :init (require 'helm-config)
-  :defer 1
-  :config
-  (add-hook 'helm-after-initialize-hook (lambda () (with-helm-buffer (visual-line-mode))))
-  (helm-mode)
-  :general
-  (:keymaps 'helm-map
-            "TAB"   #'helm-execute-persistent-action
-            "<tab>" #'helm-execute-persistent-action
-            "C-a"   #'helm-select-action
-            "C-h"   #'helm-find-files-up-one-level
-            "C-j"   #'helm-next-line
-            "C-k"   #'helm-previous-line)
-  (global-definer
-    "SPC" '(helm-M-x :which-key "M-x")
-    "/"   'helm-projectile-ag)
-  (+general-global-file
-  "f" 'helm-find-files
-  "F" 'helm-find
-  "r" 'helm-recentf)
-  (+general-global-buffer
-    "b" 'helm-mini)
-  (+general-global-jump
-      "i" 'helm-imenu))
+       (use-package helm
+       :init (require 'helm-config)
+       :defer 1
+       :config
+       (add-hook 'helm-after-initialize-hook (lambda () (with-helm-buffer (visual-line-mode))))
+       (helm-mode)
+       :general
+       (:keymaps 'helm-map
+                 "TAB"   #'helm-execute-persistent-action
+                 "<tab>" #'helm-execute-persistent-action
+                 "C-a"   #'helm-select-action
+                 "C-h"   #'helm-find-files-up-one-level
+                 "C-j"   #'helm-next-line
+                 "C-k"   #'helm-previous-line)
+       (global-definer
+         "SPC" '(helm-M-x :which-key "M-x")
+         "/"   'helm-projectile-ag)
+       (+general-global-search
+         "s" 'helm-occur)
+       (+general-global-file
+       "f" 'helm-find-files
+       "F" 'helm-find
+       "r" 'helm-recentf)
+       (+general-global-buffer
+         "b" 'helm-mini)
+       (+general-global-jump
+           "i" 'helm-imenu))
 #+end_src
 
 *** helm-ag
