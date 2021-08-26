@@ -5,13 +5,11 @@
 
 From https://github.com/progfolio/.emacs.d
 
-* TODO
-- remove C-k default binding and bind in to helm-prev-line
-- add development setup (python, completition)
-  - lsp, flycheck, pyright, etc.
-- add ispell
-- env variable
-- better shell integration
+* Todos
+** TODO add which-key menu for major-modes
+** TODO remove C-k default binding and bind in to helm-prev-line
+** TODO add ispell
+** TODO env variable (DONE when started from shell)
 * Usage
 
 Start with *make tangle* to create the init.el from this org file.
