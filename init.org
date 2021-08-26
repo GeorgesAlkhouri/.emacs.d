@@ -517,34 +517,44 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 https://github.com/emacs-helm/helm
 #+end_quote
 #+begin_src emacs-lisp
-    (use-package helm
-    :init (require 'helm-config)
-    :defer 1
-    :config
-    (add-hook 'helm-after-initialize-hook (lambda () (with-helm-buffer (visual-line-mode))))
-    (helm-mode)
-    :general
-    (:keymaps 'helm-map
-              "TAB"   #'helm-execute-persistent-action
-              "<tab>" #'helm-execute-persistent-action
-              "C-a"   #'helm-select-action
-              "C-h"   #'helm-find-files-up-one-level
-              "C-j"   #'helm-next-line
-              "C-k"   #'helm-previous-line)
-    (global-definer
-      "SPC" '(helm-M-x :which-key "M-x")
-      "/"   'helm-occur)
-    (+general-global-file
-    "f" 'helm-find-files
-    "F" 'helm-find
-    "r" 'helm-recentf)
-    (+general-global-buffer
-      "b" 'helm-mini)
-    (+general-global-jump
-        "i" 'helm-imenu))
+  (use-package helm
+  :init (require 'helm-config)
+  :defer 1
+  :config
+  (add-hook 'helm-after-initialize-hook (lambda () (with-helm-buffer (visual-line-mode))))
+  (helm-mode)
+  :general
+  (:keymaps 'helm-map
+            "TAB"   #'helm-execute-persistent-action
+            "<tab>" #'helm-execute-persistent-action
+            "C-a"   #'helm-select-action
+            "C-h"   #'helm-find-files-up-one-level
+            "C-j"   #'helm-next-line
+            "C-k"   #'helm-previous-line)
+  (global-definer
+    "SPC" '(helm-M-x :which-key "M-x")
+    "/"   'helm-projectile-ag)
+  (+general-global-file
+  "f" 'helm-find-files
+  "F" 'helm-find
+  "r" 'helm-recentf)
+  (+general-global-buffer
+    "b" 'helm-mini)
+  (+general-global-jump
+      "i" 'helm-imenu))
 #+end_src
 
+*** helm-ag
+#+begin_quote
+helm-ag.el provides interfaces of The Silver Searcher with helm.
+
+https://github.com/emacsorphanage/helm-ag
+#+end_quote
+#+begin_src emacs-lisp :lexical t
+(use-package helm-ag
+  :commands (helm-ag helm-projectile-ag))
 #+end_src
+
 *** helm-projectile
 #+begin_src emacs-lisp
 (use-package helm-projectile
