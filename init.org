@@ -619,6 +619,18 @@ https://github.com/akermu/emacs-libvterm
   (evil-set-initial-state 'vterm-mode 'emacs))
 #+end_src
 
+
+** diminish
+#+begin_quote
+This package implements hiding or abbreviation of the mode line displays (lighters) of minor-modes.
+
+https://github.com/emacsmirror/diminish
+#+end_quote
+#+begin_src emacs-lisp :lexical t
+(use-package diminish
+  :defer 3)
+#+end_src
+
 ** Development
 Fowlling packages are used majorly for programming
 
@@ -648,11 +660,23 @@ https://www.flycheck.org/en/latest/
 #+end_quote
 #+begin_src emacs-lisp
   (use-package flycheck
-  :init (global-flycheck-mode)
+  :defer t
+  ;;:init (global-flycheck-mode)
+  :hook (python-mode . flycheck-mode)
   :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el"))
 #+end_src
 
 *** Python
+
+**** python-mode
+#+begin_src emacs-lisp 
+;;(use-package python-mode :defer t
+;;  :hook
+;;   (python-mode . blacken-mode)
+;;   (python-mode . pyvenv-mode)
+;;   (python-mode . flycheck-mode)
+;; )
+#+end_src
 
 **** lsp-pyright
 #+begin_src emacs-lisp
@@ -668,13 +692,21 @@ https://www.flycheck.org/en/latest/
   (use-package pyvenv
   :defer t
   :diminish
-  ;;:config
-  ;;(setenv "WORKON_HOME" <your-pyworkon-venvs-folder>)
-  ; Show python venv name in modeline
-  ;;(setq pyvenv-mode-line-indicator '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
-  ;;(pyvenv-mode t)
+  :config
+  ;; Show python venv name in modeline
+  (setq pyvenv-mode-line-indicator '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
+  :hook (python-mode . pyvenv-mode)
   )
 #+end_src
+
+**** blacken
+#+begin_src emacs-lisp
+  (use-package blacken :defer t :hook (python-mode . blacken-mode)
+      :config (add-hook 'python-mode-hook
+       (lambda () (add-hook 'before-save-hook 'blacken-buffer)))
+  )
+#+end_src
+
 
 
 
