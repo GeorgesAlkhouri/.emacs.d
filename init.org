@@ -483,6 +483,33 @@ https://magit.vc/
     (transient-bind-q-to-quit))
 #+end_src
 
+** company
+#+begin_quote
+Company is a text completion framework for Emacs.
+The name stands for "complete anything".
+It uses pluggable back-ends and front-ends to retrieve and display completion candidates.
+
+http://company-mode.github.io/
+#+end_quote
+#+begin_src emacs-lisp :lexical t
+        (use-package company
+          :defer 5
+        :custom
+    (company-idle-delay 0.01)
+      (company-minimum-prefix-length 0)
+      (company-tooltip-limit 14)
+      (company-tooltip-align-annotations t)
+      (company-tooltip-maximum-width 50)
+      (company-tooltip-minimum-width 50)
+      (company-selection-wrap-around t)
+      (company-require-match 'never)
+    :general
+    (:keymaps
+  'company-active-map' "<tab>" #'company-complete-selection
+     )
+  )
+#+end_src
+
 ** helm
 #+begin_quote
 Helm is an Emacs framework for incremental completions and narrowing selections.
