@@ -10,6 +10,12 @@ From https://github.com/progfolio/.emacs.d
 ** TODO remove C-k default binding and bind in to helm-prev-line
 ** TODO add ispell
 ** TODO env variable (DONE when started from shell)
+* Requirements
+Dependencies you need to fully run all configured features:
+- ag
+- vterm requirements
+- pyright, black, flake8, pylint, isort, mypy
+
 * Usage
 
 Start with *make tangle* to create the init.el from this org file.
