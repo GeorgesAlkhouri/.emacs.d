@@ -5,11 +5,14 @@
 
 From https://github.com/progfolio/.emacs.d
 
-* Todos
-** TODO add which-key menu for major-modes
-** TODO remove C-k default binding and bind in to helm-prev-line
-** TODO add ispell
-** TODO env variable (DONE when started from shell)
+* TODO
+- [ ] add which-key menu for major-modes
+- [ ] remove C-k default binding and bind in to helm-prev-line
+- [ ] add fly-spell
+- [ ] env variable (DONE when started from shell)
+- [ ] format org file
+- [ ] lsp keybindings
+  
 * Requirements
 Dependencies you need to fully run all configured features:
 - ag
@@ -22,7 +25,7 @@ Start with *make tangle* to create the init.el from this org file.
 
 * An Explanation
 This is a literate configuration for =Emacs=.
-Tangling this file creates an Elisp file, =~/.emacs.d/lisp/init.el=.
+Tangling this file creates an Elisp file, =~/.emacs.d/init.el=.
 * Bootstrapping
 ** early-init
 :PROPERTIES:
@@ -502,19 +505,16 @@ http://company-mode.github.io/
 #+begin_src emacs-lisp :lexical t
         (use-package company
           :defer 5
+        :commands (company-mode global-company-mode)
         :custom
     (company-idle-delay 0.01)
-      (company-minimum-prefix-length 0)
-      (company-tooltip-limit 14)
-      (company-tooltip-align-annotations t)
-      (company-tooltip-maximum-width 50)
-      (company-tooltip-minimum-width 50)
-      (company-selection-wrap-around t)
-      (company-require-match 'never)
-    :general
-    (:keymaps
-  'company-active-map' "<tab>" #'company-complete-selection
-     )
+      (company-minimum-prefix-length 2)
+  :general
+  (general-def company-active-map "C-k"    'company-select-previous)
+  (general-def company-active-map "C-j"    'company-select-next)
+  (general-def company-active-map "<tab>"    'company-complete-common-or-cycle)
+  :config
+  (global-company-mode)
   )
 #+end_src
 
@@ -525,33 +525,31 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 https://github.com/emacs-helm/helm
 #+end_quote
 #+begin_src emacs-lisp
-       (use-package helm
-       :init (require 'helm-config)
-       :defer 1
-       :config
-       (add-hook 'helm-after-initialize-hook (lambda () (with-helm-buffer (visual-line-mode))))
-       (helm-mode)
-       :general
-       (:keymaps 'helm-map
-                 "TAB"   #'helm-execute-persistent-action
-                 "<tab>" #'helm-execute-persistent-action
-                 "C-a"   #'helm-select-action
-                 "C-h"   #'helm-find-files-up-one-level
-                 "C-j"   #'helm-next-line
-                 "C-k"   #'helm-previous-line)
-       (global-definer
-         "SPC" '(helm-M-x :which-key "M-x")
-         "/"   'helm-projectile-ag)
-       (+general-global-search
-         "s" 'helm-occur)
-       (+general-global-file
-       "f" 'helm-find-files
-       "F" 'helm-find
-       "r" 'helm-recentf)
-       (+general-global-buffer
-         "b" 'helm-mini)
-       (+general-global-jump
-           "i" 'helm-imenu))
+  (use-package helm
+  :init (require 'helm-config)
+  :defer 1
+  :config
+  (helm-mode)
+  :general
+  (general-def helm-map "<tab>" 'helm-execute-persistent-action)
+  (general-def helm-map "TAB" 'helm-execute-persistent-action)
+  (general-def helm-map "C-a" 'helm-select-action)
+  (general-def helm-map "C-h" 'helm-find-files-up-one-level)
+  (general-def helm-map "C-j" 'helm-next-line)
+  (general-def helm-map "C-k" 'helm-previous-line)
+  (global-definer
+    "SPC" '(helm-M-x :which-key "M-x")
+    "/"   'helm-projectile-ag)
+  (+general-global-search
+    "s" 'helm-occur)
+  (+general-global-file
+  "f" 'helm-find-files
+  "F" 'helm-find
+  "r" 'helm-recentf)
+  (+general-global-buffer
+    "b" 'helm-mini)
+  (+general-global-jump
+      "i" 'helm-imenu))
 #+end_src
 
 *** helm-ag
@@ -671,16 +669,6 @@ https://www.flycheck.org/en/latest/
 #+end_src
 
 *** Python
-
-**** python-mode
-#+begin_src emacs-lisp 
-;;(use-package python-mode :defer t
-;;  :hook
-;;   (python-mode . blacken-mode)
-;;   (python-mode . pyvenv-mode)
-;;   (python-mode . flycheck-mode)
-;; )
-#+end_src
 
 **** lsp-pyright
 #+begin_src emacs-lisp
