@@ -338,13 +338,14 @@ Load general before the remaining packages so they can make use of the ~:general
   (global-definer
     "!"   'shell-command
     ":"   'eval-expression
+    "v"   'er/expand-region
     "TAB" '((lambda () (interactive) (switch-to-buffer nil))
         :which-key "other-buffer")
   )
 #+end_src
 
 We define a global-leader definer to access major-mode specific bindings:
-
+;; TODO
 #+begin_src emacs-lisp
 (general-create-definer global-leader
   :keymaps 'override
@@ -513,6 +514,7 @@ http://company-mode.github.io/
   (general-def company-active-map "C-k"    'company-select-previous)
   (general-def company-active-map "C-j"    'company-select-next)
   (general-def company-active-map "<tab>"    'company-complete-common-or-cycle)
+  (general-def company-active-map "S-<tab>"    'company-select-previous)
   :config
   (global-company-mode)
   )
@@ -633,6 +635,25 @@ https://github.com/emacsmirror/diminish
   :defer 3)
 #+end_src
 
+** expand-region
+#+begin_quote
+Expand region increases the selected region by semantic units. Just keep pressing the key until it selects what you want.
+
+https://github.com/magnars/expand-region.el
+
+See also
+https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#why-do-non-evil-users-get-expand-region-but-not-evil-users
+to learn about the VIM way.
+#+end_quote
+#+begin_src emacs-lisp
+  (use-package expand-region
+     :commands er/expand-region
+     :config
+  (setq expand-region-contract-fast-key "V"
+            expand-region-reset-fast-key "r")
+  )
+  
+#+end_src
 ** Development
 Fowlling packages are used majorly for programming
 
