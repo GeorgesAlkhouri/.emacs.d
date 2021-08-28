@@ -292,10 +292,10 @@ https://github.com/emacs-evil/evil
 #+begin_src emacs-lisp
   (use-package evil
     :demand t
-    :preface (setq evil-want-keybinding nil)
-    :custom
-    (evil-want-integration t)
-    (evil-undo-system 'undo-redo)
+    :init
+    (setq evil-want-integration t)
+    (setq evil-undo-system 'undo-redo)
+    (setq evil-want-keybinding nil)
     :hook (after-init . evil-mode))
 #+end_src
 
@@ -306,12 +306,13 @@ This is a collection of Evil bindings for the parts of Emacs that Evil does not 
 https://github.com/emacs-evil/evil-collection
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package evil-collection
-    :after (evil)
-    :config (evil-collection-init)
-    :custom
-    (evil-collection-setup-minibuffer t "Add evil bindings to minibuffer")
-  )
+   (use-package evil-collection
+     :after (evil)
+     :config
+  ;;Whether to setup Evil bindings in the minibuffer.
+  (setq evil-collection-setup-minibuffer t)
+  (evil-collection-init)
+   )
 #+end_src
 
 ** general (key-bindings)
@@ -324,8 +325,9 @@ https://github.com/noctuid/general.el#about
 Load general before the remaining packages so they can make use of the ~:general~ keyword in their declarations.
 
 #+begin_src emacs-lisp
-(use-package general
-  :demand t)
+  (use-package general
+    :config (add-to-list 'general-non-normal-states 'visual)
+    :demand t)
 #+end_src
 
 *** config key-bindings
@@ -333,8 +335,9 @@ Load general before the remaining packages so they can make use of the ~:general
 #+begin_src emacs-lisp
   (general-create-definer global-definer
     :keymaps 'override
-    :states  '(normal)
+    :states  '(normal visual insert)
     :prefix  "SPC"
+    :non-normal-prefix "C-SPC"
     )
   
   (global-definer
