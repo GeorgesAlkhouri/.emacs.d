@@ -7,7 +7,7 @@ Idea and basics from https://github.com/progfolio/.emacs.d
 
 * An Explanation
 This is a literate configuration for =Emacs=.
-Tangling this file creates an Elisp file, =~/.emacs.d/init.el=.
+Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d/early-init.el=.
 
 ** Todos
 - add which-key menu for major-modes
@@ -16,6 +16,7 @@ Tangling this file creates an Elisp file, =~/.emacs.d/init.el=.
 - env variable (DONE when started from shell)
 - format org file
 - lsp keybindings
+- add emacs application framework
   
 * Requirements
 Dependencies you need to fully run all configured features:
@@ -25,7 +26,7 @@ Dependencies you need to fully run all configured features:
 
 * Tangle
 
-Start with =make tangle= to create the init.el from this org file.
+Start with =make tangle= to create the init.el and early-init.el from this org file.
 
 * Bootstrapping
 ** early-init
@@ -346,7 +347,9 @@ Load general before the remaining packages so they can make use of the ~:general
 #+end_src
 
 We define a global-leader definer to access major-mode specific bindings:
-;; TODO
+TODO
+read:
+https://sam217pa.github.io/2016/09/23/keybindings-strategies-in-emacs/
 #+begin_src emacs-lisp
 (general-create-definer global-leader
   :keymaps 'override
