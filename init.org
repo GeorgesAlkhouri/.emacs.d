@@ -340,6 +340,7 @@ Load general before the remaining packages so they can make use of the ~:general
   (global-definer
     "!"   'shell-command
     ":"   'eval-expression
+    ";"   'evilnc-comment-or-uncomment-lines
     "v"   'er/expand-region
     "TAB" '((lambda () (interactive) (switch-to-buffer nil))
         :which-key "other-buffer")
@@ -658,6 +659,17 @@ to learn about the VIM way.
 #+end_src
 ** Development
 Fowlling packages are used majorly for programming
+*** evil-nerd-commenter
+#+begin_quote
+A Nerd Commenter emulation, help you comment code efficiently.
+
+https://github.com/redguardtoo/evil-nerd-commenter
+#+end_quote
+
+#+begin_src emacs-lisp
+ (use-package evil-nerd-commenter
+ :commands evilnc-comment-or-uncomment-lines)
+#+end_src
 
 *** lsp-mode
 #+begin_quote
