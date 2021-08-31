@@ -1,16 +1,21 @@
 # -*- mode: gitignore; -*-
 
-# ignore everthing
+# ignore everthing in same directory as gitignore file
 
-*
+/*
 
-# and then whitelist
+# then allow
 
-!*/
 !init.org
 !init-dev.el
 !README.org
 !emacs-batch-tangle.sh
 !Makefile
 
-/straight/**
+!straight/
+straight/*
+!straight/versions/
+straight/versions/*
+!straight/versions/default.el
+
+

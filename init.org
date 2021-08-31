@@ -10,12 +10,9 @@ This is a literate configuration for =Emacs=.
 Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d/early-init.el=.
 
 ** Todos
-- add which-key menu for major-mode 
-- remove C-k default binding and bind in to helm-prev-line
 - add fly-spell
 - env variable (DONE when started from shell)
 - format org file
-- lsp keybindings
 - add emacs application framework
   
 * Requirements
@@ -224,16 +221,6 @@ check out your desired revision/branch.
   (load bootstrap-file nil 'nomessage))
 #+end_src
 
-[[https://www.funtoo.org/Keychain][Keychain]] is a gpg/ssh agent that allows me to cache my credentials.
-This package gets the correct environment variables so straight can use the ssh protocol.
-
-#+begin_src emacs-lisp
-;;(straight-use-package 'keychain-environment)
-;;(require 'keychain-environment)
-;;(keychain-refresh-environment)
-;;(setq straight-vc-git-default-protocol 'ssh)
-#+end_src
-
 *** Install org-contrib
 Installing it this early *should* prevent mixed Org installations.
 #+begin_src emacs-lisp
@@ -254,17 +241,6 @@ It's a rough way of knowing when/if I need to optimize my init file.
 #+end_src
 ** packaging
 *** use-package
-#+begin_src emacs-lisp
-(defmacro use-feature (name &rest args)
-  "Like `use-package' but with `straight-use-package-by-default' disabled.
-NAME and ARGS are in `use-package'."
-  (declare (indent defun))
-  `(use-package ,name
-     :straight nil
-     :ensure nil
-     ,@args))
-#+end_src
-
 #+begin_src emacs-lisp
 (straight-use-package 'use-package)
 (eval-when-compile
@@ -383,7 +359,11 @@ Load general before the remaining packages so they can make use of the ~:general
 
 **** files
 #+begin_src emacs-lisp
-  (general-create-definer global-menu-file :states '(normal visual) :prefix "SPC f" "" '(:ignore t :which-key "file"))
+    (general-create-definer global-menu-file :states '(normal visual) :prefix "SPC f" "" '(:ignore t :which-key "file"))
+    (global-menu-file "e" '(:ignore t :which-key "env") 
+     "ed" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org config")
+     "ef" '(straight-freeze-versions :which-key "freeze packages")
+  )
 #+end_src
 
 
@@ -652,17 +632,19 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
 #+end_quote
 
 #+begin_src emacs-lisp
-    (use-package lsp-mode
-    :hook (lsp-mode . lsp-enable-which-key-integration)
-    :commands lsp-deferred
-    :general
-    (global-leader :keymaps 'python-mode-map "r" 'lsp-rename)
-     )
+  (use-package lsp-mode
+  :hook (lsp-mode . lsp-enable-which-key-integration)
+  :commands lsp-deferred
+  :general
+  (global-leader :keymaps 'python-mode-map "r" 'lsp-rename
+  "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
+   ))
   
-    (use-package lsp-ui
-      :commands lsp-ui-mode)
-    (use-package helm-lsp
-      :commands helm-lsp-workspace-symbol)
+  (use-package lsp-ui
+    :commands lsp-ui-mode)
+  (use-package helm-lsp
+    :commands helm-lsp-workspace-symbol)
+  
 #+end_src
 
 *** flycheck
