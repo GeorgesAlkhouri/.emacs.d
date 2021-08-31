@@ -360,12 +360,17 @@ Load general before the remaining packages so they can make use of the ~:general
 **** files
 #+begin_src emacs-lisp
     (general-create-definer global-menu-file :states '(normal visual) :prefix "SPC f" "" '(:ignore t :which-key "file"))
-    (global-menu-file "e" '(:ignore t :which-key "env") 
-     "ed" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org config")
-     "ef" '(straight-freeze-versions :which-key "freeze packages")
-  )
 #+end_src
 
+**** env
+Menus for everything releated to Emacs environmental files, settings, etc. 
+#+begin_src emacs-lisp
+  (general-create-definer global-menu-env :states '(normal visual) :prefix "SPC e" "" '(:ignore t :which-key "env"))
+  (global-menu-env 
+     "d" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org config")
+     "f" '(straight-freeze-versions :which-key "freeze packages")
+  )
+#+end_src
 
 **** git
 #+begin_src emacs-lisp
@@ -692,8 +697,36 @@ https://www.flycheck.org/en/latest/
   )
 #+end_src
 
+** Theme
+Look into defering theme loading (=emacs-startup=) to save some startup time.
+#+begin_src emacs-lisp
+  (use-package doom-themes
+  :config
+  ;; Global settings (defaults)
+  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+        doom-themes-enable-italic t) ; if nil, italics is universally disabled
+  (load-theme 'doom-one t)
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
+#+end_src
+** Hyda
+ Hydra helps to design transient key bindings.
 
+ https://github.com/abo-abo/hydra
+ #+begin_src  emacs-lisp
+   (use-package hydra
+     :defer t
+     :config
+   (defhydra hydra-text-scale (:timeout 4)
+       "scale text"
+       ("j" text-scale-increase "in")
+       ("k" text-scale-decrease "out")
+       ("f" nil "finished" :exit t))
+     :general
+     (global-menu-env "s" '(hydra-text-scale/body :which-key "scale text")) 
+     )
+   
+ #+end_src
 
-
-
- 

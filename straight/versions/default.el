@@ -5,6 +5,7 @@
  ("diminish.el" . "6ec6ebc391371418efc6c98d70b013f34af5a2ee")
  ("el-get" . "ec47ecf257bf010cf1f3061e2061c26f78e61540")
  ("emacs-async" . "180742ec4a18107df65efca246e67d698ed23e79")
+ ("emacs-doom-themes" . "65fb964f36939cf412d03b3fe410618caf99c494")
  ("emacs-libvterm" . "f73644a07ce56712101d1568139a8f3c3b4a9e59")
  ("emacs-which-key" . "7a10ff66154c03f277a009aab8861889cbbe2618")
  ("emacsmirror-mirror" . "cf4385804420024f63f41b1bc39c6e2c51e51a20")
