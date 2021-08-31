@@ -10,7 +10,7 @@ This is a literate configuration for =Emacs=.
 Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d/early-init.el=.
 
 ** Todos
-- add which-key menu for major-modes
+- add which-key menu for major-mode 
 - remove C-k default binding and bind in to helm-prev-line
 - add fly-spell
 - env variable (DONE when started from shell)
@@ -25,7 +25,7 @@ Dependencies you need to fully run all configured features:
 - pyright, black, flake8, pylint, isort, mypy
 
 * Tangle
-
+ 
 Start with =make tangle= to create the init.el and early-init.el from this org file.
 
 * Bootstrapping
@@ -333,136 +333,99 @@ Load general before the remaining packages so they can make use of the ~:general
 *** config key-bindings
 
 #+begin_src emacs-lisp
-  (general-create-definer global-definer
-    :keymaps 'override
-    :states  '(normal visual insert)
-    :prefix  "SPC"
-    :non-normal-prefix "C-SPC"
-    )
-  
-  (global-definer
-    "!"   'shell-command
-    ":"   'eval-expression
-    ";"   'evilnc-comment-or-uncomment-lines
-    "v"   'er/expand-region
-    "TAB" '((lambda () (interactive) (switch-to-buffer nil))
-        :which-key "other-buffer")
-  )
-#+end_src
-
-We define a global-leader definer to access major-mode specific bindings:
-TODO
-read:
-https://sam217pa.github.io/2016/09/23/keybindings-strategies-in-emacs/
-#+begin_src emacs-lisp
-(general-create-definer global-leader
-  :keymaps 'override
-  :states '(normal)
-  :prefix "SPC m"
-  :non-normal-prefix "C-SPC m"
-  "" '( :ignore t
-        :which-key
-        (lambda (arg)
-          (cons (cadr (split-string (car arg) " "))
-                (replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
-#+end_src
-
-And a macro to ease the creation of nested menu bindings:
-
-#+begin_src emacs-lisp
-(defmacro +general-global-menu! (name infix-key &rest body)
-  "Create a definer named +general-global-NAME wrapping global-definer.
-Create prefix map: +general-global-NAME. Prefix bindings in BODY with INFIX-KEY."
-  (declare (indent 2))
-  `(progn
-     (general-create-definer ,(intern (concat "+general-global-" name))
-       :wrapping global-definer
-       :prefix-map (quote ,(intern (concat "+general-global-" name "-map")))
-       :infix ,infix-key
-       :wk-full-keys nil
-       "" '(:ignore t :which-key ,name))
-     (,(intern (concat "+general-global-" name))
-      ,@body)))
+  ;; We define a global-leader definer to access major-mode specific bindings
+    (general-create-definer global-leader :states '(normal visual) :prefix "SPC m"
+      "" '( :ignore t
+                  :which-key
+                  (lambda (arg)
+                  (cons (cadr (split-string (car arg) " "))
+              (replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
+ ;; Also define a global menu definer  
+    (general-create-definer global-menu :states '(normal visual) :prefix "SPC" )
+     (global-menu "!" 'shell-command
+      ":"   'eval-expression
+      "TAB" '((lambda () (interactive) (switch-to-buffer nil))
+          :which-key "other-buffer")
+     )
 #+end_src
 
 **** applications
 #+begin_src emacs-lisp
-(+general-global-menu! "application" "a")
+(general-create-definer global-menu-applications :states '(normal visual) :prefix "SPC a" "" '(:ignore t :which-key "applications"))
 #+end_src
 
 **** search
 #+begin_src emacs-lisp
-(+general-global-menu! "search" "s")
+(general-create-definer global-menu-search :states '(normal visual) :prefix "SPC s" "" '(:ignore t :which-key "search"))
 #+end_src
 
 **** buffer
 #+begin_src emacs-lisp
-  (+general-global-menu! "buffer" "b"
-    "d"  'kill-current-buffer
-    "o" '((lambda () (interactive) (switch-to-buffer nil))
-          :which-key "other-buffer")
-    "p"  'previous-buffer
-    "r"  'rename-buffer
-    "R"  'revert-buffer
-    "M" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
-          :which-key "messages-buffer")
-    "n"  'next-buffer
-    "s" '((lambda () (interactive) (switch-to-buffer "*scratch*"))
-          :which-key "scratch-buffer")
+    (general-create-definer global-menu-buffer :states '(normal visual) :prefix "SPC b" "" '(:ignore t :which-key "buffer"))
+    (global-menu-buffer
+         "d"  'kill-current-buffer
+         "o" '((lambda () (interactive) (switch-to-buffer nil))
+               :which-key "other-buffer")
+         "r"  'rename-buffer
+         "R"  'revert-buffer
+         "M" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
+               :which-key "messages-buffer")
+         "s" '((lambda () (interactive) (switch-to-buffer "*scratch*"))
+               :which-key "scratch-buffer")
   )
 #+end_src
 
 
 **** jumping/ joining / spliting
 #+begin_src emacs-lisp
-  (+general-global-menu! "jump" "j"
-    )
+  (general-create-definer global-menu-jump :states '(normal visual) :prefix "SPC j" "" '(:ignore t :which-key "jump"))
 #+end_src
 
 **** files
 #+begin_src emacs-lisp
-  (+general-global-menu! "file" "f"
-    )
+  (general-create-definer global-menu-file :states '(normal visual) :prefix "SPC f" "" '(:ignore t :which-key "file"))
 #+end_src
 
 
 **** git
 #+begin_src emacs-lisp
-(+general-global-menu! "git" "g")
+  (general-create-definer global-menu-vc :states '(normal visual) :prefix "SPC g" "" '(:ignore t :which-key "git"))
 #+end_src
 
 **** windows
 #+begin_src emacs-lisp
-(+general-global-menu! "window" "w"
-  "?" 'split-window-vertically
-  "=" 'balance-windows-area
-  "/" 'split-window-horizontally
-  "O" 'delete-other-windows
-  "X" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
-        :which-key "kill-other-buffer-and-window")
-  "H" 'evil-window-move-far-left
-  "J" 'evil-window-move-very-bottom
-  "K" 'evil-window-move-very-top
-  "L" 'evil-window-move-far-right
-  "d" 'delete-window
-  "h" 'windmove-left
-  "j" 'windmove-down
-  "k" 'windmove-up
-  "l" 'windmove-right
-  "o" 'other-window
-  "t" '((lambda () (interactive)
-          "toggle window dedication"
-          (set-window-dedicated-p (selected-window) (not (window-dedicated-p))))
-        :which-key "toggle window dedication")
-  "x" 'kill-buffer-and-window)
+  (general-create-definer global-menu-window :states '(normal visual) :prefix "SPC w" "" '(:ignore t :which-key "window"))
+  (global-menu-window
+  
+          "?" 'split-window-vertically
+          "=" 'balance-windows-area
+          "/" 'split-window-horizontally
+          "O" 'delete-other-windows
+          "X" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
+                :which-key "kill-other-buffer-and-window")
+          "H" 'evil-window-move-far-left
+          "J" 'evil-window-move-very-bottom
+          "K" 'evil-window-move-very-top
+          "L" 'evil-window-move-far-right
+          "d" 'delete-window
+          "h" 'windmove-left
+          "j" 'windmove-down
+          "k" 'windmove-up
+          "l" 'windmove-right
+          "o" 'other-window
+          "t" '((lambda () (interactive)
+                  "toggle window dedication"
+                  (set-window-dedicated-p (selected-window) (not (window-dedicated-p))))
+                :which-key "toggle window dedication")
+          "x" 'kill-buffer-and-window
+   )  
 #+end_src
 
 **** projects
 #+begin_src emacs-lisp
-(+general-global-menu! "project" "p"
-  "b" '(:ignore t :which-key "buffer"))
+ (general-create-definer global-menu-project :states '(normal visual) :prefix "SPC p" "" '(:ignore t :which-key "project"))
 #+end_src
-
+ 
 ** which-key
 #+begin_quote
 which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
@@ -470,16 +433,16 @@ which-key is a minor mode for Emacs that displays the key bindings following you
 https://github.com/justbur/emacs-which-key
 #+end_quote
 #+begin_src emacs-lisp
-(use-package which-key
-  :demand t
-  :config
-  (which-key-mode)
-  :custom
-  (which-key-side-window-location 'bottom)
-  (which-key-sort-order 'which-key-key-order-alpha)
-  (which-key-side-window-max-width 0.33)
-  (which-key-idle-delay 0.05)
-  :diminish which-key-mode)
+  (use-package which-key
+    :demand t
+    :config
+    (which-key-mode)
+    :custom
+    (which-key-side-window-location 'bottom)
+    (which-key-sort-order 'which-key-key-order-alpha)
+    (which-key-side-window-max-width 0.33)
+    (which-key-idle-delay 0.05)
+    :diminish which-key-mode)
 #+end_src
 
 ** magit
@@ -489,16 +452,17 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 https://magit.vc/
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package magit
-    :defer t
-    :after (general)
-    :general
-    (+general-global-git
-        "b"  'magit-blame
+      (use-package magit
+        :defer t
+        :after (general)
+        :general
+        (global-menu-vc
+      "b"  'magit-blame
         "i"  'magit-init
-        "s"  'magit-status)
-    :config
-    (transient-bind-q-to-quit))
+         "s"  'magit-status
+         )
+        :config
+        (transient-bind-q-to-quit))
 #+end_src
 
 ** company
@@ -533,31 +497,32 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 https://github.com/emacs-helm/helm
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package helm
-  :init (require 'helm-config)
-  :defer 1
-  :config
-  (helm-mode)
-  :general
-  (general-def helm-map "<tab>" 'helm-execute-persistent-action)
-  (general-def helm-map "TAB" 'helm-execute-persistent-action)
-  (general-def helm-map "C-a" 'helm-select-action)
-  (general-def helm-map "C-h" 'helm-find-files-up-one-level)
-  (general-def helm-map "C-j" 'helm-next-line)
-  (general-def helm-map "C-k" 'helm-previous-line)
-  (global-definer
-    "SPC" '(helm-M-x :which-key "M-x")
-    "/"   'helm-projectile-ag)
-  (+general-global-search
-    "s" 'helm-occur)
-  (+general-global-file
-  "f" 'helm-find-files
-  "F" 'helm-find
-  "r" 'helm-recentf)
-  (+general-global-buffer
-    "b" 'helm-mini)
-  (+general-global-jump
-      "i" 'helm-imenu))
+    (use-package helm
+    :init (require 'helm-config)
+    :defer 1
+    :config
+    (helm-mode)
+    :general
+    (general-def helm-map "<tab>" 'helm-execute-persistent-action)
+    (general-def helm-map "TAB" 'helm-execute-persistent-action)
+    (general-def helm-map "C-a" 'helm-select-action)
+    (general-def helm-map "C-h" 'helm-find-files-up-one-level)
+    (general-def helm-map "C-j" 'helm-next-line)
+    (general-def helm-map "C-k" 'helm-previous-line)
+    (global-menu
+       "SPC" '(helm-M-x :which-key "M-x")
+       "/"   'helm-projectile-ag)
+    (global-menu-search
+       "s" 'helm-occur)
+    (global-menu-file
+     "f" 'helm-find-files
+     "F" 'helm-find
+     "r" 'helm-recentf)
+    (global-menu-buffer
+       "b" 'helm-mini)
+    (global-menu-jump
+         "i" 'helm-imenu)
+  )
 #+end_src
 
 *** helm-ag
@@ -573,14 +538,15 @@ https://github.com/emacsorphanage/helm-ag
 
 *** helm-projectile
 #+begin_src emacs-lisp
-(use-package helm-projectile
-  :after (helm)
-  :general
-  (+general-global-project
-    "d" 'helm-projectile-find-dir
-    "f" 'helm-projectile-find-file
-    "p" 'helm-projectile-switch-project
-    "r" 'helm-projectile-recentf))
+  (use-package helm-projectile
+    :after (helm)
+    :general
+    (global-menu-project
+       "d" 'helm-projectile-find-dir
+       "f" 'helm-projectile-find-file
+       "p" 'helm-projectile-switch-project
+       "r" 'helm-projectile-recentf)
+  )
 #+end_src
 
 ** projectile
@@ -594,15 +560,15 @@ https://github.com/bbatsov/projectile
 (use-package projectile
   :after (general)
   :general
-  (+general-global-project
-    "!" 'projectile-run-shell-command-in-root
-    "%" 'projectile-replace-regexp
-    "D" 'projectile-dired
-    "e" 'projectile-edit-dir-locals
-    "g" 'projectile-find-tag
-    "G" 'projectile-regenerate-tags
-    "R" 'projectile-replace
-    "v" 'projectile-vc)
+  (global-menu-project
+     "!" 'projectile-run-shell-command-in-root
+     "%" 'projectile-replace-regexp
+     "D" 'projectile-dired
+     "e" 'projectile-edit-dir-locals
+     "g" 'projectile-find-tag
+     "G" 'projectile-regenerate-tags
+     "R" 'projectile-replace
+     "v" 'projectile-vc)
   :config
   (projectile-mode))
 #+end_src
@@ -614,19 +580,18 @@ Emacs-libvterm (vterm) is fully-fledged terminal emulator inside GNU Emacs based
 https://github.com/akermu/emacs-libvterm
 #+end_quote
 #+begin_src emacs-lisp
-(use-package vterm
-  :straight (:post-build (cl-letf (((symbol-function #'pop-to-buffer)
-                                    (lambda (buffer) (with-current-buffer buffer (message (buffer-string))))))
-                           (setq vterm-always-compile-module t)
-                          (require 'vterm)))
-  :commands (vterm vterm-other-window)
-  :general
-  (+general-global-application
-    "t" '(:ignore t :which-key "terminal")
-    "tt" 'vterm-other-window
-    "t." 'vterm)
-  :config
-  (evil-set-initial-state 'vterm-mode 'emacs))
+  (use-package vterm
+    :straight (:post-build (cl-letf (((symbol-function #'pop-to-buffer)
+                                      (lambda (buffer) (with-current-buffer buffer (message (buffer-string))))))
+                             (setq vterm-always-compile-module t)
+                            (require 'vterm)))
+    :commands (vterm vterm-other-window)
+    :general
+    (global-menu-applications "t" '(:ignore t :which-key "terminal") "tt" 'vterm-other-window
+         "t." 'vterm
+    )
+    :config
+    (evil-set-initial-state 'vterm-mode 'emacs))
 #+end_src
 
 
@@ -652,13 +617,16 @@ https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#why-do-non-evil
 to learn about the VIM way.
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package expand-region
-     :commands er/expand-region
-     :config
-  (setq expand-region-contract-fast-key "V"
-            expand-region-reset-fast-key "r")
-  )
-  
+     (use-package expand-region
+        :commands er/expand-region
+        :config
+     (setq expand-region-contract-fast-key "V"
+               expand-region-reset-fast-key "r")
+     :general
+     (global-menu
+      "v"   'er/expand-region)
+     )
+    
 #+end_src
 ** Development
 Fowlling packages are used majorly for programming
@@ -670,8 +638,11 @@ https://github.com/redguardtoo/evil-nerd-commenter
 #+end_quote
 
 #+begin_src emacs-lisp
- (use-package evil-nerd-commenter
- :commands evilnc-comment-or-uncomment-lines)
+      (use-package evil-nerd-commenter
+         :commands evilnc-comment-or-uncomment-lines
+        :general
+    (global-menu";"   'evilnc-comment-or-uncomment-lines)
+    )
 #+end_src
 
 *** lsp-mode
@@ -681,15 +652,17 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
 #+end_quote
 
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-  :hook (;; replace XXX-mode with concrete major-mode(e. g. python-mode)
-         (lsp-mode . lsp-enable-which-key-integration))
-  :commands lsp-deferred)
+    (use-package lsp-mode
+    :hook (lsp-mode . lsp-enable-which-key-integration)
+    :commands lsp-deferred
+    :general
+    (global-leader :keymaps 'python-mode-map "r" 'lsp-rename)
+     )
   
-  (use-package lsp-ui
-    :commands lsp-ui-mode)
-  (use-package helm-lsp
-    :commands helm-lsp-workspace-symbol)
+    (use-package lsp-ui
+      :commands lsp-ui-mode)
+    (use-package helm-lsp
+      :commands helm-lsp-workspace-symbol)
 #+end_src
 
 *** flycheck
