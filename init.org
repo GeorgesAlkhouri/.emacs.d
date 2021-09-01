@@ -14,6 +14,7 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - env variable (DONE when started from shell)
 - format org file
 - add emacs application framework
+- quick access for windows by numbers
   
 * Requirements
 Dependencies you need to fully run all configured features:
@@ -327,12 +328,12 @@ Load general before the remaining packages so they can make use of the ~:general
 
 **** applications
 #+begin_src emacs-lisp
-(general-create-definer global-menu-applications :states '(normal visual) :prefix "SPC a" "" '(:ignore t :which-key "applications"))
+(general-create-definer global-menu-applications :keymaps 'override :states '(normal visual) :prefix "SPC a" "" '(:ignore t :which-key "applications"))
 #+end_src
 
 **** search
 #+begin_src emacs-lisp
-(general-create-definer global-menu-search :states '(normal visual) :prefix "SPC s" "" '(:ignore t :which-key "search"))
+(general-create-definer global-menu-search :keymaps 'override :states '(normal visual) :prefix "SPC s" "" '(:ignore t :which-key "search"))
 #+end_src
 
 **** buffer
@@ -350,7 +351,6 @@ Load general before the remaining packages so they can make use of the ~:general
                :which-key "scratch-buffer")
   )
 #+end_src
-
 
 **** jumping/ joining / spliting
 #+begin_src emacs-lisp
@@ -579,7 +579,6 @@ https://github.com/akermu/emacs-libvterm
     (evil-set-initial-state 'vterm-mode 'emacs))
 #+end_src
 
-
 ** diminish
 #+begin_quote
 This package implements hiding or abbreviation of the mode line displays (lighters) of minor-modes.
@@ -697,19 +696,30 @@ https://www.flycheck.org/en/latest/
   )
 #+end_src
 
-** Theme
-Look into defering theme loading (=emacs-startup=) to save some startup time.
+** Themes
+https://github.com/hlissner/emacs-doom-themes
+TODO Look into defering theme loading (=emacs-startup=) to save some startup time.
 #+begin_src emacs-lisp
-  (use-package doom-themes
-  :config
-  ;; Global settings (defaults)
-  (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-        doom-themes-enable-italic t) ; if nil, italics is universally disabled
-  (load-theme 'doom-one t)
-  ;; Enable flashing mode-line on errors
-  (doom-themes-visual-bell-config)
-  ;; Corrects (and improves) org-mode's native fontification.
-  (doom-themes-org-config))
+      (use-package doom-themes
+      :config
+      ;; Global settings (defaults)
+      (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+            doom-themes-enable-italic t) ; if nil, italics is universally disabled
+      (load-theme 'doom-one t)
+      ;; Enable flashing mode-line on errors
+      (doom-themes-visual-bell-config)
+      ;; Corrects (and improves) org-mode's native fontification.
+      (doom-themes-org-config)
+      :general
+      (global-menu-env "t" '(:ignore t :which-key "themes")
+     "t1" '((lambda () (interactive)
+                (load-theme 'doom-one t))
+              :which-key "doom-one")
+     "t2" '((lambda () (interactive)
+                  (load-theme 'doom-one-light t))
+                :which-key "doom-one-light")
+   )
+  )
 #+end_src
 ** Hyda
  Hydra helps to design transient key bindings.
@@ -723,7 +733,7 @@ Look into defering theme loading (=emacs-startup=) to save some startup time.
        "scale text"
        ("j" text-scale-increase "in")
        ("k" text-scale-decrease "out")
-       ("f" nil "finished" :exit t))
+       ("q" nil "finished" :exit t))
      :general
      (global-menu-env "s" '(hydra-text-scale/body :which-key "scale text")) 
      )
