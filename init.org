@@ -14,6 +14,7 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - add auto venv switch
 - add better parentheses 
 - add fly-spell
+- add all the icons
 - env variable (DONE when started from shell)
 - format org file
 - add emacs application framework
@@ -56,6 +57,12 @@ Save some time at startup.
 #+end_src
 
 *** Debugging
+
+Silence native compilation compiler warnings for as they can be pretty disruptive.
+#+begin_src emacs-lisp :tangle yes
+(setq native-comp-async-report-warnings-errors nil)
+#+end_src
+
 Running this form will launch the debugger after loading a package.
 This is useful for finding out when a dependency is requiring a package (perhaps earlier than you want).
 Use by tangling this block and launching Emacs with =emacs --debug-init=.
@@ -699,18 +706,18 @@ https://www.flycheck.org/en/latest/
 
 **** blacken
 #+begin_src emacs-lisp
-  (use-package blacken :defer t :hook (python-mode . blacken-mode)
-      :config (add-hook 'python-mode-hook
-       (lambda () (add-hook 'before-save-hook 'blacken-buffer)))
-  )
+      (use-package blacken :defer t :commands blacken-buffer
+        ;; only format buffer when in python-mode
+        :init (add-hook 'before-save-hook #'(lambda () (when (derived-mode-p 'python-mode)
+           (blacken-buffer)
+           )))
+      )
 #+end_src
 
 **** pytest-el
-
 https://github.com/ionrock/pytest-el
 
 - FIX  Package cl is deprecated
-  
 #+begin_src emacs-lisp
   (use-package pytest :defer t
   :commands (pytest-one ptytest-module pytest-all)
@@ -722,7 +729,14 @@ https://github.com/ionrock/pytest-el
   )
 #+end_src
 
-
+**** py-isort
+#+begin_src emacs-lisp
+  (use-package py-isort
+    :commands py-isort-before-save
+    :init
+  ;;isort checks if in python-mode
+    (add-hook 'before-save-hook 'py-isort-before-save))
+#+end_src
 ** Themes
 
 https://github.com/hlissner/emacs-doom-themes

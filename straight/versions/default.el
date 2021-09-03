@@ -38,6 +38,7 @@
  ("pkg-info" . "76ba7415480687d05a4353b27fea2ae02b8d9d61")
  ("popup-el" . "cf899f8012f4189e76a009bebb589ff71631b1e9")
  ("projectile" . "e4d692c26aaa5680c03e5e601203f27fb7a879c9")
+ ("py-isort.el" . "e67306f459c47c53a65604e4eea88a3914596560")
  ("pytest-el" . "6934047242db79b1c53e9fe3e0734cc9719ed1c4")
  ("pyvenv" . "045ff9476dac26086a04538d9b7ba186aa8f0fd1")
  ("s.el" . "08661efb075d1c6b4fa812184c1e5e90c08795a9")
