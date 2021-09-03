@@ -16,6 +16,7 @@
  ("expand-region.el" . "95a773bd8f557cbd43d3b2dab2fa4417ec5927ab")
  ("f.el" . "50af874cd19042f17c8686813d52569b1025c76a")
  ("flycheck" . "21d52264aa80bfa4ede94c59e37a20fb6d033b0c")
+ ("flyspell-correct" . "00357953a736e21d0a1c8d76f5605820990544fe")
  ("general.el" . "a0b17d207badf462311b2eef7c065b884462cb7c")
  ("gnu-elpa-mirror" . "8ce05c546573f36c39b1e4a921de4fbf8613a98a")
  ("goto-chg" . "3ce1389fea12edde4e343bc7d54c8da97a1a6136")
