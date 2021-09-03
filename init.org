@@ -10,6 +10,9 @@ This is a literate configuration for =Emacs=.
 Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d/early-init.el=.
 
 ** Todos
+- add restart lsp workspace key-binding
+- add auto venv switch
+- add better parentheses 
 - add fly-spell
 - env variable (DONE when started from shell)
 - format org file
@@ -619,7 +622,7 @@ to learn about the VIM way.
     
 #+end_src
 ** Development
-Fowlling packages are used majorly for programming
+Following packages are used majorly for programming
 *** evil-nerd-commenter
 #+begin_quote
 A Nerd Commenter emulation, help you comment code efficiently.
@@ -628,10 +631,10 @@ https://github.com/redguardtoo/evil-nerd-commenter
 #+end_quote
 
 #+begin_src emacs-lisp
-      (use-package evil-nerd-commenter
+   (use-package evil-nerd-commenter
          :commands evilnc-comment-or-uncomment-lines
         :general
-    (global-menu";"   'evilnc-comment-or-uncomment-lines)
+    (global-menu ";" '(evilnc-comment-or-uncomment-lines :which-key "evil-comment"))
     )
 #+end_src
 
@@ -702,9 +705,30 @@ https://www.flycheck.org/en/latest/
   )
 #+end_src
 
+**** pytest-el
+
+https://github.com/ionrock/pytest-el
+
+- FIX  Package cl is deprecated
+  
+#+begin_src emacs-lisp
+  (use-package pytest :defer t
+  :commands (pytest-one ptytest-module pytest-all)
+  :config (add-to-list 'pytest-project-root-files "setup.cfg")
+  :general
+   (global-leader :keymaps 'python-mode-map "t" '(:ignore t :which-key "testing")
+     "tt" 'pytest-one "ta" 'pytest-all "tb" 'pytest-module
+   )
+  )
+#+end_src
+
+
 ** Themes
+
 https://github.com/hlissner/emacs-doom-themes
-TODO Look into defering theme loading (=emacs-startup=) to save some startup time.
+
+- TODO Look into defering theme loading (=emacs-startup=) to save some startup time
+  
 #+begin_src emacs-lisp
       (use-package doom-themes
       :config
@@ -746,16 +770,15 @@ TODO Look into defering theme loading (=emacs-startup=) to save some startup tim
    
  #+end_src
 ** flyspell
-Spell checking
 #+begin_quote
 Flyspell enables on-the-fly spell checking in Emacs by the means of a minor mode.
 
 http://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html
 #+end_quote
 
-FIX: ispell starts also in init major mode which is fundamental mode
-TODO: add German dict to ispell
-TODO: Add cycling hydra menu for spell checking
+- FIX ispell starts also in init major mode which is fundamental mode
+- TODO add German dict to ispell
+- TODO add cycling hydra menu for spell checking
 
 #+begin_src emacs-lisp
    (use-package flyspell
