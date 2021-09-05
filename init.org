@@ -654,7 +654,8 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
   (use-package lsp-mode
   :hook (lsp-mode . lsp-enable-which-key-integration)
   :commands lsp-deferred
-  :config (setq lsp-diagnostic-package :none) 
+  ;; disable flycheck override with lsp checker in python-mode
+  :config (setq lsp-diagnostics-disabled-modes '(python-mode)) 
   :general
   (global-leader :keymaps 'python-mode-map "r" 'lsp-rename
   "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
@@ -680,10 +681,9 @@ https://www.flycheck.org/en/latest/
     (add-hook 'python-mode-hook #'(lambda ()
            (flycheck-mode)
            ;; checker setup locally for python-mode
-           (setq-local flycheck-disabled-checkers '(lsp))
-           (setq-local flycheck-checker 'python-flake8)
-            ))
-  
+           ;; explicitly set flake8 checker
+           ;; implicitly set mypy and pylint in checker chain
+           (setq-local flycheck-checker 'python-flake8)))
     :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el")
   )
 #+end_src
