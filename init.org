@@ -270,9 +270,15 @@ It's a rough way of knowing when/if I need to optimize my init file.
 #+end_src
 
 ** after start up
-Maximize emacs frame
+After start up do some UI changes.
 #+begin_src emacs-lisp
-  (add-hook 'emacs-startup-hook 'toggle-frame-maximized)
+  (defun after-startup ()
+    (set-face-attribute 'default nil :height 140)
+    (toggle-frame-maximized)
+  )
+  
+  (add-hook 'emacs-startup-hook #'after-startup)
+  
 #+end_src
 * Packages
 ** evil
@@ -447,7 +453,7 @@ https://github.com/justbur/emacs-which-key
     (which-key-sort-order 'which-key-key-order-alpha)
     (which-key-side-window-max-width 0.33)
     (which-key-idle-delay 0.05)
-    :diminish which-key-mode)
+    :diminish )
 #+end_src
 
 ** magit
@@ -481,6 +487,7 @@ http://company-mode.github.io/
 #+begin_src emacs-lisp :lexical t
         (use-package company
           :defer 5
+        :diminish
         :commands (company-mode global-company-mode)
         :custom
     (company-idle-delay 0.01)
@@ -504,6 +511,7 @@ https://github.com/emacs-helm/helm
 #+begin_src emacs-lisp
     (use-package helm
     :init (require 'helm-config)
+    :diminish
     :defer 1
     :config
     (helm-mode)
@@ -777,6 +785,15 @@ https://github.com/hlissner/emacs-doom-themes
    )
   )
 #+end_src
+
+
+#+begin_src emacs-lisp
+  (use-package doom-modeline
+  :defer t
+  :hook
+  (after-init . doom-modeline-mode))
+#+end_src
+
 ** Hyda
  Hydra helps to design transient key bindings.
 
