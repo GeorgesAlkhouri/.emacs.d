@@ -13,7 +13,6 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - add restart lsp workspace key-binding
 - add auto venv switch
 - add better parentheses 
-- add fly-spell
 - add all the icons
 - env variable (DONE when started from shell)
 - format org file
@@ -655,6 +654,7 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
   (use-package lsp-mode
   :hook (lsp-mode . lsp-enable-which-key-integration)
   :commands lsp-deferred
+  :config (setq lsp-diagnostic-package :none) 
   :general
   (global-leader :keymaps 'python-mode-map "r" 'lsp-rename
   "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
@@ -674,11 +674,18 @@ Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intende
 https://www.flycheck.org/en/latest/
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package flycheck
-  :defer t
-  ;;:init (global-flycheck-mode)
-  :hook (python-mode . flycheck-mode)
-  :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el"))
+     (use-package flycheck
+     :defer t
+     :init 
+    (add-hook 'python-mode-hook #'(lambda ()
+           (flycheck-mode)
+           ;; checker setup locally for python-mode
+           (setq-local flycheck-disabled-checkers '(lsp))
+           (setq-local flycheck-checker 'python-flake8)
+            ))
+  
+    :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el")
+  )
 #+end_src
 
 *** Python
