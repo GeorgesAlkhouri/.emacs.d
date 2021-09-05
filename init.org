@@ -277,7 +277,7 @@ After start up do some UI changes.
     (toggle-frame-maximized)
   )
   
-  (add-hook 'emacs-startup-hook #'after-startup)
+  (add-hook 'after-init-hook #'after-startup)
   
 #+end_src
 * Packages
