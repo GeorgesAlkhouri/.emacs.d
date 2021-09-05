@@ -269,6 +269,11 @@ It's a rough way of knowing when/if I need to optimize my init file.
         use-package-expand-minimally t))
 #+end_src
 
+** after start up
+Maximize emacs frame
+#+begin_src emacs-lisp
+  (add-hook 'emacs-startup-hook 'toggle-frame-maximized)
+#+end_src
 * Packages
 ** evil
 #+begin_quote
@@ -832,4 +837,17 @@ https://github.com/d12frosted/flyspell-correct
   :defer t
   :after flyspell-correct)
   
+#+end_src
+
+** winner
+Winner Mode is a global minor mode that allows you to “undo” and “redo” changes in WindowConfiguration
+(Changes in window state).
+#+begin_src emacs-lisp
+  (use-package winner
+  :defer 3
+  :general
+  (global-menu-window
+    "u" 'winner-undo
+    "r" 'winner-redo)
+  :config (winner-mode))
 #+end_src
