@@ -269,7 +269,7 @@ It's a rough way of knowing when/if I need to optimize my init file.
         use-package-expand-minimally t))
 #+end_src
 
-** after start up
+** additional setup
 After start up do some UI changes.
 #+begin_src emacs-lisp
   (defun after-startup ()
@@ -278,8 +278,13 @@ After start up do some UI changes.
   )
   
   (add-hook 'after-init-hook #'after-startup)
-  
 #+end_src
+
+Enable  line numbers for prog-mode
+#+begin_src emacs-lisp
+  (add-hook 'prog-mode-hook #'display-line-numbers-mode) 
+#+end_src
+
 * Packages
 ** evil
 #+begin_quote
