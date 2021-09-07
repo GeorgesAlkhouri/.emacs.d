@@ -10,6 +10,7 @@
  ("emacs-doom-themes" . "65fb964f36939cf412d03b3fe410618caf99c494")
  ("emacs-libvterm" . "f73644a07ce56712101d1568139a8f3c3b4a9e59")
  ("emacs-which-key" . "7a10ff66154c03f277a009aab8861889cbbe2618")
+ ("emacs-winum" . "c5455e866e8a5f7eab6a7263e2057aff5f1118b9")
  ("emacsmirror-mirror" . "cf4385804420024f63f41b1bc39c6e2c51e51a20")
  ("epl" . "78ab7a85c08222cd15582a298a364774e3282ce6")
  ("evil" . "dceb73603d397f7e42a541976d8ec0711248d38c")

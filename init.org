@@ -17,7 +17,6 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - env variable (DONE when started from shell)
 - format org file
 - add emacs application framework
-- quick access for windows by numbers
   
 * Requirements
 Dependencies you need to fully run all configured features:
@@ -457,7 +456,7 @@ https://github.com/justbur/emacs-which-key
     (which-key-side-window-location 'bottom)
     (which-key-sort-order 'which-key-key-order-alpha)
     (which-key-side-window-max-width 0.33)
-    (which-key-idle-delay 0.05)
+    (which-key-idle-delay 0.5)
     :diminish )
 #+end_src
 
@@ -503,6 +502,7 @@ http://company-mode.github.io/
   (general-def company-active-map "<tab>"    'company-complete-common-or-cycle)
   (general-def company-active-map "S-<tab>"    'company-select-previous)
   :config
+  (setq company-tooltip-align-annotations t)
   (global-company-mode)
   )
 #+end_src
@@ -873,3 +873,37 @@ Winner Mode is a global minor mode that allows you to “undo” and “redo” 
     "r" 'winner-redo)
   :config (winner-mode))
 #+end_src
+
+** winum
+#+begin_quote
+Window numbers for Emacs: Navigate your windows and frames using numbers !
+
+https://github.com/deb0ch/emacs-winum
+#+end_quote
+
+#+begin_src emacs-lisp
+   (use-package winum
+     :defer 1
+     :config
+   (setq winum-auto-assign-0-to-minibuffer nil
+             winum-auto-setup-mode-line nil
+             winum-ignored-buffers '(" *LV*" " *which-key*"))
+  (global-menu "0" 'winum-select-window-0
+    "1" 'winum-select-window-1
+        "2" 'winum-select-window-2
+        "3" 'winum-select-window-3
+        "4" 'winum-select-window-4
+        "5" 'winum-select-window-5
+        "6" 'winum-select-window-6
+        "7" 'winum-select-window-7
+        "8" 'winum-select-window-8
+        "9" 'winum-select-window-9)
+  ;; Rename the entry for M-1 in the SPC h k Top-level bindings,
+  ;; Rename the entry winum 0-9 at SPC root, to 0..9
+  (push '(("\\(.*\\) 0" . "winum-select-window-0") . ("\\1 0..9" . "window 0..9"))
+      which-key-replacement-alist)
+  (push '((nil . "winum-select-window-[1-9]") . t) which-key-replacement-alist)
+    (winum-mode))
+#+end_src
+
+
