@@ -45,6 +45,7 @@
  ("pytest-el" . "6934047242db79b1c53e9fe3e0734cc9719ed1c4")
  ("pyvenv" . "045ff9476dac26086a04538d9b7ba186aa8f0fd1")
  ("s.el" . "08661efb075d1c6b4fa812184c1e5e90c08795a9")
+ ("shackle" . "4ef05b117c87e1f0d97e0ee74fd2f0bfd07a49b1")
  ("shrink-path.el" . "c14882c8599aec79a6e8ef2d06454254bb3e1e41")
  ("spinner" . "34905eae12a236753fa88abc831eff1e41e8576e")
  ("straight.el" . "45eb6112b2ea1214bfbec35ea20df7a75147fc08")
