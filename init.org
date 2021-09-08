@@ -13,7 +13,6 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - add restart lsp workspace key-binding
 - add auto venv switch
 - add better parentheses 
-- add all the icons
 - env variable (DONE when started from shell)
 - format org file
 - add emacs application framework
@@ -898,7 +897,6 @@ https://github.com/deb0ch/emacs-winum
         "7" 'winum-select-window-7
         "8" 'winum-select-window-8
         "9" 'winum-select-window-9)
-  ;; Rename the entry for M-1 in the SPC h k Top-level bindings,
   ;; Rename the entry winum 0-9 at SPC root, to 0..9
   (push '(("\\(.*\\) 0" . "winum-select-window-0") . ("\\1 0..9" . "window 0..9"))
       which-key-replacement-alist)
@@ -906,4 +904,18 @@ https://github.com/deb0ch/emacs-winum
     (winum-mode))
 #+end_src
 
+** shackle
+#+begin_quote
+Enforce rules for popup windows
 
+https://depp.brause.cc/shackle/
+#+end_quote
+#+begin_src emacs-lisp
+  (use-package shackle :defer t
+    :commands (shackle-mode)
+    :custom (shackle-rules '(("*Flycheck errors*"  :align below :size 0.15)
+                             ("\\`\\*helm.*?\\*\\'" :regexp t :align t :size 0.4)
+                             (magit-status-mode :select t :inhibit-window-quit t :same t)
+                             ))
+    :hook ((flycheck-mode global-flycheck-mode helm-mode magit-mode) . shackle-mode))
+#+end_src
