@@ -10,9 +10,8 @@ This is a literate configuration for =Emacs=.
 Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d/early-init.el=.
 
 ** Todos
-- add restart lsp workspace key-binding
+- add better magit keybinding support
 - add auto venv switch
-- add better parentheses 
 - env variable (DONE when started from shell)
 - format org file
 - add emacs application framework
@@ -273,6 +272,7 @@ After start up do some UI changes.
   (defun after-startup ()
     (set-face-attribute 'default nil :height 140)
     (toggle-frame-maximized)
+    (show-paren-mode t)
   )
   
   (add-hook 'after-init-hook #'after-startup)
@@ -910,6 +910,7 @@ Enforce rules for popup windows
 
 https://depp.brause.cc/shackle/
 #+end_quote
+
 #+begin_src emacs-lisp
   (use-package shackle :defer t
     :commands (shackle-mode)
@@ -918,4 +919,18 @@ https://depp.brause.cc/shackle/
                              (magit-status-mode :select t :inhibit-window-quit t :same t)
                              ))
     :hook ((flycheck-mode global-flycheck-mode helm-mode magit-mode) . shackle-mode))
+#+end_src
+
+** smartparens
+
+#+begin_quote
+Smartparens is a minor mode for dealing with pairs in Emacs.
+
+https://github.com/Fuco1/smartparens
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package smartparens
+  :defer t
+  :hook ((prog-mode org-mode) . smartparens-mode))
 #+end_src

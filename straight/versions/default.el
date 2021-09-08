@@ -47,6 +47,7 @@
  ("s.el" . "08661efb075d1c6b4fa812184c1e5e90c08795a9")
  ("shackle" . "4ef05b117c87e1f0d97e0ee74fd2f0bfd07a49b1")
  ("shrink-path.el" . "c14882c8599aec79a6e8ef2d06454254bb3e1e41")
+ ("smartparens" . "2834c66c4f09778d0c57e99886c329188eed591a")
  ("spinner" . "34905eae12a236753fa88abc831eff1e41e8576e")
  ("straight.el" . "45eb6112b2ea1214bfbec35ea20df7a75147fc08")
  ("transient" . "65f4eac82c564204d20df0a606dc2fcaa72cc41e")
