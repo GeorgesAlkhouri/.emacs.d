@@ -915,6 +915,7 @@ https://depp.brause.cc/shackle/
   (use-package shackle :defer t
     :commands (shackle-mode)
     :custom (shackle-rules '(("*Flycheck errors*"  :align below :size 0.15)
+                             ("*vterm*" :align below :size 0.4)
                              ("\\`\\*helm.*?\\*\\'" :regexp t :align t :size 0.4)
                              (magit-status-mode :select t)
                              ))
