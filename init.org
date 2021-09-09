@@ -916,7 +916,7 @@ https://depp.brause.cc/shackle/
     :commands (shackle-mode)
     :custom (shackle-rules '(("*Flycheck errors*"  :align below :size 0.15)
                              ("\\`\\*helm.*?\\*\\'" :regexp t :align t :size 0.4)
-                             (magit-status-mode :select t :inhibit-window-quit t :same t)
+                             (magit-status-mode :select t)
                              ))
     :hook ((flycheck-mode global-flycheck-mode helm-mode magit-mode) . shackle-mode))
 #+end_src
