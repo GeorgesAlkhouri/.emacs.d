@@ -717,8 +717,8 @@ https://github.com/anachronic/importmagic.el
   (use-package importmagic
     :defer t
     :hook (python-mode . importmagic-mode)
-    :init
-    ;; (add-hook 'python-mode-hook 'importmagic-mode)
+    :general
+   (global-leader :keymaps 'python-mode-map "i" '(importmagic-fix-imports :which-key "fix imports"))
     )
 #+end_src
 
