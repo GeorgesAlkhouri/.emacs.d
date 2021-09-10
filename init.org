@@ -82,7 +82,7 @@ Adding a variable watcher can be a useful way to track down initialization and m
 #+end_src
 
 *** initial-major-mode
-Prevent the \*scratch* buffer from loading a mode.
+Prevent the *scratch* buffer from loading a mode.
 #+begin_src emacs-lisp :tangle no
 (setq initial-major-mode 'fundamental-mode)
 #+end_src
@@ -273,7 +273,8 @@ After start up do some UI changes.
     (set-face-attribute 'default nil :height 140)
     (toggle-frame-maximized)
     (show-paren-mode t)
-  )
+    (global-hl-line-mode t)
+    )
   
   (add-hook 'after-init-hook #'after-startup)
 #+end_src
