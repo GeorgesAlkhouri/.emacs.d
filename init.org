@@ -708,6 +708,20 @@ https://www.flycheck.org/en/latest/
 
 *** Python
 
+**** importmagic.el
+Emacs package which tries to suggest imports for unresolved symbols.
+
+https://github.com/anachronic/importmagic.el
+
+#+begin_src emacs-lisp
+  (use-package importmagic
+    :defer t
+    :hook (python-mode . importmagic-mode)
+    :init
+    ;; (add-hook 'python-mode-hook 'importmagic-mode)
+    )
+#+end_src
+
 **** lsp-pyright
 #+begin_src emacs-lisp
   (use-package lsp-pyright
