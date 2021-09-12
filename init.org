@@ -10,7 +10,6 @@ This is a literate configuration for =Emacs=.
 Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d/early-init.el=.
 
 ** Todos
-- add better magit keybinding support
 - env variable (DONE when started from shell)
 - format org file
 - add emacs application framework
@@ -274,9 +273,7 @@ After start up do some UI changes.
     (set-face-attribute 'default nil :height 140)
     (toggle-frame-maximized)
     (show-paren-mode t)
-    (global-hl-line-mode t)
-    )
-  
+    (global-hl-line-mode t))
   (add-hook 'after-init-hook #'after-startup)
 #+end_src
 
@@ -337,19 +334,37 @@ Load general before the remaining packages so they can make use of the ~:general
 
 #+begin_src emacs-lisp
   ;; We define a global-leader definer to access major-mode specific bindings
-    (general-create-definer global-leader :states '(normal visual) :prefix "SPC m"
-      "" '( :ignore t
-                  :which-key
-                  (lambda (arg)
-                  (cons (cadr (split-string (car arg) " "))
-              (replace-regexp-in-string "-mode$" "" (symbol-name major-mode))))))
- ;; Also define a global menu definer  
-    (general-create-definer global-menu :states '(normal visual) :prefix "SPC" )
-     (global-menu "!" 'shell-command
-      ":"   'eval-expression
-      "TAB" '((lambda () (interactive) (switch-to-buffer nil))
-          :which-key "other-buffer")
-     )
+  (general-create-definer
+    global-leader
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator)
+    :prefix
+    "SPC m"
+    ""
+    '
+    (:ignore
+      t
+      :which-key
+      (lambda (arg)
+        (cons
+          (cadr (split-string (car arg) " "))
+          (replace-regexp-in-string
+            "-mode$"
+            ""
+            (symbol-name major-mode))))))
+  
+  ;; Also define a global menu definer  
+  (general-create-definer
+    global-menu
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator)
+    :prefix "SPC")
+  
+  (global-menu
+    "!" 'shell-command ":" 'eval-expression "TAB"
+    '
+    ((lambda () (interactive) (switch-to-buffer nil))
+      :which-key "other-buffer"))
 #+end_src
 
 **** applications
