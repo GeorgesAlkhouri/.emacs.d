@@ -47,7 +47,6 @@
  ("projectile" . "e4d692c26aaa5680c03e5e601203f27fb7a879c9")
  ("py-isort.el" . "e67306f459c47c53a65604e4eea88a3914596560")
  ("pytest-el" . "6934047242db79b1c53e9fe3e0734cc9719ed1c4")
- ("pyvenv" . "045ff9476dac26086a04538d9b7ba186aa8f0fd1")
  ("s.el" . "08661efb075d1c6b4fa812184c1e5e90c08795a9")
  ("shackle" . "4ef05b117c87e1f0d97e0ee74fd2f0bfd07a49b1")
  ("shrink-path.el" . "c14882c8599aec79a6e8ef2d06454254bb3e1e41")
@@ -56,5 +55,6 @@
  ("straight.el" . "45eb6112b2ea1214bfbec35ea20df7a75147fc08")
  ("transient" . "65f4eac82c564204d20df0a606dc2fcaa72cc41e")
  ("use-package" . "a7422fb8ab1baee19adb2717b5b47b9c3812a84c")
+ ("virtualenvwrapper.el" . "c7e84505db4142fd1beebf38ffe37c3f42444ca3")
  ("with-editor" . "5519b6a67ecd66865b4fdd5447425eee900c54f4"))
 :beta

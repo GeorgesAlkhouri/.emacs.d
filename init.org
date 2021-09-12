@@ -11,10 +11,11 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 
 ** Todos
 - add better magit keybinding support
-- add auto venv switch
 - env variable (DONE when started from shell)
 - format org file
 - add emacs application framework
+- add nice initial-buffer-choice
+- add venv to mode-line
   
 * Requirements
 Dependencies you need to fully run all configured features:
@@ -731,16 +732,34 @@ https://github.com/anachronic/importmagic.el
                           (lsp-deferred))))
 #+end_src
 
-**** pyvenv
+**** virtualenvwrapper
+#+begin_quote
+A featureful virtualenv tool for Emacs. Emulates much of the functionality of Doug Hellmann's virtualenvwrapper.
+
+https://github.com/porterjamesj/virtualenvwrapper.el
+#+end_quote
 #+begin_src emacs-lisp
-  (use-package pyvenv
-  :defer t
-  :diminish
-  :config
-  ;; Show python venv name in modeline
-  (setq pyvenv-mode-line-indicator '(pyvenv-virtual-env-name ("[venv:" pyvenv-virtual-env-name "] ")))
-  :hook (python-mode . pyvenv-mode)
-  )
+  (use-package virtualenvwrapper
+    :commands
+    (venv-projectile-auto-workon
+      venv-list-virtualenvs
+      venv-get-candidates)
+    :init
+    (add-hook 'projectile-after-switch-project-hook
+      #'
+      (lambda ()
+        "Auto activated venv when project folder name is in list of available venvs"
+        (when
+          (and (derived-mode-p 'python-mode) (projectile-project-root))
+          (let
+            (
+              (project-dir
+                (file-name-nondirectory
+                  (directory-file-name
+                    (file-name-directory (projectile-project-root))))))
+            (if (member project-dir (venv-get-candidates))
+              (venv-workon project-dir)
+              (venv-deactivate)))))))
 #+end_src
 
 **** blacken
