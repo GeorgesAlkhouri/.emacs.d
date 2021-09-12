@@ -843,11 +843,10 @@ https://github.com/hlissner/emacs-doom-themes
 A fancy and fast mode-line inspired by minimalism design.
 
 https://github.com/seagle0128/doom-modeline
-
+#+end_quote
 *Troubleshoot*
 It could happen that when behind a proxy you have to manually download the fonts for the /all-the-icons.el/ package included
 in doom-modeline.
-#+end_quote
 #+begin_src emacs-lisp
   (use-package doom-modeline
   :defer t
