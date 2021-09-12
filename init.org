@@ -198,8 +198,7 @@ https://github.com/raxod502/straight.el
 Straight installs packages directly from there git repository.
 
 Bootstrap straight
-Caveat:
-
+*Troubleshoot*:
 #+begin_quote
 Sometimes, in a corporate environment, url-retrieve-synchronously may not work and straight.el
 will be unable to download the installation script mentioned in the bootstrap snippet.
@@ -839,7 +838,16 @@ https://github.com/hlissner/emacs-doom-themes
   )
 #+end_src
 
+** doom-modeline
+#+begin_quote
+A fancy and fast mode-line inspired by minimalism design.
 
+https://github.com/seagle0128/doom-modeline
+
+*Troubleshoot*
+It could happen that when behind a proxy you have to manually download the fonts for the /all-the-icons.el/ package included
+in doom-modeline.
+#+end_quote
 #+begin_src emacs-lisp
   (use-package doom-modeline
   :defer t
