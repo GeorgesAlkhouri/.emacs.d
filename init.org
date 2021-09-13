@@ -247,7 +247,19 @@ It's a rough way of knowing when/if I need to optimize my init file.
                      gcs-done)))
 #+end_src
 ** packaging
+
 *** use-package
+#+begin_src emacs-lisp
+  (defmacro use-feature (name &rest args)
+  "Like `use-package' but with `straight-use-package-by-default' disabled.
+NAME and ARGS are in `use-package'."
+  (declare (indent defun))
+  `(use-package ,name
+     :straight nil
+     :ensure nil
+     ,@args))
+#+end_src
+
 #+begin_src emacs-lisp
 (straight-use-package 'use-package)
 (eval-when-compile
@@ -271,7 +283,6 @@ After start up do some UI changes.
   (defun after-startup ()
     (set-face-attribute 'default nil :height 140)
     (toggle-frame-maximized)
-    (show-paren-mode t)
     (global-hl-line-mode t))
   (add-hook 'after-init-hook #'after-startup)
 #+end_src
@@ -884,7 +895,7 @@ http://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html
 - TODO add cycling hydra menu for spell checking
 
 #+begin_src emacs-lisp
-   (use-package flyspell
+   (use-feature flyspell
     :defer t
     :hook ((prog-mode . flyspell-prog-mode)
            (text-mode . flyspell-mode))
@@ -979,7 +990,6 @@ https://depp.brause.cc/shackle/
 #+end_src
 
 ** smartparens
-
 #+begin_quote
 Smartparens is a minor mode for dealing with pairs in Emacs.
 
@@ -991,3 +1001,26 @@ https://github.com/Fuco1/smartparens
   :defer t
   :hook ((prog-mode org-mode) . smartparens-mode))
 #+end_src
+
+** paran
+Show matching delimiters highlighted.
+
+#+begin_src emacs-lisp
+(use-feature paren
+  :defer 1
+  :config (show-paren-mode t))
+#+end_src
+
+** compile
+#+begin_src emacs-lisp
+    (use-feature compile
+    :config
+    (setq compilation-scroll-output 'first-error)
+    (defun +compilation-colorize ()
+      "Colorize from `compilation-filter-start' to `point'."
+      (require 'ansi-color)
+      (let ((inhibit-read-only t))
+        (ansi-color-apply-on-region (point-min) (point-max))))
+  (add-hook 'compilation-filter-hook #'+compilation-colorize))
+#+end_src
+
