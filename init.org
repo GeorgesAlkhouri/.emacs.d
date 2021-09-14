@@ -533,13 +533,9 @@ It uses pluggable back-ends and front-ends to retrieve and display completion ca
 http://company-mode.github.io/
 #+end_quote
 #+begin_src emacs-lisp :lexical t
-        (use-package company
-          :defer 5
-        :diminish
-        :commands (company-mode global-company-mode)
-        :custom
-    (company-idle-delay 0.01)
-      (company-minimum-prefix-length 2)
+  (use-package company
+  :hook ((prog-mode) . company-mode)
+  :diminish
   :general
   (general-def company-active-map "C-k"    'company-select-previous)
   (general-def company-active-map "C-j"    'company-select-next)
@@ -547,7 +543,10 @@ http://company-mode.github.io/
   (general-def company-active-map "S-<tab>"    'company-select-previous)
   :config
   (setq company-tooltip-align-annotations t)
-  (global-company-mode)
+  (setq company-idle-delay 0.01)
+  (setq company-minimum-prefix-length 2)
+  (setq company-require-match 'never)
+  (global-company-mode t)
   )
 #+end_src
 
@@ -713,20 +712,28 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
 #+end_quote
 
 #+begin_src emacs-lisp
-  (use-package lsp-mode
-  :hook (lsp-mode . lsp-enable-which-key-integration)
-  :commands lsp-deferred
-  ;; disable flycheck override with lsp checker in python-mode
-  :config (setq lsp-diagnostics-disabled-modes '(python-mode)) 
-  :general
-  (global-leader :keymaps 'python-mode-map "r" 'lsp-rename
-  "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
-   ))
+       (use-package lsp-mode
+       :defer t
+       :hook ((python-mode) . lsp-deferred)
+       :commands lsp
+       :config
+       ;; disable flycheck override with lsp checker in python-mode
+       (setq lsp-diagnostics-disabled-modes '(python-mode)) 
+       (setq lsp-keep-workspace-alive nil)
+       :general
+       (global-leader :keymaps 'python-mode-map "r" 'lsp-rename
+       "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
+        ))
   
-  (use-package lsp-ui
-    :commands lsp-ui-mode)
-  (use-package helm-lsp
-    :commands helm-lsp-workspace-symbol)
+       (use-package lsp-ui
+         :after lsp-mode
+         :commands lsp-ui-mode
+         :config
+         (setq lsp-ui-sideline-ignore-duplicate t)
+  )
+       (use-package helm-lsp
+         :after lsp-mode
+         :commands helm-lsp-workspace-symbol)
   
 #+end_src
 
