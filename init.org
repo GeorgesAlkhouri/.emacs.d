@@ -13,7 +13,7 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - env variable (DONE when started from shell)
 - format org file
 - add emacs application framework
-- add nice initial-buffer-choice
+- add nice initial-buffer-choice (https://github.com/emacs-dashboard/emacs-dashboard)
 - add venv to mode-line
   
 * Requirements
@@ -277,11 +277,29 @@ NAME and ARGS are in `use-package'."
         use-package-expand-minimally t))
 #+end_src
 
+** define some constants
+
+#+begin_src emacs-lisp
+  (defconst *sys/win32*
+  (eq system-type 'windows-nt)
+  "Are we running on a Win system?")
+
+(defconst *sys/linux*
+  (eq system-type 'gnu/linux)
+  "Are we running on a GNU/Linux system?")
+
+(defconst *sys/mac*
+  (eq system-type 'darwin)
+  "Are we running on a Mac system?")
+#+end_src
+
 ** additional setup
 After start up do some UI changes.
 #+begin_src emacs-lisp
   (defun after-startup ()
     (set-face-attribute 'default nil :height 140)
+    ;; When buffer is closed, saves the cursor location
+    (save-place-mode t)
     (toggle-frame-maximized)
     (global-hl-line-mode t))
   (add-hook 'after-init-hook #'after-startup)
@@ -931,13 +949,15 @@ https://github.com/d12frosted/flyspell-correct
 Winner Mode is a global minor mode that allows you to “undo” and “redo” changes in WindowConfiguration
 (Changes in window state).
 #+begin_src emacs-lisp
-  (use-package winner
-  :defer 3
-  :general
-  (global-menu-window
-    "u" 'winner-undo
-    "r" 'winner-redo)
-  :config (winner-mode))
+   (use-package winner
+   :defer 3
+   :general
+   (global-menu-window
+     "u" 'winner-undo
+     "r" 'winner-redo)
+   :config
+  (add-to-list 'winner-boring-buffers "*Help*")
+  (winner-mode t))
 #+end_src
 
 ** winum
