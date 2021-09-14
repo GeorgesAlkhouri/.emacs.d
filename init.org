@@ -15,6 +15,7 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - add emacs application framework
 - add nice initial-buffer-choice (https://github.com/emacs-dashboard/emacs-dashboard)
 - add venv to mode-line
+- make terminal history variable (mac, linux)
   
 * Requirements
 Dependencies you need to fully run all configured features:
@@ -397,22 +398,22 @@ Load general before the remaining packages so they can make use of the ~:general
 
 **** applications
 #+begin_src emacs-lisp
-(general-create-definer global-menu-applications :keymaps 'override :states '(normal visual) :prefix "SPC a" "" '(:ignore t :which-key "applications"))
+(general-create-definer global-menu-applications :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC a" "" '(:ignore t :which-key "applications"))
 #+end_src
 
 **** search
 #+begin_src emacs-lisp
-(general-create-definer global-menu-search :keymaps 'override :states '(normal visual) :prefix "SPC s" "" '(:ignore t :which-key "search"))
+(general-create-definer global-menu-search :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC s" "" '(:ignore t :which-key "search"))
 #+end_src
 
 **** spelling
 #+begin_src emacs-lisp
-(general-create-definer global-menu-spelling :keymaps 'override :states '(normal visual) :prefix "SPC S" "" '(:ignore t :which-key "spelling"))
+(general-create-definer global-menu-spelling :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC S" "" '(:ignore t :which-key "spelling"))
 #+end_src
 
 **** buffer
 #+begin_src emacs-lisp
-    (general-create-definer global-menu-buffer :states '(normal visual) :prefix "SPC b" "" '(:ignore t :which-key "buffer"))
+    (general-create-definer global-menu-buffer :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC b" "" '(:ignore t :which-key "buffer"))
     (global-menu-buffer
          "d"  'kill-current-buffer
          "o" '((lambda () (interactive) (switch-to-buffer nil))
@@ -428,18 +429,18 @@ Load general before the remaining packages so they can make use of the ~:general
 
 **** jumping/ joining / spliting
 #+begin_src emacs-lisp
-  (general-create-definer global-menu-jump :states '(normal visual) :prefix "SPC j" "" '(:ignore t :which-key "jump"))
+  (general-create-definer global-menu-jump :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC j" "" '(:ignore t :which-key "jump"))
 #+end_src
 
 **** files
 #+begin_src emacs-lisp
-    (general-create-definer global-menu-file :states '(normal visual) :prefix "SPC f" "" '(:ignore t :which-key "file"))
+    (general-create-definer global-menu-file :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC f" "" '(:ignore t :which-key "file"))
 #+end_src
 
 **** env
 Menus for everything releated to Emacs environmental files, settings, etc. 
 #+begin_src emacs-lisp
-  (general-create-definer global-menu-env :states '(normal visual) :prefix "SPC e" "" '(:ignore t :which-key "env"))
+  (general-create-definer global-menu-env :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC e" "" '(:ignore t :which-key "env"))
   (global-menu-env 
      "d" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org config")
      "f" '(straight-freeze-versions :which-key "freeze packages")
@@ -448,12 +449,12 @@ Menus for everything releated to Emacs environmental files, settings, etc.
 
 **** git
 #+begin_src emacs-lisp
-  (general-create-definer global-menu-vc :states '(normal visual) :prefix "SPC g" "" '(:ignore t :which-key "git"))
+  (general-create-definer global-menu-vc :keymaps 'override  :states '(normal hybrid motion visual operator) :prefix "SPC g" "" '(:ignore t :which-key "git"))
 #+end_src
 
 **** windows
 #+begin_src emacs-lisp
-  (general-create-definer global-menu-window :states '(normal visual) :prefix "SPC w" "" '(:ignore t :which-key "window"))
+  (general-create-definer global-menu-window :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC w" "" '(:ignore t :which-key "window"))
   (global-menu-window
   
           "?" 'split-window-vertically
@@ -482,7 +483,7 @@ Menus for everything releated to Emacs environmental files, settings, etc.
 
 **** projects
 #+begin_src emacs-lisp
- (general-create-definer global-menu-project :states '(normal visual) :prefix "SPC p" "" '(:ignore t :which-key "project"))
+ (general-create-definer global-menu-project :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC p" "" '(:ignore t :which-key "project"))
 #+end_src
  
 ** which-key
@@ -641,18 +642,38 @@ Emacs-libvterm (vterm) is fully-fledged terminal emulator inside GNU Emacs based
 https://github.com/akermu/emacs-libvterm
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package vterm
-    :straight (:post-build (cl-letf (((symbol-function #'pop-to-buffer)
-                                      (lambda (buffer) (with-current-buffer buffer (message (buffer-string))))))
-                             (setq vterm-always-compile-module t)
-                            (require 'vterm)))
-    :commands (vterm vterm-other-window)
-    :general
-    (global-menu-applications "t" '(:ignore t :which-key "terminal") "tt" 'vterm-other-window
-         "t." 'vterm
-    )
-    :config
-    (evil-set-initial-state 'vterm-mode 'emacs))
+      (use-package vterm
+        :straight (:post-build (cl-letf (((symbol-function #'pop-to-buffer)
+                                          (lambda (buffer) (with-current-buffer buffer (message (buffer-string))))))
+                                 (setq vterm-always-compile-module t)
+                                (require 'vterm)))
+        :commands (vterm vterm-other-window)
+        :general
+        (global-menu-applications "t" '(:ignore t :which-key "terminal") "tt" 'vterm-other-window
+             "t." 'vterm
+        )
+        (general-def vterm-mode-map "C-r" 'helm-vterm-search-history :states '(normal emacs))
+        ;; copied from spacemacs
+        :config
+        (defun vterm-make-history-candidates ()
+        (with-temp-buffer
+            (insert-file-contents "~/.bash_history")
+            (reverse
+            (delete-dups
+            (split-string (buffer-string) "\n")))))
+        (defun helm-vterm-search-history ()
+        "Narrow down bash history with helm."
+        (interactive)
+        (cl-assert (string-equal mode-name "VTerm") nil "Not in VTerm mode")
+        (helm :sources (helm-build-sync-source "Bash history"
+                                                :candidates (vterm-make-history-candidates)
+                                                :action #'vterm-send-string)
+                :buffer "*helm-bash-history*"
+                :candidate-number-limit 10000))
+  
+        (evil-set-initial-state 'vterm-mode 'emacs)
+        (add-hook 'vterm-mode-hook #'(lambda () (setq-local global-hl-line-mode nil)))
+  )
 #+end_src
 
 ** diminish
