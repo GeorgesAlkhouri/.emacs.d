@@ -535,20 +535,20 @@ http://company-mode.github.io/
 #+end_quote
 #+begin_src emacs-lisp :lexical t
   (use-package company
-  :hook ((prog-mode) . company-mode)
-  :diminish
-  :general
-  (general-def company-active-map "C-k"    'company-select-previous)
-  (general-def company-active-map "C-j"    'company-select-next)
-  (general-def company-active-map "<tab>"    'company-complete-common-or-cycle)
-  (general-def company-active-map "S-<tab>"    'company-select-previous)
-  :config
-  (setq company-tooltip-align-annotations t)
-  (setq company-idle-delay 0.01)
-  (setq company-minimum-prefix-length 2)
-  (setq company-require-match 'never)
-  (global-company-mode t)
-  )
+    :hook ((prog-mode) . company-mode)
+    :diminish
+    :general
+    (general-def company-active-map "C-k"    'company-select-previous)
+    (general-def company-active-map "C-j"    'company-select-next)
+    (general-def company-active-map "<tab>"    'company-complete-common-or-cycle)
+    (general-def company-active-map "S-<tab>"    'company-select-previous)
+    :config
+    (setq company-tooltip-align-annotations t)
+    (setq company-idle-delay 0.01)
+    (setq company-minimum-prefix-length 2)
+    (setq company-require-match 'never)
+    (global-company-mode t)
+    )
 #+end_src
 
 ** helm
@@ -619,20 +619,21 @@ Its goal is to provide a nice set of features operating on a project level witho
 https://github.com/bbatsov/projectile
 #+end_quote
 #+begin_src emacs-lisp
-(use-package projectile
-  :after (general)
-  :general
-  (global-menu-project
-     "!" 'projectile-run-shell-command-in-root
-     "%" 'projectile-replace-regexp
-     "D" 'projectile-dired
-     "e" 'projectile-edit-dir-locals
-     "g" 'projectile-find-tag
-     "G" 'projectile-regenerate-tags
-     "R" 'projectile-replace
-     "v" 'projectile-vc)
-  :config
-  (projectile-mode))
+  (use-package projectile
+    :after (general)
+    :general
+    (global-menu-project
+      "!" 'projectile-run-shell-command-in-root
+      "%" 'projectile-replace-regexp
+      "D" 'projectile-dired
+      "e" 'projectile-edit-dir-locals
+      "g" 'projectile-find-tag
+      "G" 'projectile-regenerate-tags
+      "R" 'projectile-replace
+      "v" 'projectile-vc)
+    :config
+    (add-to-list 'projectile-globally-ignored-directories "site-packages")
+    (projectile-mode t))
 #+end_src
 
 ** vterm
@@ -711,6 +712,22 @@ to learn about the VIM way.
 #+end_src
 ** Development
 Following packages are used majorly for programming
+
+#+begin_src emacs-lisp
+  (use-package highlight-indent-guides
+    :defer t
+    :hook (prog-mode . highlight-indent-guides-mode)
+    :if (display-graphic-p)
+    :diminish
+    :config
+    (setq highlight-indent-guides-method 'character)
+    (setq highlight-indent-guides-responsive 'top)
+    (setq highlight-indent-guides-delay 0)
+    (setq highlight-indent-guides-auto-character-face-perc 7)
+    )
+#+end_src
+
+
 *** evil-nerd-commenter
 #+begin_quote
 A Nerd Commenter emulation, help you comment code efficiently.
@@ -930,9 +947,11 @@ It could happen that when behind a proxy you have to manually download the fonts
 in doom-modeline.
 #+begin_src emacs-lisp
   (use-package doom-modeline
-  :defer t
-  :hook
-  (after-init . doom-modeline-mode))
+    :defer t
+    :config
+    (setq doom-modeline-height 30)
+    :hook
+    (after-init . doom-modeline-mode))
 #+end_src
 
 ** Hyda

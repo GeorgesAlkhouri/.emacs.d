@@ -32,6 +32,7 @@
  ("helm-ag" . "7cfed5d3e861717466ae6d3f76c759548a9fad04")
  ("helm-lsp" . "c2c6974dadfac459b1a69a1217441283874cea92")
  ("helm-projectile" . "58123f14c392021714fc5d23b9f95c7f95ce07f1")
+ ("highlight-indent-guides" . "cf352c85cd15dd18aa096ba9d9ab9b7ab493e8f6")
  ("ht.el" . "c4c1be487d6ecb353d07881526db05d7fc90ea87")
  ("hydra" . "2d553787aca1aceb3e6927e426200e9bb9f056f1")
  ("importmagic.el" . "701dfcca5f3ab42be0f26a8d381d7116c79be850")
