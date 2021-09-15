@@ -778,6 +778,30 @@ https://www.flycheck.org/en/latest/
   )
 #+end_src
 
+*** format-all
+#+begin_quote
+Lets you auto-format source code in many languages using the same command for all languages, instead of learning a different Emacs package and formatting command for each language.
+
+https://github.com/lassik/emacs-format-all-the-code
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package format-all
+    :defer t
+    :commands format-all-buffer
+    ;; Format elisp
+    :general
+    (global-leader
+      :keymaps
+      'emacs-lisp-mode-map
+      "f"
+      '(:ignore t :which-key "format")
+      "fb"
+      'format-all-buffer)
+    ;; :hook ((python-mode) . format-all-mode)
+    )
+#+end_src
+
 *** Python
 
 **** importmagic.el
