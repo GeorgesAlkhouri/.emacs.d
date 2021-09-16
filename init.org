@@ -369,7 +369,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
 #+begin_src emacs-lisp
   (use-package general
-    :config (add-to-list 'general-non-normal-states 'visual)
+    ;; :config (add-to-list 'general-non-normal-states 'visual)
     :demand t)
 #+end_src
 
@@ -386,48 +386,66 @@ Load general before the remaining packages so they can make use of the ~:general
     ""
     '
     (:ignore
-      t
-      :which-key
-      (lambda (arg)
-        (cons
-          (cadr (split-string (car arg) " "))
-          (replace-regexp-in-string
-            "-mode$"
-            ""
-            (symbol-name major-mode))))))
+     t
+     :which-key
+     (lambda (arg)
+       (cons
+        (cadr (split-string (car arg) " "))
+        (replace-regexp-in-string
+         "-mode$"
+         ""
+         (symbol-name major-mode))))))
   
-  ;; Also define a global menu definer  
+  ;; Also define a global menu definer
   (general-create-definer
     global-menu
     :keymaps 'override
-    :states '(normal hybrid motion visual operator)
+    :states '(normal hybrid motion visual operator emacs)
+    :non-normal-prefix "S-SPC"
     :prefix "SPC")
   
   (global-menu
     "!" 'shell-command ":" 'eval-expression "TAB"
     '
     ((lambda () (interactive) (switch-to-buffer nil))
-      :which-key "other-buffer"))
+     :which-key "other-buffer"))
 #+end_src
 
 **** applications
 #+begin_src emacs-lisp
-(general-create-definer global-menu-applications :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC a" "" '(:ignore t :which-key "applications"))
+  (general-create-definer global-menu-applications
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator emacs)
+    :non-normal-prefix "S-SPC a"
+    :prefix "SPC a" "" '(:ignore t :which-key "applications"))
 #+end_src
 
 **** search
 #+begin_src emacs-lisp
-(general-create-definer global-menu-search :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC s" "" '(:ignore t :which-key "search"))
+  (general-create-definer global-menu-search
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator emacs)
+    :non-normal-prefix "S-SPC s"
+    :prefix "SPC s" "" '(:ignore t :which-key "search"))
 #+end_src
 
 **** spelling
 #+begin_src emacs-lisp
-(general-create-definer global-menu-spelling :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC S" "" '(:ignore t :which-key "spelling"))
+  (general-create-definer global-menu-spelling
+    :keymaps 'override
+    :states
+    '(normal hybrid motion visual operator)
+    :non-normal-prefix "S-SPC S"
+    :prefix "SPC S" "" '(:ignore t :which-key "spelling"))
 #+end_src
 
 **** buffer
 #+begin_src emacs-lisp
-    (general-create-definer global-menu-buffer :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC b" "" '(:ignore t :which-key "buffer"))
+  (general-create-definer global-menu-buffer
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator emacs)
+    :non-normal-prefix "S-SPC b"
+    :prefix "SPC b" "" '(:ignore t :which-key "buffer"))
     (global-menu-buffer
          "d"  'kill-current-buffer
          "o" '((lambda () (interactive) (switch-to-buffer nil))
@@ -443,18 +461,30 @@ Load general before the remaining packages so they can make use of the ~:general
 
 **** jumping/ joining / spliting
 #+begin_src emacs-lisp
-  (general-create-definer global-menu-jump :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC j" "" '(:ignore t :which-key "jump"))
+  (general-create-definer global-menu-jump
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator emacs)
+    :non-normal-prefix "S-SPC"
+    :prefix "SPC j" "" '(:ignore t :which-key "jump"))
 #+end_src
 
 **** files
 #+begin_src emacs-lisp
-    (general-create-definer global-menu-file :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC f" "" '(:ignore t :which-key "file"))
+  (general-create-definer global-menu-file
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator emacs)
+    :non-normal-prefix "S-SPC f"
+    :prefix "SPC f" "" '(:ignore t :which-key "file"))
 #+end_src
 
 **** env
 Menus for everything releated to Emacs environmental files, settings, etc. 
 #+begin_src emacs-lisp
-  (general-create-definer global-menu-env :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC e" "" '(:ignore t :which-key "env"))
+  (general-create-definer global-menu-env
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator emacs)
+    :non-normal-prefix "S-SPC e"
+    :prefix "SPC e" "" '(:ignore t :which-key "env"))
   (global-menu-env 
      "d" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org config")
      "f" '(straight-freeze-versions :which-key "freeze packages")
@@ -463,36 +493,45 @@ Menus for everything releated to Emacs environmental files, settings, etc.
 
 **** git
 #+begin_src emacs-lisp
-  (general-create-definer global-menu-vc :keymaps 'override  :states '(normal hybrid motion visual operator) :prefix "SPC g" "" '(:ignore t :which-key "git"))
+  (general-create-definer global-menu-vc
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator emacs)
+    :non-normal-prefix "S-SPC g"
+    :prefix "SPC g" "" '(:ignore t :which-key "git"))
 #+end_src
 
 **** windows
 #+begin_src emacs-lisp
-  (general-create-definer global-menu-window :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC w" "" '(:ignore t :which-key "window"))
+  (general-create-definer global-menu-window
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator emacs)
+    :non-normal-prefix "S-SPC w"
+    :prefix "SPC w" "" '(:ignore t :which-key "window"))
+  
   (global-menu-window
   
-          "?" 'split-window-vertically
-          "=" 'balance-windows-area
-          "/" 'split-window-horizontally
-          "O" 'delete-other-windows
-          "X" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
-                :which-key "kill-other-buffer-and-window")
-          "H" 'evil-window-move-far-left
-          "J" 'evil-window-move-very-bottom
-          "K" 'evil-window-move-very-top
-          "L" 'evil-window-move-far-right
-          "d" 'delete-window
-          "h" 'windmove-left
-          "j" 'windmove-down
-          "k" 'windmove-up
-          "l" 'windmove-right
-          "o" 'other-window
-          "t" '((lambda () (interactive)
-                  "toggle window dedication"
-                  (set-window-dedicated-p (selected-window) (not (window-dedicated-p))))
-                :which-key "toggle window dedication")
-          "x" 'kill-buffer-and-window
-   )  
+    "?" 'split-window-vertically
+    "=" 'balance-windows-area
+    "/" 'split-window-horizontally
+    "O" 'delete-other-windows
+    "X" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
+          :which-key "kill-other-buffer-and-window")
+    "H" 'evil-window-move-far-left
+    "J" 'evil-window-move-very-bottom
+    "K" 'evil-window-move-very-top
+    "L" 'evil-window-move-far-right
+    "d" 'delete-window
+    "h" 'windmove-left
+    "j" 'windmove-down
+    "k" 'windmove-up
+    "l" 'windmove-right
+    "o" 'other-window
+    "t" '((lambda () (interactive)
+            "toggle window dedication"
+            (set-window-dedicated-p (selected-window) (not (window-dedicated-p))))
+          :which-key "toggle window dedication")
+    "x" 'kill-buffer-and-window
+    )
 #+end_src
 
 **** projects
@@ -515,7 +554,7 @@ https://github.com/justbur/emacs-which-key
     (which-key-side-window-location 'bottom)
     (which-key-sort-order 'which-key-key-order-alpha)
     (which-key-side-window-max-width 0.33)
-    (which-key-idle-delay 0.5)
+    (which-key-idle-delay 0.75)
     :diminish )
 #+end_src
 
