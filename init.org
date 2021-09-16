@@ -278,27 +278,39 @@ NAME and ARGS are in `use-package'."
         use-package-expand-minimally t))
 #+end_src
 
-** define some constants
+** define constants
 
 #+begin_src emacs-lisp
   (defconst *sys/win32*
-  (eq system-type 'windows-nt)
-  "Are we running on a Win system?")
-
-(defconst *sys/linux*
-  (eq system-type 'gnu/linux)
-  "Are we running on a GNU/Linux system?")
-
-(defconst *sys/mac*
-  (eq system-type 'darwin)
-  "Are we running on a Mac system?")
+    (eq system-type 'windows-nt)
+    "Are we running on a Win system?")
+  
+  (defconst *sys/linux*
+    (eq system-type 'gnu/linux)
+    "Are we running on a GNU/Linux system?")
+  
+  (defconst *sys/mac*
+    (eq system-type 'darwin)
+    "Are we running on a Mac system?")
+  
+  (defconst *sys/project-home*
+    "~/Devel")
+  
+  (cond (*sys/mac*
+         (defconst *sys/font-default-height* 145))
+        (*sys/linux*
+         (defconst *sys/font-default-height* 130))
+        (t
+         (defconst *sys/font-default-height* 145)))
 #+end_src
 
 ** additional setup
+
 After start up do some UI changes.
+
 #+begin_src emacs-lisp
   (defun after-startup ()
-    (set-face-attribute 'default nil :height 140)
+    (set-face-attribute 'default nil :height *sys/font-default-height*)
     ;; When buffer is closed, saves the cursor location
     (save-place-mode t)
     (toggle-frame-maximized)
@@ -632,8 +644,11 @@ https://github.com/bbatsov/projectile
       "R" 'projectile-replace
       "v" 'projectile-vc)
     :config
-    (add-to-list 'projectile-globally-ignored-directories "site-packages")
-    (projectile-mode t))
+    (progn
+      (setq projectile-project-search-path (list *sys/project-home*))
+      (add-to-list 'projectile-globally-ignored-directories "site-packages")
+      (projectile-mode t))
+    )
 #+end_src
 
 ** vterm
@@ -854,24 +869,24 @@ https://github.com/porterjamesj/virtualenvwrapper.el
   (use-package virtualenvwrapper
     :commands
     (venv-projectile-auto-workon
-      venv-list-virtualenvs
-      venv-get-candidates)
+     venv-list-virtualenvs
+     venv-get-candidates)
     :init
     (add-hook 'projectile-after-switch-project-hook
-      #'
-      (lambda ()
-        "Auto activated venv when project folder name is in list of available venvs"
-        (when
-          (and (derived-mode-p 'python-mode) (projectile-project-root))
-          (let
-            (
-              (project-dir
-                (file-name-nondirectory
-                  (directory-file-name
-                    (file-name-directory (projectile-project-root))))))
-            (if (member project-dir (venv-get-candidates))
-              (venv-workon project-dir)
-              (venv-deactivate)))))))
+              #'
+              (lambda ()
+                "Auto activated venv when project folder name is in list of available venvs"
+                (when
+                    (and (derived-mode-p 'python-mode) (projectile-project-root))
+                  (let
+                      (
+                       (project-dir
+                        (file-name-nondirectory
+                         (directory-file-name
+                          (file-name-directory (projectile-project-root))))))
+                    (if (member project-dir (venv-get-candidates))
+                        (venv-workon project-dir)
+                      (venv-deactivate)))))))
 #+end_src
 
 **** blacken
