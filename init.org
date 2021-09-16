@@ -311,6 +311,8 @@ After start up do some UI changes.
 #+begin_src emacs-lisp
   (defun after-startup ()
     (set-face-attribute 'default nil :height *sys/font-default-height*)
+    ;; Faster than scp
+    (setq tramp-default-method "ssh")
     ;; When buffer is closed, saves the cursor location
     (save-place-mode t)
     (toggle-frame-maximized)
@@ -570,7 +572,7 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 https://github.com/emacs-helm/helm
 #+end_quote
 #+begin_src emacs-lisp
-    (use-package helm
+  (use-package helm
     :init (require 'helm-config)
     :diminish
     :defer 1
@@ -584,19 +586,19 @@ https://github.com/emacs-helm/helm
     (general-def helm-map "C-j" 'helm-next-line)
     (general-def helm-map "C-k" 'helm-previous-line)
     (global-menu
-       "SPC" '(helm-M-x :which-key "M-x")
-       "/"   'helm-projectile-ag)
+      "SPC" '(helm-M-x :which-key "M-x")
+      "/"   'helm-projectile-ag)
     (global-menu-search
-       "s" 'helm-occur)
+      "s" 'helm-occur)
     (global-menu-file
-     "f" 'helm-find-files
-     "F" 'helm-find
-     "r" 'helm-recentf)
+      "f" 'helm-find-files
+      "F" 'helm-find
+      "r" 'helm-recentf)
     (global-menu-buffer
-       "b" 'helm-mini)
+      "b" 'helm-mini)
     (global-menu-jump
-         "i" 'helm-imenu)
-  )
+      "i" 'helm-imenu)
+    )
 #+end_src
 
 *** helm-ag
@@ -797,17 +799,18 @@ Flycheck is a modern on-the-fly syntax checking extension for GNU Emacs, intende
 https://www.flycheck.org/en/latest/
 #+end_quote
 #+begin_src emacs-lisp
-     (use-package flycheck
-     :defer t
-     :init 
+  (use-package flycheck
+    :defer t
+    :init
+    (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
     (add-hook 'python-mode-hook #'(lambda ()
-           (flycheck-mode)
-           ;; checker setup locally for python-mode
-           ;; explicitly set flake8 checker
-           ;; implicitly set mypy and pylint in checker chain
-           (setq-local flycheck-checker 'python-flake8)))
+                                    (flycheck-mode)
+                                    ;; checker setup locally for python-mode
+                                    ;; explicitly set flake8 checker
+                                    ;; implicitly set mypy and pylint in checker chain
+                                    (setq-local flycheck-checker 'python-flake8)))
     :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el")
-  )
+    )
 #+end_src
 
 *** format-all
@@ -1088,7 +1091,7 @@ https://depp.brause.cc/shackle/
   (use-package shackle :defer t
     :commands (shackle-mode)
     :custom (shackle-rules '(("*Flycheck errors*"  :align below :size 0.15)
-                             ("*vterm*" :align below :size 0.4)
+                             ("*vterm*" :align below :size 0.3)
                              ("\\`\\*helm.*?\\*\\'" :regexp t :align t :size 0.4)
                              (magit-status-mode :select t)
                              ))
