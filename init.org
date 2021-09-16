@@ -848,7 +848,9 @@ https://www.flycheck.org/en/latest/
                                     ;; checker setup locally for python-mode
                                     ;; explicitly set flake8 checker
                                     ;; implicitly set mypy and pylint in checker chain
-                                    (setq-local flycheck-checker 'python-flake8)))
+                                    (setq-local flycheck-checker 'python-flake8)
+                                    ;; safe time and just determine the line of error
+                                    (setq-local flycheck-highlighting-mode 'lines)))
     :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el")
     )
 #+end_src
