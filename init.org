@@ -671,6 +671,7 @@ https://github.com/akermu/emacs-libvterm
              "t." 'vterm
         )
         (general-def vterm-mode-map "C-r" 'helm-vterm-search-history :states '(normal emacs))
+        (general-def vterm-mode-map "C-l" 'vterm-clear :states '(normal emacs))
         ;; copied from spacemacs
         :config
         (defun vterm-make-history-candidates ()
@@ -847,10 +848,10 @@ https://github.com/anachronic/importmagic.el
 #+begin_src emacs-lisp
   (use-package importmagic
     :defer t
-    :hook (python-mode . importmagic-mode)
+    :init
+    (add-hook 'venv-postactivate-hook  #'importmagic-mode)
     :general
-   (global-leader :keymaps 'python-mode-map "i" '(importmagic-fix-imports :which-key "fix imports"))
-    )
+    (global-leader :keymaps 'python-mode-map "i" '(importmagic-fix-imports :which-key "fix imports")))
 #+end_src
 
 **** lsp-pyright
@@ -888,8 +889,12 @@ https://github.com/porterjamesj/virtualenvwrapper.el
                          (directory-file-name
                           (file-name-directory (projectile-project-root))))))
                     (if (member project-dir (venv-get-candidates))
-                        (venv-workon project-dir)
-                      (venv-deactivate)))))))
+                        (progn
+                          (message "Switch venv: %s" project-dir)
+                          (venv-workon project-dir))
+                      (progn
+                        (message "%s not found. venv deactivated" project-dir)
+                        (venv-deactivate))))))))
 #+end_src
 
 **** blacken
