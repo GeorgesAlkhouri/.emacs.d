@@ -1014,6 +1014,7 @@ in doom-modeline.
     :defer t
     :config
     (setq doom-modeline-height 30)
+    (setq doom-modeline-buffer-file-name-style 'truncate-all)
     :hook
     (after-init . doom-modeline-mode))
 #+end_src
