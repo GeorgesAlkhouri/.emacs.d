@@ -11,12 +11,13 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 
 ** Todos
 - env variable (DONE when started from shell)
-- format org file
 - add emacs application framework
 - add nice initial-buffer-choice (https://github.com/emacs-dashboard/emacs-dashboard)
 - add venv to mode-line
-- make terminal history variable (mac, linux)
-  
+- reload bash config for helm
+- let emacs setup OSH if not already setup
+- match vterm colors with theme (https://github.com/akermu/emacs-libvterm#colors)
+    
 * Requirements
 Dependencies you need to fully run all configured features:
 - ag
@@ -296,12 +297,15 @@ NAME and ARGS are in `use-package'."
   (defconst *sys/project-home*
     "~/Devel")
   
+  (defconst *sys/shell-history-file* "~/.bash_history")
+  (defconst *sys/shell-config-file* "~/.bashrc")
+  
   (cond (*sys/mac*
-         (defconst *sys/font-default-height* 145))
+         (defconst *sys/font-default-height* 145)
+         (defconst *sys/shell-executable* "/usr/local/bin/bash")
+         )
         (*sys/linux*
-         (defconst *sys/font-default-height* 130))
-        (t
-         (defconst *sys/font-default-height* 145)))
+         (defconst *sys/font-default-height* 130)))
 #+end_src
 
 ** additional setup
@@ -485,10 +489,12 @@ Menus for everything releated to Emacs environmental files, settings, etc.
     :states '(normal hybrid motion visual operator emacs)
     :non-normal-prefix "S-SPC e"
     :prefix "SPC e" "" '(:ignore t :which-key "env"))
-  (global-menu-env 
-     "d" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org config")
-     "f" '(straight-freeze-versions :which-key "freeze packages")
-  )
+  (global-menu-env
+    "f" '(:ignore t :which-key "files")
+    "fd" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org")
+    "fb" '((lambda () (interactive) (find-file *sys/shell-config-file*)) :which-key ".bashrc")
+    "fp" '(straight-freeze-versions :which-key "freeze packages")
+    )
 #+end_src
 
 **** git
@@ -713,9 +719,10 @@ https://github.com/akermu/emacs-libvterm
         (general-def vterm-mode-map "C-l" 'vterm-clear :states '(normal emacs))
         ;; copied from spacemacs
         :config
+        (setq vterm-shell *sys/shell-executable*)
         (defun vterm-make-history-candidates ()
         (with-temp-buffer
-            (insert-file-contents "~/.bash_history")
+            (insert-file-contents *sys/shell-history-file*)
             (reverse
             (delete-dups
             (split-string (buffer-string) "\n")))))

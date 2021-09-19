@@ -19,3 +19,8 @@ straight/versions/*
 !straight/versions/default.el
 
 
+!dotfiles/
+dotfiles/*
+!dotfiles/.bashrc
+
+
