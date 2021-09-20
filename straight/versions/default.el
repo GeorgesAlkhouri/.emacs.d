@@ -61,5 +61,6 @@
  ("transient" . "65f4eac82c564204d20df0a606dc2fcaa72cc41e")
  ("use-package" . "a7422fb8ab1baee19adb2717b5b47b9c3812a84c")
  ("virtualenvwrapper.el" . "c7e84505db4142fd1beebf38ffe37c3f42444ca3")
- ("with-editor" . "5519b6a67ecd66865b4fdd5447425eee900c54f4"))
+ ("with-editor" . "5519b6a67ecd66865b4fdd5447425eee900c54f4")
+ ("yaml-mode" . "63b637f846411806ae47e63adc06fe9427be1131"))
 :beta
