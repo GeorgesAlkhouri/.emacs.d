@@ -16,7 +16,6 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - add venv to mode-line
 - reload bash config for helm
 - let emacs setup OSH if not already setup
-- match vterm colors with theme (https://github.com/akermu/emacs-libvterm#colors)
     
 * Requirements
 Dependencies you need to fully run all configured features:
@@ -322,7 +321,10 @@ After start up do some UI changes.
     ;; When buffer is closed, saves the cursor location
     (save-place-mode t)
     (toggle-frame-maximized)
-    (global-hl-line-mode t))
+    (global-hl-line-mode t)
+    (solaire-global-mode t)
+    (load-theme 'doom-one-light t)
+    )
   (add-hook 'after-init-hook #'after-startup)
 #+end_src
 
@@ -983,30 +985,27 @@ https://github.com/ionrock/pytest-el
 ** Themes
 
 https://github.com/hlissner/emacs-doom-themes
-
-- TODO Look into defering theme loading (=emacs-startup=) to save some startup time
   
 #+begin_src emacs-lisp
-      (use-package doom-themes
-      :config
-      ;; Global settings (defaults)
-      (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-            doom-themes-enable-italic t) ; if nil, italics is universally disabled
-      (load-theme 'doom-one-light t)
-      ;; Enable flashing mode-line on errors
-      (doom-themes-visual-bell-config)
-      ;; Corrects (and improves) org-mode's native fontification.
-      (doom-themes-org-config)
-      :general
-      (global-menu-env "t" '(:ignore t :which-key "themes")
-     "t1" '((lambda () (interactive)
-                (load-theme 'doom-one t))
-              :which-key "doom-one")
-     "t2" '((lambda () (interactive)
-                  (load-theme 'doom-one-light t))
-                :which-key "doom-one-light")
-   )
-  )
+  (use-package doom-themes
+    :config
+    ;; Global settings (defaults)
+    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
+          doom-themes-enable-italic t) ; if nil, italics is universally disabled
+    ;; Enable flashing mode-line on errors
+    (doom-themes-visual-bell-config)
+    ;; Corrects (and improves) org-mode's native fontification.
+    (doom-themes-org-config)
+    :general
+    (global-menu-env "t" '(:ignore t :which-key "themes")
+      "t1" '((lambda () (interactive)
+               (load-theme 'doom-one t))
+             :which-key "doom-one")
+      "t2" '((lambda () (interactive)
+               (load-theme 'doom-one-light t))
+             :which-key "doom-one-light")
+      )
+    )
 #+end_src
 
 ** doom-modeline
@@ -1026,6 +1025,19 @@ in doom-modeline.
     (setq doom-modeline-buffer-file-name-style 'truncate-all)
     :hook
     (after-init . doom-modeline-mode))
+#+end_src
+
+** solaire
+#+begin_quote
+solaire-mode is an aesthetic plugin designed to visually distinguish "real" buffers (i.e. file-visiting code buffers where you do most of your work) from "unreal" buffers
+(like popups, sidebars, log buffers, terminals, etc) by giving the latter a slightly different -- often darker -- background
+
+https://github.com/hlissner/emacs-solaire-mode
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package solaire-mode
+    :defer t)
 #+end_src
 
 ** Hyda
