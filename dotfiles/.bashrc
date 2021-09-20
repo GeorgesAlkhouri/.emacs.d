@@ -1,3 +1,9 @@
+# If connection with Tramp skip bashrc file to ensure that
+# prompt will be recognized by tramp
+if [[ $TERM = dumb ]]; then
+    return
+fi
+
 # Path to your oh-my-bash installation.
 export OSH=~/.oh-my-bash
 
