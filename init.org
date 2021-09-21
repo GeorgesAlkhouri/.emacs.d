@@ -21,7 +21,8 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 Dependencies you need to fully run all configured features:
 - ag
 - vterm requirements
-- pyright, black, flake8, pylint, isort, mypy
+- pyright, black, flake8, pylint, isort, mypy, virtualenv, virtualenvwrapper
+- shellcheck
 
 * Tangle
  
@@ -856,14 +857,15 @@ https://www.flycheck.org/en/latest/
     :defer t
     :init
     (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
+    (add-hook 'sh-mode-hook #'flycheck-mode)
     (add-hook 'python-mode-hook #'(lambda ()
-                                    (flycheck-mode)
-                                    ;; checker setup locally for python-mode
-                                    ;; explicitly set flake8 checker
-                                    ;; implicitly set mypy and pylint in checker chain
-                                    (setq-local flycheck-checker 'python-flake8)
-                                    ;; safe time and just determine the line of error
-                                    (setq-local flycheck-highlighting-mode 'lines)))
+				    (flycheck-mode)
+				    ;; checker setup locally for python-mode
+				    ;; explicitly set flake8 checker
+				    ;; implicitly set mypy and pylint in checker chain
+				    (setq-local flycheck-checker 'python-flake8)
+				    ;; safe time and just determine the line of error
+				    (setq-local flycheck-highlighting-mode 'lines)))
     :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el")
     )
 #+end_src
