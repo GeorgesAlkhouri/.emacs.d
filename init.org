@@ -454,17 +454,16 @@ Load general before the remaining packages so they can make use of the ~:general
     :states '(normal hybrid motion visual operator emacs)
     :non-normal-prefix "S-SPC b"
     :prefix "SPC b" "" '(:ignore t :which-key "buffer"))
-    (global-menu-buffer
-         "d"  'kill-current-buffer
-         "o" '((lambda () (interactive) (switch-to-buffer nil))
-               :which-key "other-buffer")
-         "r"  'rename-buffer
-         "R"  'revert-buffer
-         "M" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
-               :which-key "messages-buffer")
-         "s" '((lambda () (interactive) (switch-to-buffer "*scratch*"))
-               :which-key "scratch-buffer")
-  )
+  (global-menu-buffer
+    "x"  'kill-current-buffer
+    "d"  'dired
+    "D" 'dired-jump
+    "r"  'rename-buffer
+    "m" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
+	  :which-key "messages-buffer")
+    "s" '((lambda () (interactive) (switch-to-buffer "*scratch*"))
+	  :which-key "scratch-buffer")
+    )
 #+end_src
 
 **** jumping/ joining / spliting
@@ -482,7 +481,12 @@ Load general before the remaining packages so they can make use of the ~:general
     :keymaps 'override
     :states '(normal hybrid motion visual operator emacs)
     :non-normal-prefix "S-SPC f"
-    :prefix "SPC f" "" '(:ignore t :which-key "file"))
+    :prefix "SPC f" "" '(:ignore t :which-key "file")
+    "e" '(:ignore t :which-key "env")
+    "ed" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org")
+    "eb" '((lambda () (interactive) (find-file *sys/shell-config-file*)) :which-key ".bashrc")
+    "ep" '(straight-freeze-versions :which-key "freeze packages")
+    )
 #+end_src
 
 **** env
@@ -493,12 +497,6 @@ Menus for everything releated to Emacs environmental files, settings, etc.
     :states '(normal hybrid motion visual operator emacs)
     :non-normal-prefix "S-SPC e"
     :prefix "SPC e" "" '(:ignore t :which-key "env"))
-  (global-menu-env
-    "f" '(:ignore t :which-key "files")
-    "fd" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org")
-    "fb" '((lambda () (interactive) (find-file *sys/shell-config-file*)) :which-key ".bashrc")
-    "fp" '(straight-freeze-versions :which-key "freeze packages")
-    )
 #+end_src
 
 **** git
@@ -546,7 +544,11 @@ Menus for everything releated to Emacs environmental files, settings, etc.
 
 **** projects
 #+begin_src emacs-lisp
- (general-create-definer global-menu-project :keymaps 'override :states '(normal hybrid motion visual operator) :prefix "SPC p" "" '(:ignore t :which-key "project"))
+  (general-create-definer global-menu-project
+    :keymaps 'override
+    :states '(normal hybrid motion visual operator)
+    :non-normal-prefix "S-SPC p"
+    :prefix "SPC p" "" '(:ignore t :which-key "project"))
 #+end_src
  
 ** which-key
@@ -991,19 +993,21 @@ https://github.com/hlissner/emacs-doom-themes
     :config
     ;; Global settings (defaults)
     (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-          doom-themes-enable-italic t) ; if nil, italics is universally disabled
+	  doom-themes-enable-italic t
+	  doom-themes-treemacs-theme "doom-atom") ; if nil, italics is universally disabled
     ;; Enable flashing mode-line on errors
     (doom-themes-visual-bell-config)
     ;; Corrects (and improves) org-mode's native fontification.
     (doom-themes-org-config)
+    (doom-themes-treemacs-config)
     :general
     (global-menu-env "t" '(:ignore t :which-key "themes")
       "t1" '((lambda () (interactive)
-               (load-theme 'doom-one t))
-             :which-key "doom-one")
+	       (load-theme 'doom-one t))
+	     :which-key "doom-one")
       "t2" '((lambda () (interactive)
-               (load-theme 'doom-one-light t))
-             :which-key "doom-one-light")
+	       (load-theme 'doom-one-light t))
+	     :which-key "doom-one-light")
       )
     )
 #+end_src
@@ -1208,3 +1212,35 @@ Show matching delimiters highlighted.
     )
 #+end_src
 
+** treemacs-setup
+#+begin_quote
+Treemacs is a file and project explorer similar to NeoTree or vim’s NerdTree, but largely inspired by the Project Explorer in Eclipse.
+
+https://github.com/Alexander-Miller/treemacs
+#+end_quote
+
+#+begin_src emacs-lisp :tangle no
+  ;; (use-package all-the-icons)
+  
+  (use-package treemacs :defer t
+    :general
+    (global-menu-file "t" 'treemacs))
+  
+  ;; (use-package treemacs-evil
+  ;;   :after (treemacs evil))
+  
+  ;; ;;
+  ;; (use-package treemacs-projectile
+  ;;   :after (treemacs projectile)
+  ;;   )
+  
+  (use-package treemacs-icons-dired
+    :hook (dired-mode . treemacs-icons-dired-mode))
+  
+  ;; (use-package treemacs-magit
+  ;;   :after (treemacs magit))
+  
+  ;; (use-package treemacs-all-the-icons
+  ;;   :defer t
+  ;;   :hook ((treemacs-mode dired-mode) . (lambda () (treemacs-load-theme 'all-the-icons))))
+#+end_src
