@@ -608,7 +608,9 @@ http://company-mode.github.io/
       "C-k"    'company-select-previous
       "C-j"    'company-select-next
       "<tab>"    'company-complete-common-or-cycle
-      "S-<tab>"    'company-select-previous)
+      "S-<tab>"    'company-select-previous
+      ;;for x11 https://emacs.stackexchange.com/a/53469
+      "S-<iso-lefttab>" 'company-select-previous)
     :config
     (setq company-tooltip-align-annotations t
 	  company-idle-delay 0.01
