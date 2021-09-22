@@ -599,21 +599,21 @@ It uses pluggable back-ends and front-ends to retrieve and display completion ca
 
 http://company-mode.github.io/
 #+end_quote
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp
   (use-package company
     :hook ((prog-mode) . company-mode)
     :diminish
     :general
-    (general-def company-active-map "C-k"    'company-select-previous)
-    (general-def company-active-map "C-j"    'company-select-next)
-    (general-def company-active-map "<tab>"    'company-complete-common-or-cycle)
-    (general-def company-active-map "S-<tab>"    'company-select-previous)
+    (general-def company-active-map
+      "C-k"    'company-select-previous
+      "C-j"    'company-select-next
+      "<tab>"    'company-complete-common-or-cycle
+      "S-<tab>"    'company-select-previous)
     :config
-    (setq company-tooltip-align-annotations t)
-    (setq company-idle-delay 0.01)
-    (setq company-minimum-prefix-length 2)
-    (setq company-require-match 'never)
-    (global-company-mode t)
+    (setq company-tooltip-align-annotations t
+	  company-idle-delay 0.01
+	  company-minimum-prefix-length 2
+	  company-require-match 'never)
     )
 #+end_src
 
