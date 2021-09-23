@@ -157,12 +157,19 @@ Fonts larger than the system default can cause frame resizing, which adds to sta
 (setq frame-inhibit-implied-resize t)
 #+end_src
 
-Set default and backup fonts
+Set default and backup fonts.
+
+Font sources are:
+- https://www.jetbrains.com/de-de/lp/mono/
+- https://github.com/tonsky/FiraCode
+  
+
 #+begin_src emacs-lisp
-(push '(font . "Source Code Pro") default-frame-alist)
-(set-face-font 'default "Source Code Pro")
-(set-face-font 'variable-pitch "DejaVu Sans")
-(copy-face 'default 'fixed-pitch)
+  (push '(font . "JetBrains Mono") default-frame-alist)
+  (push '(font . "Fira Code") default-frame-alist)
+  (set-face-font 'default "JetBrains Mono")
+  (set-face-font 'variable-pitch "Fira Code")
+  (copy-face 'default 'fixed-pitch)
 #+end_src
 Ignore X resources.
 #+begin_src emacs-lisp
@@ -317,6 +324,7 @@ After start up do some UI changes.
 #+begin_src emacs-lisp
   (defun after-startup ()
     (set-face-attribute 'default nil :height *sys/font-default-height*)
+    (set-face-attribute 'variable-pitch nil :height *sys/font-default-height*)
     ;; Faster than scp
     (setq tramp-default-method "ssh")
     ;; When buffer is closed, saves the cursor location
@@ -337,10 +345,13 @@ Enable  line numbers for prog-mode
 * Packages
 ** evil
 #+begin_quote
+
 Evil is an extensible vi layer for Emacs. It emulates the main features of Vim, and provides facilities for writing custom extensions.
 [...] evil-collection assumes evil-want-keybinding is set to nil and evil-want-integration is set to t before loading evil and evil-collection.
+
 https://github.com/emacs-evil/evil
 #+end_quote
+
 #+begin_src emacs-lisp
   (use-package evil
     :demand t
