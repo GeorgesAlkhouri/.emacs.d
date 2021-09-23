@@ -672,11 +672,12 @@ https://github.com/emacsorphanage/helm-ag
     :after (helm)
     :general
     (global-menu-project
-       "d" 'helm-projectile-find-dir
-       "f" 'helm-projectile-find-file
-       "p" 'helm-projectile-switch-project
-       "r" 'helm-projectile-recentf)
-  )
+      "b" 'helm-projectile-switch-to-buffer
+      "d" 'helm-projectile-find-dir
+      "f" 'helm-projectile-find-file
+      "p" 'helm-projectile-switch-project
+      "r" 'helm-projectile-recentf)
+    )
 #+end_src
 
 ** projectile
