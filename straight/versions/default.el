@@ -31,7 +31,6 @@
  ("goto-chg" . "3ce1389fea12edde4e343bc7d54c8da97a1a6136")
  ("helm" . "e8f8535f881b19185091b9fa56db5c6d5317f4f5")
  ("helm-ag" . "7cfed5d3e861717466ae6d3f76c759548a9fad04")
- ("helm-lsp" . "c2c6974dadfac459b1a69a1217441283874cea92")
  ("helm-projectile" . "58123f14c392021714fc5d23b9f95c7f95ce07f1")
  ("highlight-indent-guides" . "cf352c85cd15dd18aa096ba9d9ab9b7ab493e8f6")
  ("ht.el" . "c4c1be487d6ecb353d07881526db05d7fc90ea87")
