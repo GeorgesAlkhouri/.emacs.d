@@ -16,6 +16,7 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - add venv to mode-line
 - reload bash config for helm
 - let emacs setup OSH if not already setup
+- when loading saved persp file also switch project correctly to load venv 
     
 * Requirements
 Dependencies you need to fully run all configured features:
@@ -686,7 +687,6 @@ https://github.com/emacsorphanage/helm-ag
       "b" 'helm-projectile-switch-to-buffer
       "d" 'helm-projectile-find-dir
       "f" 'helm-projectile-find-file
-      "p" 'helm-projectile-switch-project
       "r" 'helm-projectile-recentf)
     )
 #+end_src
@@ -1239,6 +1239,37 @@ Show matching delimiters highlighted.
     )
 #+end_src
 
+** perspective
+#+begin_quote
+The Perspective package provides multiple named workspaces (or "perspectives") in Emacs, similar to multiple desktops in window managers like Awesome and XMonad, and Spaces on the Mac.
+
+https://github.com/nex3/perspective-el
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package perspective
+    :defer t
+    :commands projectile-persp-switch-project
+    :general
+    (global-menu-project
+      "P" 'persp-switch)
+    :config
+    (progn
+      (setq persp-state-default-file  (expand-file-name "persp-save-file.el" user-emacs-directory))
+      (add-hook 'kill-emacs-hook #'persp-state-save)
+      (unless (equal persp-mode t)
+	(persp-mode)))
+    )
+  
+  
+  (use-package persp-projectile
+    :defer t
+    :general
+    (global-menu-project
+      "p" 'projectile-persp-switch-project))
+#+end_src
+
+
 ** treemacs-setup
 #+begin_quote
 Treemacs is a file and project explorer similar to NeoTree or vim’s NerdTree, but largely inspired by the Project Explorer in Eclipse.
@@ -1271,3 +1302,5 @@ https://github.com/Alexander-Miller/treemacs
   ;;   :defer t
   ;;   :hook ((treemacs-mode dired-mode) . (lambda () (treemacs-load-theme 'all-the-icons))))
 #+end_src
+
+
