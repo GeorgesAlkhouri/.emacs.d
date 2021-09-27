@@ -309,13 +309,31 @@ NAME and ARGS are in `use-package'."
   (defconst *sys/shell-config-file* "~/.bashrc")
   
   (cond (*sys/mac*
-         (defconst *sys/font-default-height* 145)
-         (defconst *sys/shell-executable* "/usr/local/bin/bash")
-         )
-        (*sys/linux*
-         (defconst *sys/font-default-height* 130)
-         (defconst *sys/shell-executable* "/bin/bash")
-         ))
+	 (defconst *sys/font-default-height* 145)
+	 (defconst *sys/shell-executable* "/usr/local/bin/bash")
+	 )
+	(*sys/linux*
+	 (defconst *sys/font-default-height* 130)
+	 (defconst *sys/shell-executable* "/bin/bash")
+	 ))
+  
+  (defun sys/activate-venv ()
+    "Auto activated venv when project folder name is in list of available venvs"
+    (when
+	(and (derived-mode-p 'python-mode) (projectile-project-root))
+      (let
+	  (
+	   (project-dir
+	    (file-name-nondirectory
+	     (directory-file-name
+	      (file-name-directory (projectile-project-root))))))
+	(if (member project-dir (venv-get-candidates))
+	    (progn
+	      (message "Switch venv: %s" project-dir)
+	      (venv-workon project-dir))
+	  (progn
+	    (message "%s not found. venv deactivated" project-dir)
+	    (venv-deactivate))))))
 #+end_src
 
 ** additional setup
@@ -958,24 +976,7 @@ https://github.com/porterjamesj/virtualenvwrapper.el
      venv-get-candidates)
     :init
     (add-hook 'projectile-after-switch-project-hook
-              #'
-              (lambda ()
-                "Auto activated venv when project folder name is in list of available venvs"
-                (when
-                    (and (derived-mode-p 'python-mode) (projectile-project-root))
-                  (let
-                      (
-                       (project-dir
-                        (file-name-nondirectory
-                         (directory-file-name
-                          (file-name-directory (projectile-project-root))))))
-                    (if (member project-dir (venv-get-candidates))
-                        (progn
-                          (message "Switch venv: %s" project-dir)
-                          (venv-workon project-dir))
-                      (progn
-                        (message "%s not found. venv deactivated" project-dir)
-                        (venv-deactivate))))))))
+	      #'sys/activate-venv))
 #+end_src
 
 **** blacken
