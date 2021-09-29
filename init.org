@@ -309,7 +309,7 @@ NAME and ARGS are in `use-package'."
   (defconst *sys/shell-config-file* "~/.bashrc")
   
   (cond (*sys/mac*
-	 (defconst *sys/font-default-height* 145)
+	 (defconst *sys/font-default-height* 132)
 	 (defconst *sys/shell-executable* "/usr/local/bin/bash")
 	 )
 	(*sys/linux*
