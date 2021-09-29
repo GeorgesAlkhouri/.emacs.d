@@ -161,8 +161,8 @@ Fonts larger than the system default can cause frame resizing, which adds to sta
 Set default and backup fonts.
 
 Font sources are:
-- https://www.jetbrains.com/de-de/lp/mono/
-- https://github.com/tonsky/FiraCode
+- https://github.com/JetBrains/JetBrainsMono/releases/tag/v2.242
+- https://github.com/tonsky/FiraCode/releases/download/5.2/Fira_Code_v5.2.zip
   
 
 #+begin_src emacs-lisp
