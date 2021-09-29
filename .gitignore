@@ -18,9 +18,12 @@ straight/*
 straight/versions/*
 !straight/versions/default.el
 
-
 !dotfiles/
 dotfiles/*
 !dotfiles/.bashrc
+
+!media/
+media/*
+!media/emacs.svg
 
 

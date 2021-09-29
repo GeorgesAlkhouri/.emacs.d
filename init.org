@@ -1293,6 +1293,24 @@ https://github.com/nex3/perspective-el
     )
 #+end_src
 
+** dashboard
+
+#+begin_src emacs-lisp
+  (use-package dashboard
+    :demand t
+    :init
+    (progn
+      (add-hook 'dashboard-mode-hook #'(lambda () (setq-local global-hl-line-mode nil))))
+    :config
+    (progn
+  (setq dashboard-startup-banner
+	    (expand-file-name "emacs.svg" (expand-file-name "media" user-emacs-directory)))
+      (setq dashboard-items '((recents  . 5)
+			      (projects . 5))
+	    dashboard-set-heading-icons t
+	    dashboard-set-file-icons t)
+      (dashboard-setup-startup-hook)))
+#+end_src
 
 ** treemacs-setup
 #+begin_quote

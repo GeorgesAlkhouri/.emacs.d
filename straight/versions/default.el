@@ -8,6 +8,7 @@
  ("el-get" . "b5a5a405d04f61ec9c5fcb19357a50a4b9e36a25")
  ("emacs-async" . "5d365ffc6a2c2041657eaa5d762c395ea748c8d7")
  ("emacs-ctable" . "48b73742757a3ae5736d825fe49e00034cc453b5")
+ ("emacs-dashboard" . "66bf051f9df70070315c920daaf7ad44a86a0386")
  ("emacs-deferred" . "2239671d94b38d92e9b28d4e12fd79814cfb9c16")
  ("emacs-doom-themes" . "e716ddbb882a3a06744faa74decb2fea1569c921")
  ("emacs-epc" . "e1bfa5ca163273859336e3cc89b4b6460f7f8cda")
