@@ -705,6 +705,7 @@ https://github.com/emacsorphanage/helm-ag
       "b" 'helm-projectile-switch-to-buffer
       "d" 'helm-projectile-find-dir
       "f" 'helm-projectile-find-file
+      "p" 'helm-projectile-switch-project
       "r" 'helm-projectile-recentf)
     )
 #+end_src
@@ -731,7 +732,12 @@ https://github.com/bbatsov/projectile
       "v" 'projectile-vc)
     :config
     (progn
+      (defun sys/switch-project-action ()
+	"Switch to a workspace with the project name."
+	(persp-switch (projectile-project-name))
+	(projectile-find-file))
       (setq projectile-project-search-path (list *sys/project-home*))
+      (setq projectile-switch-project-action #'sys/switch-project-action)
       (add-to-list 'projectile-globally-ignored-directories "site-packages")
       (projectile-mode t))
     )
@@ -1250,7 +1256,7 @@ https://github.com/nex3/perspective-el
 #+begin_src emacs-lisp
   (use-package perspective
     :defer t
-    :commands projectile-persp-switch-project
+    :commands persp-switch
     :general
     (global-menu-project
       "P" 'persp-switch)
@@ -1261,13 +1267,6 @@ https://github.com/nex3/perspective-el
       (unless (equal persp-mode t)
 	(persp-mode)))
     )
-  
-  
-  (use-package persp-projectile
-    :defer t
-    :general
-    (global-menu-project
-      "p" 'projectile-persp-switch-project))
 #+end_src
 
 

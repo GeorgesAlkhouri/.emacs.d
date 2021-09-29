@@ -46,7 +46,6 @@
  ("melpa" . "6860800b52e2c06ae339f5f65ace6a5e05ddcbbc")
  ("org" . "f33b92dea77f6679b4a5978218989dc7d6a0ed7d")
  ("org-contrib" . "fc81309cf6756607a836f93049a9393c2967c4e0")
- ("persp-projectile" . "4e374d7650c7e041df5af5ac280a44d4a4ec705a")
  ("perspective-el" . "acad4fb2cfe27feb0ecbe07e51c364bfa5ea4f47")
  ("pkg-info" . "76ba7415480687d05a4353b27fea2ae02b8d9d61")
  ("popup-el" . "cf899f8012f4189e76a009bebb589ff71631b1e9")
