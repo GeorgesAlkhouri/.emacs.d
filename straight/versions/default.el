@@ -42,6 +42,8 @@
  ("lsp-pyright" . "72fd57643d2e8eccb9a55058ec0c89bdc04dba7d")
  ("lsp-ui" . "b625f3cb5e88559ab99bec58f7a14272edb296bc")
  ("magit" . "2049fd6f6eae7e958b673e809299bc7d3f02a781")
+ ("magit-gitflow" . "cc41b561ec6eea947fe9a176349fb4f771ed865b")
+ ("magit-popup" . "d8585fa39f88956963d877b921322530257ba9f5")
  ("markdown-mode" . "862ae8addd29bf6affca1a35fd0176cb0c1392da")
  ("melpa" . "6860800b52e2c06ae339f5f65ace6a5e05ddcbbc")
  ("org" . "f33b92dea77f6679b4a5978218989dc7d6a0ed7d")

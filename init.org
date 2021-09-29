@@ -24,6 +24,7 @@ Dependencies you need to fully run all configured features:
 - vterm requirements
 - pyright, black, flake8, pylint, isort, mypy, virtualenv, virtualenvwrapper
 - shellcheck
+- git and git-flow
 
 * Tangle
  
@@ -619,6 +620,29 @@ https://magit.vc/
          )
         :config
         (transient-bind-q-to-quit))
+#+end_src
+
+
+*** magit-gitflow
+Plugin in for git-flow in magit.
+
+https://github.com/jtatarik/magit-gitflow
+
+#+begin_src emacs-lisp
+  (use-package magit-gitflow
+    :defer t
+    :init (setq magit-gitflow-popup-key "%")
+    ;; TODO add % key to magit-dispatch-popup
+    ;; https://magit.vc/manual/magit-popup.html#Customizing-Existing-Popups
+    ;; :config
+    ;; (progn
+    ;;   (magit-define-popup-action 'magit-dispatch-popup
+    ;;    "%" "Git Flow" 'magit-gitflow-popup t))
+    :hook (magit-mode . magit-gitflow-mode)
+    :general
+    (general-def magit-mode-map
+      "%" 'magit-gitflow-popup)
+    )
 #+end_src
 
 ** company
