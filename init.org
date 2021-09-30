@@ -12,7 +12,6 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - fix python mode when using tramp
 - env variable (DONE when started from shell)
 - add emacs application framework
-- add nice initial-buffer-choice (https://github.com/emacs-dashboard/emacs-dashboard)
 - add venv to mode-line
 - reload bash config for helm
 - let emacs setup OSH if not already setup
@@ -1312,37 +1311,52 @@ https://github.com/nex3/perspective-el
       (dashboard-setup-startup-hook)))
 #+end_src
 
-** treemacs-setup
+** all-the-icons
+
+#+begin_src emacs-lisp
+  (use-package all-the-icons
+    :defer t)
+#+end_src
+
+** treemacs
 #+begin_quote
 Treemacs is a file and project explorer similar to NeoTree or vim’s NerdTree, but largely inspired by the Project Explorer in Eclipse.
 
 https://github.com/Alexander-Miller/treemacs
 #+end_quote
 
-#+begin_src emacs-lisp :tangle no
-  ;; (use-package all-the-icons)
+Currently treemacs is only supported in projects by toggling the treemacs window.
+Further todos would be to make it possible to switch projects correctly (e.g. activating projectile-after-switch-project-hook) with treemacs.
+
+#+begin_src emacs-lisp 
   
   (use-package treemacs :defer t
+    :commands (treemacs-select-window
+	       treemacs-current-visibility)
+    :init
+    (progn
+      ;; copied from spacemacs
+      (defun sys/treemacs-project-toggle ()
+	"Toggle and add the current project to treemacs if not already added."
+	(interactive)
+	(if (eq (treemacs-current-visibility) 'visible)
+	    (delete-window (treemacs-get-local-window))
+	  (let ((path (projectile-ensure-project (projectile-project-root)))
+		(name (projectile-project-name)))
+	    (unless (treemacs-current-workspace)
+	      (treemacs--find-workspace))
+	    (treemacs-do-add-project-to-workspace path name)
+	    (treemacs-select-window)))))
+    :config
+    (progn
+      (require 'all-the-icons)
+      (require 'treemacs-all-the-icons)
+      (treemacs-load-theme 'all-the-icons))
     :general
-    (global-menu-file "t" 'treemacs))
+    (global-menu-project "t" 'sys/treemacs-project-toggle))
   
-  ;; (use-package treemacs-evil
-  ;;   :after (treemacs evil))
-  
-  ;; ;;
-  ;; (use-package treemacs-projectile
-  ;;   :after (treemacs projectile)
-  ;;   )
-  
-  (use-package treemacs-icons-dired
-    :hook (dired-mode . treemacs-icons-dired-mode))
-  
-  ;; (use-package treemacs-magit
-  ;;   :after (treemacs magit))
-  
-  ;; (use-package treemacs-all-the-icons
-  ;;   :defer t
-  ;;   :hook ((treemacs-mode dired-mode) . (lambda () (treemacs-load-theme 'all-the-icons))))
+  (use-package treemacs-all-the-icons
+    :defer t)
 #+end_src
 
 
