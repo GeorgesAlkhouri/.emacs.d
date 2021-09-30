@@ -12,7 +12,6 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - fix python mode when using tramp
 - env variable (DONE when started from shell)
 - add emacs application framework
-- add nice initial-buffer-choice (https://github.com/emacs-dashboard/emacs-dashboard)
 - add venv to mode-line
 - reload bash config for helm
 - let emacs setup OSH if not already setup
