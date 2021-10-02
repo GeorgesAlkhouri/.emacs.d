@@ -305,6 +305,18 @@ NAME and ARGS are in `use-package'."
   (defconst *sys/project-home*
     "~/Devel")
   
+  (defconst sys/leader-key "SPC"
+    "The default leader key.")
+  
+  (defconst sys/leader-secondary-key "S-SPC"
+    "The secondary leader key.")
+  
+  (defconst sys/major-leader-key "SPC m"
+    "The default major mode leader key.")
+  
+  (defconst sys/major-leader-secondary-key "S-SPC m"
+    "The secondary major mode leader key.")
+  
   (defconst *sys/shell-history-file* "~/.bash_history")
   (defconst *sys/shell-config-file* "~/.bashrc")
   
@@ -408,180 +420,95 @@ Load general before the remaining packages so they can make use of the ~:general
 
 #+begin_src emacs-lisp
   (use-package general
-    ;; :config (add-to-list 'general-non-normal-states 'visual)
-    :demand t)
-#+end_src
-
-*** config key-bindings
-
-#+begin_src emacs-lisp
-  ;; We define a global-leader definer to access major-mode specific bindings
-  (general-create-definer
-    global-leader
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator)
-    :prefix
-    "SPC m"
-    ""
-    '
-    (:ignore
-     t
-     :which-key
-     (lambda (arg)
-       (cons
-        (cadr (split-string (car arg) " "))
-        (replace-regexp-in-string
-         "-mode$"
-         ""
-         (symbol-name major-mode))))))
+    :demand t
+    :init
+    (progn
+      (setq general-override-states '(insert emacs hybrid normal visual motion operator replace)))
+    :config
+    (progn
   
-  ;; Also define a global menu definer
-  (general-create-definer
-    global-menu
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator emacs)
-    :non-normal-prefix "S-SPC"
-    :prefix "SPC")
+      (defun sys/major-mode-name (arg)
+	"Return major mode name"
+	(cons
+	 (cadr (split-string (car arg) " "))
+	 (replace-regexp-in-string
+	  "-mode$"
+	  ""
+	  (symbol-name major-mode))))
   
-  (global-menu
-    "!" 'shell-command ":" 'eval-expression "TAB"
-    '
-    ((lambda () (interactive) (switch-to-buffer nil))
-     :which-key "other-buffer"))
-#+end_src
-
-**** applications
-#+begin_src emacs-lisp
-  (general-create-definer global-menu-applications
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator emacs)
-    :non-normal-prefix "S-SPC a"
-    :prefix "SPC a" "" '(:ignore t :which-key "applications"))
-#+end_src
-
-**** search
-#+begin_src emacs-lisp
-  (general-create-definer global-menu-search
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator emacs)
-    :non-normal-prefix "S-SPC s"
-    :prefix "SPC s" "" '(:ignore t :which-key "search"))
-#+end_src
-
-**** spelling
-#+begin_src emacs-lisp
-  (general-create-definer global-menu-spelling
-    :keymaps 'override
-    :states
-    '(normal hybrid motion visual operator)
-    :non-normal-prefix "S-SPC S"
-    :prefix "SPC S" "" '(:ignore t :which-key "spelling"))
-#+end_src
-
-**** buffer
-#+begin_src emacs-lisp
-  (general-create-definer global-menu-buffer
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator emacs)
-    :non-normal-prefix "S-SPC b"
-    :prefix "SPC b" "" '(:ignore t :which-key "buffer"))
-  (global-menu-buffer
-    "x"  'kill-current-buffer
-    "d"  'dired
-    "D" 'dired-jump
-    "r"  'rename-buffer
-    "m" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
-	  :which-key "messages-buffer")
-    "s" '((lambda () (interactive) (switch-to-buffer "*scratch*"))
-	  :which-key "scratch-buffer")
-    )
-#+end_src
-
-**** jumping/ joining / spliting
-#+begin_src emacs-lisp
-  (general-create-definer global-menu-jump
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator emacs)
-    :non-normal-prefix "S-SPC"
-    :prefix "SPC j" "" '(:ignore t :which-key "jump"))
-#+end_src
-
-**** files
-#+begin_src emacs-lisp
-  (general-create-definer global-menu-file
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator emacs)
-    :non-normal-prefix "S-SPC f"
-    :prefix "SPC f" "" '(:ignore t :which-key "file")
-    "e" '(:ignore t :which-key "env")
-    "ed" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org")
-    "eb" '((lambda () (interactive) (find-file *sys/shell-config-file*)) :which-key ".bashrc")
-    "ep" '(straight-freeze-versions :which-key "freeze packages")
-    )
-#+end_src
-
-**** env
-Menus for everything releated to Emacs environmental files, settings, etc. 
-#+begin_src emacs-lisp
-  (general-create-definer global-menu-env
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator emacs)
-    :non-normal-prefix "S-SPC e"
-    :prefix "SPC e" "" '(:ignore t :which-key "env"))
-#+end_src
-
-**** git
-#+begin_src emacs-lisp
-  (general-create-definer global-menu-vc
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator emacs)
-    :non-normal-prefix "S-SPC g"
-    :prefix "SPC g" "" '(:ignore t :which-key "git"))
-#+end_src
-
-**** windows
-#+begin_src emacs-lisp
-  (general-create-definer global-menu-window
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator emacs)
-    :non-normal-prefix "S-SPC w"
-    :prefix "SPC w" "" '(:ignore t :which-key "window"))
+      (general-evil-setup)
   
-  (global-menu-window
+      (general-create-definer
+	global-leader
+	:keymaps 'override
+	:states '(normal insert emacs motion visual)
+	:prefix sys/leader-key
+	:non-normal-prefix sys/leader-secondary-key)
   
-    "?" 'split-window-vertically
-    "=" 'balance-windows-area
-    "/" 'split-window-horizontally
-    "O" 'delete-other-windows
-    "X" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
-          :which-key "kill-other-buffer-and-window")
-    "H" 'evil-window-move-far-left
-    "J" 'evil-window-move-very-bottom
-    "K" 'evil-window-move-very-top
-    "L" 'evil-window-move-far-right
-    "d" 'delete-window
-    "h" 'windmove-left
-    "j" 'windmove-down
-    "k" 'windmove-up
-    "l" 'windmove-right
-    "o" 'other-window
-    "t" '((lambda () (interactive)
-            "toggle window dedication"
-            (set-window-dedicated-p (selected-window) (not (window-dedicated-p))))
-          :which-key "toggle window dedication")
-    "x" 'kill-buffer-and-window
-    )
+      (general-create-definer
+	global-major-leader
+	:keymaps 'override
+	:states '(normal insert emacs motion viusal)
+	:prefix sys/major-leader-key
+	:non-normal-prefix sys/major-leader-secondary-key
+	"" '(:ignore t :which-key sys/major-mode-name))
+  
+      (general-nmap "," (general-simulate-key "SPC m"))
+  
+      (global-leader
+	"a" '(:ignore t :wk "applications")
+  
+	"b" '(:ignore t :wk "buffers")
+	"bx"  'kill-current-buffer
+	"bd"  'dired
+	"bD" 'dired-jump
+	"bm" '((lambda () (interactive) (switch-to-buffer "*Messages*"))
+	       :which-key "messages-buffer")
+	"bs" '((lambda () (interactive) (switch-to-buffer "*scratch*"))
+	       :which-key "scratch-buffer")
+  
+	"f" '(:ignore t :wk "files")
+	"fe" '(:ignore t :which-key "env")
+	"fed" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org")
+	"feb" '((lambda () (interactive) (find-file *sys/shell-config-file*)) :which-key ".bashrc")
+	"fep" '(straight-freeze-versions :which-key "freeze packages")
+  
+	"g" '(:ignore t :wk "git")
+	"j" '(:ignore t :wk "jump")
+	"p" '(:ignore t :wk "projects")
+	"s" '(:ignore t :wk "search")
+	"S" '(:ignore t :wk "spelling")
+	"t" '(:ignore t :wk "themes")
+  
+	"w" '(:ignore t :wk "windows")
+	"w?" 'split-window-vertically
+	"w=" 'balance-windows-area
+	"w/" 'split-window-horizontally
+	"wH" 'evil-window-move-far-left
+	"wJ" 'evil-window-move-very-bottom
+	"wK" 'evil-window-move-very-top
+	"wL" 'evil-window-move-far-right
+	"wd" 'delete-window
+	"wh" 'windmove-left
+	"wj" 'windmove-down
+	"wk" 'windmove-up
+	"wl" 'windmove-right
+	"wo" 'other-window
+	"wO" 'delete-other-windows
+	"wx" 'kill-buffer-and-window
+	"wX" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
+	       :which-key "kill-other-buffer-and-window")
+  
+	"!" 'shell-command
+	":" 'eval-expression
+	"TAB" '((lambda () (interactive) (switch-to-buffer nil))
+		:which-key "other-buffer")
+  
+  
+  
+	)))
 #+end_src
 
-**** projects
-#+begin_src emacs-lisp
-  (general-create-definer global-menu-project
-    :keymaps 'override
-    :states '(normal hybrid motion visual operator)
-    :non-normal-prefix "S-SPC p"
-    :prefix "SPC p" "" '(:ignore t :which-key "project"))
-#+end_src
- 
 ** which-key
 #+begin_quote
 which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
@@ -608,17 +535,17 @@ Magit is an interface to the version control system Git, implemented as an Emacs
 https://magit.vc/
 #+end_quote
 #+begin_src emacs-lisp
-      (use-package magit
-        :defer t
-        :after (general)
-        :general
-        (global-menu-vc
-      "b"  'magit-blame
-        "i"  'magit-init
-         "s"  'magit-status
-         )
-        :config
-        (transient-bind-q-to-quit))
+  (use-package magit
+    :defer t
+    :after (general)
+    :general
+    (global-leader
+      "gb"  'magit-blame
+      "gi"  'magit-init
+      "gs"  'magit-status
+      )
+    :config
+    (transient-bind-q-to-quit))
 #+end_src
 
 
@@ -692,19 +619,15 @@ https://github.com/emacs-helm/helm
     (general-def helm-map "C-h" 'helm-find-files-up-one-level)
     (general-def helm-map "C-j" 'helm-next-line)
     (general-def helm-map "C-k" 'helm-previous-line)
-    (global-menu
+    (global-leader
       "SPC" '(helm-M-x :which-key "M-x")
-      "/"   'helm-projectile-ag)
-    (global-menu-search
-      "s" 'helm-occur)
-    (global-menu-file
-      "f" 'helm-find-files
-      "F" 'helm-find
-      "r" 'helm-recentf)
-    (global-menu-buffer
-      "b" 'helm-mini)
-    (global-menu-jump
-      "i" 'helm-imenu)
+      "/"   'helm-projectile-ag
+      "ss" 'helm-occur
+      "ff" 'helm-find-files
+      "fF" 'helm-find
+      "fr" 'helm-recentf
+      "bb" 'helm-mini
+      "ji" 'helm-imenu)
     )
 #+end_src
 
@@ -724,12 +647,12 @@ https://github.com/emacsorphanage/helm-ag
   (use-package helm-projectile
     :after (helm)
     :general
-    (global-menu-project
-      "b" 'helm-projectile-switch-to-buffer
-      "d" 'helm-projectile-find-dir
-      "f" 'helm-projectile-find-file
-      "p" 'helm-projectile-switch-project
-      "r" 'helm-projectile-recentf)
+    (global-leader
+      "pb" 'helm-projectile-switch-to-buffer
+      "pd" 'helm-projectile-find-dir
+      "pf" 'helm-projectile-find-file
+      "pp" 'helm-projectile-switch-project
+      "pr" 'helm-projectile-recentf)
     )
 #+end_src
 
@@ -744,15 +667,11 @@ https://github.com/bbatsov/projectile
   (use-package projectile
     :after (general)
     :general
-    (global-menu-project
-      "!" 'projectile-run-shell-command-in-root
-      "%" 'projectile-replace-regexp
-      "D" 'projectile-dired
-      "e" 'projectile-edit-dir-locals
-      "g" 'projectile-find-tag
-      "G" 'projectile-regenerate-tags
-      "R" 'projectile-replace
-      "v" 'projectile-vc)
+    (global-leader
+      "p!" 'projectile-run-shell-command-in-root
+      "pD" 'projectile-dired
+      "pe" 'projectile-edit-dir-locals
+      "pR" 'projectile-replace)
     :config
     (progn
       (defun sys/switch-project-action ()
@@ -773,40 +692,41 @@ Emacs-libvterm (vterm) is fully-fledged terminal emulator inside GNU Emacs based
 https://github.com/akermu/emacs-libvterm
 #+end_quote
 #+begin_src emacs-lisp
-      (use-package vterm
-        :straight (:post-build (cl-letf (((symbol-function #'pop-to-buffer)
-                                          (lambda (buffer) (with-current-buffer buffer (message (buffer-string))))))
-                                 (setq vterm-always-compile-module t)
-                                (require 'vterm)))
-        :commands (vterm vterm-other-window)
-        :general
-        (global-menu-applications "t" '(:ignore t :which-key "terminal") "tt" 'vterm-other-window
-             "t." 'vterm
-        )
-        (general-def vterm-mode-map "C-r" 'helm-vterm-search-history :states '(normal emacs))
-        (general-def vterm-mode-map "C-l" 'vterm-clear :states '(normal emacs))
-        ;; copied from spacemacs
-        :config
-        (setq vterm-shell *sys/shell-executable*)
-        (defun vterm-make-history-candidates ()
-        (with-temp-buffer
-            (insert-file-contents *sys/shell-history-file*)
-            (reverse
-            (delete-dups
-            (split-string (buffer-string) "\n")))))
-        (defun helm-vterm-search-history ()
-        "Narrow down bash history with helm."
-        (interactive)
-        (cl-assert (string-equal mode-name "VTerm") nil "Not in VTerm mode")
-        (helm :sources (helm-build-sync-source "Bash history"
-                                                :candidates (vterm-make-history-candidates)
-                                                :action #'vterm-send-string)
-                :buffer "*helm-bash-history*"
-                :candidate-number-limit 10000))
+  (use-package vterm
+    :straight (:post-build (cl-letf (((symbol-function #'pop-to-buffer)
+				      (lambda (buffer) (with-current-buffer buffer (message (buffer-string))))))
+			     (setq vterm-always-compile-module t)
+			     (require 'vterm)))
+    :commands (vterm vterm-other-window)
+    :general
+    (global-leader "at" '(:ignore t :which-key "terminal")
+      "att" 'vterm-other-window
+      "at." 'vterm
+      )
+    (general-def vterm-mode-map "C-r" 'helm-vterm-search-history :states '(normal emacs))
+    (general-def vterm-mode-map "C-l" 'vterm-clear :states '(normal emacs))
+    ;; copied from spacemacs
+    :config
+    (setq vterm-shell *sys/shell-executable*)
+    (defun vterm-make-history-candidates ()
+      (with-temp-buffer
+	(insert-file-contents *sys/shell-history-file*)
+	(reverse
+	 (delete-dups
+	  (split-string (buffer-string) "\n")))))
+    (defun helm-vterm-search-history ()
+      "Narrow down bash history with helm."
+      (interactive)
+      (cl-assert (string-equal mode-name "VTerm") nil "Not in VTerm mode")
+      (helm :sources (helm-build-sync-source "Bash history"
+		       :candidates (vterm-make-history-candidates)
+		       :action #'vterm-send-string)
+	    :buffer "*helm-bash-history*"
+	    :candidate-number-limit 10000))
   
-        (evil-set-initial-state 'vterm-mode 'emacs)
-        (add-hook 'vterm-mode-hook #'(lambda () (setq-local global-hl-line-mode nil)))
-  )
+    (evil-set-initial-state 'vterm-mode 'emacs)
+    (add-hook 'vterm-mode-hook #'(lambda () (setq-local global-hl-line-mode nil)))
+    )
 #+end_src
 
 ** diminish
@@ -831,16 +751,15 @@ https://github.com/hlissner/doom-emacs/blob/develop/docs/faq.org#why-do-non-evil
 to learn about the VIM way.
 #+end_quote
 #+begin_src emacs-lisp
-     (use-package expand-region
-        :commands er/expand-region
-        :config
-     (setq expand-region-contract-fast-key "V"
-               expand-region-reset-fast-key "r")
-     :general
-     (global-menu
+  (use-package expand-region
+    :commands er/expand-region
+    :config
+    (setq expand-region-contract-fast-key "V"
+	  expand-region-reset-fast-key "r")
+    :general
+    (global-leader
       "v"   'er/expand-region)
-     )
-    
+    )
 #+end_src
 ** Development
 Following packages are used majorly for programming
@@ -868,10 +787,11 @@ https://github.com/redguardtoo/evil-nerd-commenter
 #+end_quote
 
 #+begin_src emacs-lisp
-   (use-package evil-nerd-commenter
-         :commands evilnc-comment-or-uncomment-lines
-        :general
-    (global-menu ";" '(evilnc-comment-or-uncomment-lines :which-key "evil-comment"))
+  (use-package evil-nerd-commenter
+    :commands evilnc-comment-or-uncomment-lines
+    :general
+    (global-leader
+      ";" '(evilnc-comment-or-uncomment-lines :which-key "evil-comment"))
     )
 #+end_src
 
@@ -882,26 +802,26 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
 #+end_quote
 
 #+begin_src emacs-lisp
-       (use-package lsp-mode
-       :defer t
-       :hook ((python-mode) . lsp-deferred)
-       :commands lsp
-       :config
-       ;; disable flycheck override with lsp checker in python-mode
-       (setq lsp-diagnostics-disabled-modes '(python-mode)) 
-       (setq lsp-keep-workspace-alive nil)
-       :general
-       (global-leader :keymaps 'python-mode-map "r" 'lsp-rename
-       "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
-        ))
+  (use-package lsp-mode
+    :defer t
+    :hook ((python-mode) . lsp-deferred)
+    :commands lsp
+    :config
+    ;; disable flycheck override with lsp checker in python-mode
+    (setq lsp-diagnostics-disabled-modes '(python-mode))
+    (setq lsp-keep-workspace-alive nil)
+    :general
+    (global-major-leader :keymaps 'python-mode-map
+      "r" 'lsp-rename
+      "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
+      ))
   
-       (use-package lsp-ui
-         :after lsp-mode
-         :commands lsp-ui-mode
-         :config
-         (setq lsp-ui-sideline-ignore-duplicate t)
-  )
-  
+  (use-package lsp-ui
+    :after lsp-mode
+    :commands lsp-ui-mode
+    :config
+    (setq lsp-ui-sideline-ignore-duplicate t)
+    )
 #+end_src
 
 **** helm-lsp
@@ -955,12 +875,12 @@ https://github.com/lassik/emacs-format-all-the-code
     :commands format-all-buffer
     ;; Format elisp
     :general
-    (global-leader
+    (global-major-leader
       :keymaps
       'emacs-lisp-mode-map
-      "f"
-      '(:ignore t :which-key "format")
-      "fb"
+      "b"
+      '(:ignore t :which-key "buffers")
+      "bf"
       'format-all-buffer)
     ;; :hook ((python-mode) . format-all-mode)
     )
@@ -979,7 +899,8 @@ https://github.com/anachronic/importmagic.el
     :init
     (add-hook 'venv-postactivate-hook  #'importmagic-mode)
     :general
-    (global-leader :keymaps 'python-mode-map "i" '(importmagic-fix-imports :which-key "fix imports")))
+    (global-major-leader :keymaps 'python-mode-map
+      "i" '(importmagic-fix-imports :which-key "fix imports")))
 #+end_src
 
 **** lsp-pyright
@@ -1024,13 +945,16 @@ https://github.com/ionrock/pytest-el
 - FIX  Package cl is deprecated
 #+begin_src emacs-lisp
   (use-package pytest :defer t
-  :commands (pytest-one ptytest-module pytest-all)
-  :config (add-to-list 'pytest-project-root-files "setup.cfg")
-  :general
-   (global-leader :keymaps 'python-mode-map "t" '(:ignore t :which-key "testing")
-     "tt" 'pytest-one "ta" 'pytest-all "tb" 'pytest-module
-   )
-  )
+    :commands (pytest-one ptytest-module pytest-all)
+    :config (add-to-list 'pytest-project-root-files "setup.cfg")
+    :general
+    (global-major-leader :keymaps 'python-mode-map
+      "t" '(:ignore t :which-key "testing")
+      "tt" 'pytest-one
+      "ta" 'pytest-all
+      "tb" 'pytest-module
+      )
+    )
 #+end_src
 
 **** py-isort
@@ -1058,13 +982,13 @@ https://github.com/hlissner/emacs-doom-themes
     (doom-themes-org-config)
     (doom-themes-treemacs-config)
     :general
-    (global-menu-env "t" '(:ignore t :which-key "themes")
-      "t1" '((lambda () (interactive)
-	       (load-theme 'doom-one t))
-	     :which-key "doom-one")
-      "t2" '((lambda () (interactive)
-	       (load-theme 'doom-one-light t))
-	     :which-key "doom-one-light")
+    (global-leader "tt" '(:ignore t :which-key "choose themes")
+      "tt1" '((lambda () (interactive)
+		(load-theme 'doom-one t))
+	      :which-key "doom-one")
+      "tt2" '((lambda () (interactive)
+		(load-theme 'doom-one-light t))
+	      :which-key "doom-one-light")
       )
     )
 #+end_src
@@ -1109,15 +1033,15 @@ https://github.com/hlissner/emacs-solaire-mode
    (use-package hydra
      :defer t
      :config
-   (defhydra hydra-text-scale (:timeout 4)
+     (defhydra hydra-text-scale (:timeout 4)
        "scale text"
        ("j" text-scale-increase "in")
        ("k" text-scale-decrease "out")
        ("q" nil "finished" :exit t))
      :general
-     (global-menu-env "s" '(hydra-text-scale/body :which-key "scale text")) 
+     (global-leader
+       "ts" '(hydra-text-scale/body :which-key "scale text"))
      )
-   
  #+end_src
 ** flyspell
 #+begin_quote
@@ -1150,32 +1074,32 @@ https://github.com/d12frosted/flyspell-correct
 #+end_quote
 
 #+begin_src emacs-lisp
-    (use-package flyspell-correct
-     :defer t
-     :after flyspell
-     :general
-     (global-menu-spelling "c" '(flyspell-correct-wrapper :which-key "check"))
-  )
+  (use-package flyspell-correct
+    :defer t
+    :after flyspell
+    :general
+    (global-leader
+      "Sc" '(flyspell-correct-wrapper :which-key "check"))
+    )
   
   (use-package flyspell-correct-helm
-  :defer t
-  :after flyspell-correct)
-  
+    :defer t
+    :after flyspell-correct)
 #+end_src
 
-** winner
+* winner
 Winner Mode is a global minor mode that allows you to “undo” and “redo” changes in WindowConfiguration
 (Changes in window state).
 #+begin_src emacs-lisp
-   (use-package winner
-   :defer 3
-   :general
-   (global-menu-window
-     "u" 'winner-undo
-     "r" 'winner-redo)
-   :config
-  (add-to-list 'winner-boring-buffers "*Help*")
-  (winner-mode t))
+  (use-package winner
+    :defer 3
+    :general
+    (global-leader
+      "wu" 'winner-undo
+      "wr" 'winner-redo)
+    :config
+    (add-to-list 'winner-boring-buffers "*Help*")
+    (winner-mode t))
 #+end_src
 
 ** winum
@@ -1192,7 +1116,7 @@ https://github.com/deb0ch/emacs-winum
    (setq winum-auto-assign-0-to-minibuffer nil
              winum-auto-setup-mode-line nil
              winum-ignored-buffers '(" *LV*" " *which-key*"))
-  (global-menu "0" 'winum-select-window-0
+  (global-leader "0" 'winum-select-window-0
     "1" 'winum-select-window-1
         "2" 'winum-select-window-2
         "3" 'winum-select-window-3
@@ -1281,8 +1205,8 @@ https://github.com/nex3/perspective-el
     :defer t
     :commands persp-switch
     :general
-    (global-menu-project
-      "P" 'persp-switch)
+    (global-leader
+      "pP" 'persp-switch)
     :config
     (progn
       (setq persp-state-default-file  (expand-file-name "persp-save-file.el" user-emacs-directory))
@@ -1353,7 +1277,8 @@ Further todos would be to make it possible to switch projects correctly (e.g. ac
       (require 'treemacs-all-the-icons)
       (treemacs-load-theme 'all-the-icons))
     :general
-    (global-menu-project "t" 'sys/treemacs-project-toggle))
+    (global-leader
+      "pt" 'sys/treemacs-project-toggle))
   
   (use-package treemacs-all-the-icons
     :defer t)
