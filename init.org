@@ -428,6 +428,7 @@ Load general before the remaining packages so they can make use of the ~:general
     (progn
   
       (defun sys/major-mode-name (arg)
+	"Return major mode name"
 	(cons
 	 (cadr (split-string (car arg) " "))
 	 (replace-regexp-in-string
