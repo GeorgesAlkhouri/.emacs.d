@@ -311,10 +311,10 @@ NAME and ARGS are in `use-package'."
   (defconst sys/leader-secondary-key "S-SPC"
     "The secondary leader key.")
   
-  (defconst sys/major-leader-key ","
+  (defconst sys/major-leader-key "SPC m"
     "The default major mode leader key.")
   
-  (defconst sys/major-leader-secondary-key "M-,"
+  (defconst sys/major-leader-secondary-key "S-SPC m"
     "The secondary major mode leader key.")
   
   (defconst *sys/shell-history-file* "~/.bash_history")
@@ -452,7 +452,7 @@ Load general before the remaining packages so they can make use of the ~:general
 	:non-normal-prefix sys/major-leader-secondary-key
 	"" '(:ignore t :which-key sys/major-mode-name))
   
-      (general-nmap "SPC m" (general-simulate-key "," :which-key "major-mode"))
+      (general-nmap "," (general-simulate-key "SPC m"))
   
       (global-leader
 	"a" '(:ignore t :wk "applications")
@@ -473,7 +473,8 @@ Load general before the remaining packages so they can make use of the ~:general
 	"fep" '(straight-freeze-versions :which-key "freeze packages")
   
 	"g" '(:ignore t :wk "git")
-	"h" '(:ignore t :wk "help")
+	"j" '(:ignore t :wk "jump")
+	"p" '(:ignore t :wk "projects")
 	"s" '(:ignore t :wk "search")
 	"S" '(:ignore t :wk "spelling")
 	"t" '(:ignore t :wk "themes")
