@@ -804,17 +804,27 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :defer t
-    :hook ((python-mode) . lsp-deferred)
+    :hook
+    (((python-mode) . lsp-deferred)
+     (lsp-mode . lsp-enable-which-key-integration))
     :commands lsp
     :config
-    ;; disable flycheck override with lsp checker in python-mode
-    (setq lsp-diagnostics-disabled-modes '(python-mode))
-    (setq lsp-keep-workspace-alive nil)
+    (progn
+      ;; disable flycheck override with lsp checker in python-mode
+      (setq lsp-diagnostics-disabled-modes '(python-mode)
+	    lsp-keep-workspace-alive nil
+	    lsp-auto-guess-root t)
+      )
     :general
-    (global-major-leader :keymaps 'python-mode-map
-      "r" 'lsp-rename
-      "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
-      ))
+    (general-def lsp-mode-map "C-l" '(:keymap lsp-command-map))
+    ;; (general-def lsp-mode-map "C-l" lsp-command-map)
+    ;; (global-major-leader :keymaps 'lsp-mode-map
+    ;;   "l" '(:keymap lsp-command-map :wk "lsp"))
+    ;; (global-major-leader :keymaps 'python-mode-map
+    ;;   "r" 'lsp-rename
+    ;;   "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
+    ;;   )
+    )
   
   (use-package lsp-ui
     :after lsp-mode
