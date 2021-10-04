@@ -1285,3 +1285,21 @@ Further todos would be to make it possible to switch projects correctly (e.g. ac
 #+end_src
 
 
+** avy
+#+begin_quote
+avy is a GNU Emacs package for jumping to visible text using a char-based decision tree.
+
+https://github.com/abo-abo/avy
+#+end_quote
+#+begin_src emacs-lisp
+  (use-package avy
+    :defer t
+    :general
+    (global-leader
+      "jj" '(evil-avy-goto-char-timer :wk "jump to char")
+      "jl" '(evil-avy-goto-line :wk "jump to line")
+      "jo" 'avy-pop-mark)
+    )
+#+end_src
+
+
