@@ -447,7 +447,6 @@ Load general before the remaining packages so they can make use of the ~:general
   
       (general-create-definer
 	global-major-leader
-	:keymaps 'override
 	:states '(normal insert emacs motion viusal)
 	:prefix sys/major-leader-key
 	:non-normal-prefix sys/major-leader-secondary-key
@@ -818,14 +817,8 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
 	    lsp-auto-guess-root t)
       )
     :general
-    (general-def lsp-mode-map "C-l" '(:keymap lsp-command-map))
-    ;; (general-def lsp-mode-map "C-l" lsp-command-map)
-    ;; (global-major-leader :keymaps 'lsp-mode-map
-    ;;   "l" '(:keymap lsp-command-map :wk "lsp"))
-    ;; (global-major-leader :keymaps 'python-mode-map
-    ;;   "r" 'lsp-rename
-    ;;   "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
-    ;;   )
+    (global-major-leader :keymaps 'python-mode-map
+      "l" '(:keymap lsp-command-map :wk "lsp"))
     )
   
   (use-package lsp-ui
