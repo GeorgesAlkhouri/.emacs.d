@@ -499,6 +499,8 @@ Load general before the remaining packages so they can make use of the ~:general
 	"wX" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
 	       :which-key "kill-other-buffer-and-window")
   
+	"q" '(:ignore t :wk "quit")
+  
 	"!" 'shell-command
 	":" 'eval-expression
 	"TAB" '((lambda () (interactive) (switch-to-buffer nil))
@@ -1286,6 +1288,7 @@ Further todos would be to make it possible to switch projects correctly (e.g. ac
 
 
 ** avy
+
 #+begin_quote
 avy is a GNU Emacs package for jumping to visible text using a char-based decision tree.
 
@@ -1302,4 +1305,17 @@ https://github.com/abo-abo/avy
     )
 #+end_src
 
+
+** restart-emacs
+
+#+begin_src emacs-lisp
+  (use-package restart-emacs
+    :defer t
+    :general
+    (global-leader
+      "qq" '(save-buffers-kill-terminal :wk "quit Emacs")
+      "qR" '(restart-emacs :wk "restart Emacs")
+      ;; "qr" '((restart-emacs (list "--resume-layouts")) :wk "restart Emacs (resume layouts)"))
+    )
+#+end_src
 
