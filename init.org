@@ -325,7 +325,7 @@ NAME and ARGS are in `use-package'."
 	 (defconst *sys/shell-executable* "/usr/local/bin/bash")
 	 )
 	(*sys/linux*
-	 (defconst *sys/font-default-height* 130)
+	 (defconst *sys/font-default-height* 110)
 	 (defconst *sys/shell-executable* "/bin/bash")
 	 ))
   
@@ -498,6 +498,8 @@ Load general before the remaining packages so they can make use of the ~:general
 	"wx" 'kill-buffer-and-window
 	"wX" '((lambda () (interactive) (call-interactively #'other-window) (kill-buffer-and-window))
 	       :which-key "kill-other-buffer-and-window")
+  
+	"q" '(:ignore t :wk "quit")
   
 	"!" 'shell-command
 	":" 'eval-expression
@@ -1294,4 +1296,36 @@ Further todos would be to make it possible to switch projects correctly (e.g. ac
     :defer t)
 #+end_src
 
+
+** avy
+
+#+begin_quote
+avy is a GNU Emacs package for jumping to visible text using a char-based decision tree.
+
+https://github.com/abo-abo/avy
+#+end_quote
+#+begin_src emacs-lisp
+  (use-package avy
+    :defer t
+    :general
+    (global-leader
+      "jj" '(evil-avy-goto-char-timer :wk "jump to char")
+      "jl" '(evil-avy-goto-line :wk "jump to line")
+      "jo" 'avy-pop-mark)
+    )
+#+end_src
+
+
+** restart-emacs
+
+#+begin_src emacs-lisp
+  (use-package restart-emacs
+    :defer t
+    :general
+    (global-leader
+      "qq" '(save-buffers-kill-terminal :wk "quit Emacs")
+      "qR" '(restart-emacs :wk "restart Emacs"))
+      ;; "qr" '((restart-emacs (list "--resume-layouts")) :wk "restart Emacs (resume layouts)"))
+    )
+#+end_src
 
