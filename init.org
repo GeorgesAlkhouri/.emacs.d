@@ -325,7 +325,7 @@ NAME and ARGS are in `use-package'."
 	 (defconst *sys/shell-executable* "/usr/local/bin/bash")
 	 )
 	(*sys/linux*
-	 (defconst *sys/font-default-height* 130)
+	 (defconst *sys/font-default-height* 110)
 	 (defconst *sys/shell-executable* "/bin/bash")
 	 ))
   
