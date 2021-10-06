@@ -1024,6 +1024,7 @@ in doom-modeline.
   (use-package doom-modeline
     :defer t
     :config
+    (setq doom-modeline-icon (display-graphic-p))
     (setq doom-modeline-height 30)
     (setq doom-modeline-buffer-file-name-style 'truncate-all)
     :hook
@@ -1257,6 +1258,7 @@ https://github.com/nex3/perspective-el
 
 #+begin_src emacs-lisp
   (use-package all-the-icons
+    :if (display-graphic-p)
     :defer t)
 #+end_src
 
@@ -1291,14 +1293,16 @@ Further todos would be to make it possible to switch projects correctly (e.g. ac
 	    (treemacs-select-window)))))
     :config
     (progn
-      (require 'all-the-icons)
-      (require 'treemacs-all-the-icons)
-      (treemacs-load-theme 'all-the-icons))
+      (when (display-graphic-p)
+	(require 'all-the-icons)
+	(require 'treemacs-all-the-icons)
+	(treemacs-load-theme 'all-the-icons)))
     :general
     (global-leader
       "pt" 'sys/treemacs-project-toggle))
   
   (use-package treemacs-all-the-icons
+    :if (display-graphic-p)
     :defer t)
 #+end_src
 
