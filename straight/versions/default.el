@@ -1,5 +1,4 @@
 (("ace-window" . "c7cb315c14e36fded5ac4096e158497ae974bec9")
- ("aggressive-indent-mode" . "cb416faf61c46977c06cf9d99525b04dc109a33c")
  ("all-the-icons.el" . "c0d288a41faea2ecb7e8dd947486764a2ee17ec9")
  ("annalist.el" . "134fa3f0fb91a636a1c005c483516d4b64905a6d")
  ("avy" . "e92cb37457b43336b765630dbfbea8ba4be601fa")
