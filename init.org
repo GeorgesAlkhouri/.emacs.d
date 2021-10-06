@@ -601,6 +601,22 @@ http://company-mode.github.io/
     )
 #+end_src
 
+** company-box
+
+#+begin_quote
+A company front-end with icons.
+
+https://github.com/sebastiencs/company-box
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package company-box
+    :if (display-graphic-p)
+    :after company
+    :hook (company-mode . company-box-mode))
+#+end_src
+
+
 ** helm
 #+begin_quote
 Helm is an Emacs framework for incremental completions and narrowing selections.
