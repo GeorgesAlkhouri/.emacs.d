@@ -796,6 +796,19 @@ Following packages are used majorly for programming
     )
 #+end_src
 
+#+begin_quote
+By default GNU Emacs auto-indents the code while typing with electric-indent-mode, but the indentation made is wrong when moving blocks, transposing lines and so on.
+The aggresive-indent package is an improved version of the previous mode, allowing a code to be always indented.
+
+https://github.com/Malabarba/aggressive-indent-mode
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package aggressive-indent
+    :defer t
+    :hook (prog-mode . aggressive-indent-mode))
+#+end_src
+
 
 *** evil-nerd-commenter
 #+begin_quote
