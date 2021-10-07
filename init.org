@@ -645,7 +645,7 @@ https://github.com/emacs-helm/helm
       "fF" 'helm-find
       "fr" 'helm-recentf
       "bb" 'helm-mini
-      "ji" 'helm-imenu)
+      "ji" 'helm-semantic-or-imenu)
     )
 #+end_src
 
@@ -905,6 +905,14 @@ https://github.com/lassik/emacs-format-all-the-code
 #+end_src
 
 *** Python
+
+#+begin_src emacs-lisp
+  (use-feature python
+    :defer t
+    :hook (python-mode . semantic-mode)
+    :init
+    (setq semantic-default-submodes nil))
+#+end_src
 
 **** importmagic.el
 Emacs package which tries to suggest imports for unresolved symbols.
