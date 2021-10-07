@@ -8,6 +8,7 @@
  ("company-mode" . "3eaac91b27d5041a97a0cbae32bb5b03e361d230")
  ("dash.el" . "da167c51e9fd167a48d06c7c0ee8e3ac7abd9718")
  ("diminish.el" . "6ec6ebc391371418efc6c98d70b013f34af5a2ee")
+ ("dockerfile-mode" . "83bc055f5bcafabd3a10655a193fe8fe8b886867")
  ("doom-modeline" . "bcbb276b51c6d63fcb81195172575fa756660472")
  ("el-get" . "b5a5a405d04f61ec9c5fcb19357a50a4b9e36a25")
  ("emacs-async" . "5d365ffc6a2c2041657eaa5d762c395ea748c8d7")
