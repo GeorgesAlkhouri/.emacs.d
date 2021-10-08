@@ -447,7 +447,6 @@ Load general before the remaining packages so they can make use of the ~:general
   
       (general-create-definer
 	global-major-leader
-	:keymaps 'override
 	:states '(normal insert emacs motion viusal)
 	:prefix sys/major-leader-key
 	:non-normal-prefix sys/major-leader-secondary-key
@@ -822,17 +821,21 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
 #+begin_src emacs-lisp
   (use-package lsp-mode
     :defer t
-    :hook ((python-mode) . lsp-deferred)
+    :hook
+    (((python-mode) . lsp-deferred)
+     (lsp-mode . lsp-enable-which-key-integration))
     :commands lsp
     :config
-    ;; disable flycheck override with lsp checker in python-mode
-    (setq lsp-diagnostics-disabled-modes '(python-mode))
-    (setq lsp-keep-workspace-alive nil)
+    (progn
+      ;; disable flycheck override with lsp checker in python-mode
+      (setq lsp-diagnostics-disabled-modes '(python-mode)
+	    lsp-keep-workspace-alive nil
+	    lsp-auto-guess-root t)
+      )
     :general
     (global-major-leader :keymaps 'python-mode-map
-      "r" 'lsp-rename
-      "g" '(:ignore t :which-key "goto") "gd" 'evil-goto-definition
-      ))
+      "l" '(:keymap lsp-command-map :wk "lsp"))
+    )
   
   (use-package lsp-ui
     :after lsp-mode
