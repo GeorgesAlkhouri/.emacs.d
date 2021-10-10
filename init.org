@@ -15,7 +15,8 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - add venv to mode-line
 - reload bash config for helm
 - let emacs setup OSH if not already setup
-- when loading saved persp file also switch project correctly to load venv 
+- when loading saved persp file also switch project correctly to load venv
+- fix lsp which-key integration
     
 * Requirements
 Dependencies you need to fully run all configured features:
@@ -822,9 +823,8 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
   (use-package lsp-mode
     :defer t
     :hook
-    (((python-mode) . lsp-deferred)
-     (lsp-mode . lsp-enable-which-key-integration))
-    :commands lsp
+    ((lsp-mode . lsp-enable-which-key-integration))
+    :commands (lsp lsp-deferred)
     :config
     (progn
       ;; disable flycheck override with lsp checker in python-mode
