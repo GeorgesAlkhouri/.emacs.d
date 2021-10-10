@@ -878,7 +878,9 @@ https://www.flycheck.org/en/latest/
 				    ;; implicitly set mypy and pylint in checker chain
 				    (setq-local flycheck-checker 'python-flake8)
 				    ;; safe time and just determine the line of error
-				    (setq-local flycheck-highlighting-mode 'lines)))
+				    (setq-local flycheck-highlighting-mode 'lines)
+				    ;; only apply syntax check on save and mode-enabled
+				    (setq-local flycheck-check-syntax-automatically '(save mode-enabled))))
     :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el")
     )
 #+end_src
