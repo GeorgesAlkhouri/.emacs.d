@@ -200,7 +200,7 @@ The following line turns on lexical binding for performance reasons.
 ;; -*- lexical-binding: t; -*-
 #+end_src
 
-** Straight package manager
+** Package Manager
 #+begin_quote
 straight.el: next-generation, purely functional package manager for the Emacs hacker.
 
@@ -347,31 +347,6 @@ NAME and ARGS are in `use-package'."
 	  (progn
 	    (message "%s not found. venv deactivated" project-dir)
 	    (venv-deactivate))))))
-#+end_src
-
-** additional setup
-
-After start up do some UI changes.
-
-#+begin_src emacs-lisp
-  (defun after-startup ()
-    (set-face-attribute 'default nil :height *sys/font-default-height*)
-    (set-face-attribute 'variable-pitch nil :height *sys/font-default-height*)
-    ;; Faster than scp
-    (setq tramp-default-method "ssh")
-    ;; When buffer is closed, saves the cursor location
-    (save-place-mode t)
-    (toggle-frame-maximized)
-    (global-hl-line-mode t)
-    (solaire-global-mode t)
-    (load-theme 'doom-one-light t)
-    )
-  (add-hook 'after-init-hook #'after-startup)
-#+end_src
-
-Enable  line numbers for prog-mode
-#+begin_src emacs-lisp
-  (add-hook 'prog-mode-hook #'display-line-numbers-mode) 
 #+end_src
 
 * Packages
@@ -1119,7 +1094,7 @@ https://github.com/d12frosted/flyspell-correct
     :after flyspell-correct)
 #+end_src
 
-* winner
+** winner
 Winner Mode is a global minor mode that allows you to “undo” and “redo” changes in WindowConfiguration
 (Changes in window state).
 #+begin_src emacs-lisp
@@ -1352,7 +1327,65 @@ https://github.com/abo-abo/avy
     )
 #+end_src
 
+** tramp
 
+#+begin_src emacs-lisp
+  (use-feature tramp
+    :init
+    ;; Faster than scp
+    (setq tramp-default-method "ssh")
+    ;; Disable version control on tramp buffers to avoid freezes.
+    (setq vc-ignore-dir-regexp
+	  (format "\\(%s\\)\\|\\(%s\\)"
+		  vc-ignore-dir-regexp
+		  tramp-file-name-regexp))
+    ;; :config
+    ;; ;; Multiplexing is the ability to send more than one signal over a single line or connection.
+    ;; (setq tramp-ssh-controlmaster-options (concat
+    ;; 					 "-o ControlPath=/tmp/ssh-tramp-%%r@%%h:%%p "
+    ;; 					 "-o ControlMaster=auto -o ControlPersist=yes"))
+    )
+#+end_src
+
+** emacs
+
+#+begin_src emacs-lisp
+  (use-feature emacs
+    :init
+    (progn
+  
+      (defun sys/after-startup ()
+	(set-face-attribute 'default nil :height *sys/font-default-height*)
+	(set-face-attribute 'variable-pitch nil :height *sys/font-default-height*)
+	;; When buffer is closed, saves the cursor location
+	(save-place-mode t)
+	(toggle-frame-maximized)
+	(global-hl-line-mode t)
+	(solaire-global-mode t)
+	(load-theme 'doom-one-light t)
+	)
+  
+      ;; always allow 'y' instead of 'yes'.
+      (defalias 'yes-or-no-p 'y-or-n-p)
+      ;; write over selected text on input... like all modern editors do
+      (delete-selection-mode t)
+      ;; Don't persist a custom file, this bites me more than it helps
+      ;; (setq custom-file (make-temp-file "")) ; use a temp file as a placeholder
+      (setq custom-safe-themes t)            ; mark all themes as safe, since we can't persist now
+      (setq enable-local-variables :all)     ; fix =defvar= warnings
+      ;; stop emacs from littering the file system with backup files
+      (setq make-backup-files nil
+	    ;; auto-save-default nil
+	    create-lockfiles nil)
+      ;; follow symlinks
+      (setq vc-follow-symlinks t)
+  
+      (add-hook 'after-init-hook #'sys/after-startup)
+      )
+    )
+#+end_src
+
+** dockerfile-mode
 
 #+begin_src emacs-lisp
   (use-package dockerfile-mode
