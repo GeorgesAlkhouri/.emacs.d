@@ -1,12 +1,22 @@
-;-*- eval: (load-file "./init-dev.el");   -*-
 #+title: My Emacs Configuration
-#+property: header-args :mkdirp yes :tangle yes :tangle-mode (identity #o444) :results silent :noweb yes
+#+STARTUP: content
+#+property: header-args :tangle init.el
 
 Idea and basics from https://github.com/progfolio/.emacs.d
 
 * An Explanation
 This is a literate configuration for =Emacs=.
 Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d/early-init.el=.
+
+Start with =make tangle= to create the init.el and early-init.el from this org file.
+
+** Requirements
+Dependencies you need to fully run all configured features:
+- ag
+- vterm requirements
+- pyright, black, flake8, pylint, isort, mypy, virtualenv, virtualenvwrapper
+- shellcheck
+- git and git-flow
 
 ** Todos
 - fix python mode when using tramp
@@ -18,27 +28,15 @@ Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d
 - when loading saved persp file also switch project correctly to load venv
 - fix lsp which-key integration
     
-* Requirements
-Dependencies you need to fully run all configured features:
-- ag
-- vterm requirements
-- pyright, black, flake8, pylint, isort, mypy, virtualenv, virtualenvwrapper
-- shellcheck
-- git and git-flow
-
-* Tangle
- 
-Start with =make tangle= to create the init.el and early-init.el from this org file.
-
-* Bootstrapping
+* early-init.el and init.el
 ** early-init
 :PROPERTIES:
 :header-args: :tangle-mode (identity #o444) :results silent :tangle ~/.emacs.d/early-init.el
 :END:
 Emacs 27.0 introduced an early-init file. It allows customization before package and UI initialization.
 #+begin_src emacs-lisp
-;;; early-init.el --- Emacs pre package.el & GUI configuration -*- lexical-binding: t; -*-
-;;; Code:
+  ;;; early-init.el --- Emacs pre package.el & GUI configuration -*- lexical-binding: t; no-byte-compile: t -*-
+  ;;; Code:
 #+end_src
 
 We want the latest version of Org mode.
@@ -58,10 +56,6 @@ Save some time at startup.
 
 *** Debugging
 
-Silence native compilation compiler warnings for as they can be pretty disruptive.
-#+begin_src emacs-lisp :tangle yes
-(setq native-comp-async-report-warnings-errors nil)
-#+end_src
 
 Running this form will launch the debugger after loading a package.
 This is useful for finding out when a dependency is requiring a package (perhaps earlier than you want).
@@ -194,13 +188,13 @@ This helps with a bug I was hitting when using =desktop-save-mode='s =desktop-re
 ;;; early-init.el ends here
 #+end_src
 
-** lexical binding
+** init.el
 The following line turns on lexical binding for performance reasons.
 #+begin_src emacs-lisp
-;; -*- lexical-binding: t; -*-
+  ;;; init.el --- Personal configuration file -*- lexical-binding: t; no-byte-compile: t; -*-
 #+end_src
 
-** Package Manager
+*** Package Manager
 #+begin_quote
 straight.el: next-generation, purely functional package manager for the Emacs hacker.
 
@@ -239,13 +233,13 @@ check out your desired revision/branch.
   (load bootstrap-file nil 'nomessage))
 #+end_src
 
-*** Install org-contrib
+**** Install org-contrib
 Installing it this early *should* prevent mixed Org installations.
 #+begin_src emacs-lisp
 (straight-use-package 'org-contrib)
 #+end_src
 
-** profiling
+*** profiling
 This function displays how long Emacs took to start.
 It's a rough way of knowing when/if I need to optimize my init file.
 #+begin_src emacs-lisp
@@ -257,9 +251,9 @@ It's a rough way of knowing when/if I need to optimize my init file.
                               (time-subtract after-init-time before-init-time)))
                      gcs-done)))
 #+end_src
-** packaging
+*** packaging
 
-*** use-package
+**** use-package
 #+begin_src emacs-lisp
   (defmacro use-feature (name &rest args)
   "Like `use-package' but with `straight-use-package-by-default' disabled.
@@ -288,7 +282,7 @@ NAME and ARGS are in `use-package'."
         use-package-expand-minimally t))
 #+end_src
 
-** define constants
+*** define constants
 
 #+begin_src emacs-lisp
   (defconst *sys/win32*
@@ -1379,6 +1373,8 @@ https://github.com/abo-abo/avy
 	    create-lockfiles nil)
       ;; follow symlinks
       (setq vc-follow-symlinks t)
+      ;; Silence native compilation compiler warnings for as they can be pretty disruptive.
+      (setq native-comp-async-report-warnings-errors nil)
   
       (add-hook 'after-init-hook #'sys/after-startup)
       )
@@ -1392,7 +1388,6 @@ https://github.com/abo-abo/avy
     :defer t
     :mode "Dockerfile\\'")
 #+end_src
-
 
 * Build Emacs
 
