@@ -320,7 +320,7 @@ NAME and ARGS are in `use-package'."
 	 (defconst *sys/shell-executable* "/usr/local/bin/bash")
 	 )
 	(*sys/linux*
-	 (defconst *sys/font-default-height* 100)
+	 (defconst *sys/font-default-height* 105) 
 	 (defconst *sys/shell-executable* "/bin/bash")
 	 ))
   
@@ -565,8 +565,10 @@ http://company-mode.github.io/
     :config
     (setq company-tooltip-align-annotations t
 	  company-idle-delay 0.01
+	  company-dabbrev-ignore-case nil
+	  company-dabbrev-downcase nil
 	  company-minimum-prefix-length 2
-	  company-require-match 'never)
+	  company-require-match nil)
     )
 #+end_src
 
@@ -883,9 +885,16 @@ https://github.com/lassik/emacs-format-all-the-code
 #+begin_src emacs-lisp
   (use-feature python
     :defer t
-    :hook (python-mode . semantic-mode)
+    :config
+    (progn
+      (setq python-prettify-symbols-alist '((">=" . ?≥) ("<=" . ?≤) ("!=" . ?≠) ("in" . ?∈) ("lambda" . ?λ) ("not in" . ?∉) ("/" . ?÷) ("*" . ?×) ("->" . ?→) ("return" . ?↦)))
+      )
+    :hook ((python-mode . semantic-mode)
+	   (python-mode . prettify-symbols-mode))
     :init
-    (setq semantic-default-submodes nil))
+    (progn
+      (setq semantic-default-submodes nil)
+      ))
 #+end_src
 
 **** importmagic.el
