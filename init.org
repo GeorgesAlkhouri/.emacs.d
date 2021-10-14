@@ -1379,6 +1379,7 @@ https://github.com/abo-abo/avy
 		    tramp-file-name-regexp))
   
       (add-hook 'after-init-hook #'sys/after-startup)
+      (add-hook 'prog-mode-hook #'display-line-numbers-mode)
       )
     )
 #+end_src
