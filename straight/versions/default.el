@@ -45,6 +45,7 @@
  ("importmagic.el" . "701dfcca5f3ab42be0f26a8d381d7116c79be850")
  ("inheritenv" . "7e4c8b0d0a43b6f1c6c4d6dbd2f3bf5ce7f20067")
  ("let-alist" . "6708ec0b2e6dff80ff5b64698aa009d9070a2ed2")
+ ("ligature.el" . "d3426509cc5436a12484d91e48abd7b62429b7ef")
  ("lsp-mode" . "5d61e52669605e312a62ee01c7184c4805e9dfb4")
  ("lsp-pyright" . "72fd57643d2e8eccb9a55058ec0c89bdc04dba7d")
  ("lsp-ui" . "b625f3cb5e88559ab99bec58f7a14272edb296bc")

@@ -892,7 +892,7 @@ https://github.com/lassik/emacs-format-all-the-code
     :defer t
     :config
     (progn
-      (setq python-prettify-symbols-alist '((">=" . ?≥) ("<=" . ?≤) ("!=" . ?≠) ("in" . ?∈) ("lambda" . ?λ) ("not in" . ?∉) ("/" . ?÷) ("*" . ?×) ("->" . ?→) ("return" . ?↦)))
+      (setq python-prettify-symbols-alist '(("in" . ?∈) ("lambda" . ?λ) ("not in" . ?∉)))
       )
     :hook ((python-mode . semantic-mode)
 	   (python-mode . prettify-symbols-mode))
@@ -1392,6 +1392,43 @@ https://github.com/abo-abo/avy
     :mode "Dockerfile\\'")
 #+end_src
 
+** unicode
+
+Packages for better unicode support.
+
+#+begin_quote
+This package maps ordinary graphemes (characters) to fancy ligatures, if both your version of Emacs and the font supports it.
+
+https://github.com/mickeynp/ligature.el
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package ligature
+    :defer t
+    :hook (prog-mode . ligature-mode)
+    :config
+    (progn
+      (ligature-set-ligatures '(prog-mode) '("|||>" "<|||" "<==>" "<!--" "####" "~~>" "***" "||=" "||>"
+					     ":::" "::=" "=:=" "===" "==>" "=!=" "=>>" "=<<" "=/=" "!=="
+					     "!!." ">=>" ">>=" ">>>" ">>-" ">->" "->>" "-->" "---" "-<<"
+					     "<~~" "<~>" "<*>" "<||" "<|>" "<$>" "<==" "<=>" "<=<" "<->"
+					     "<--" "<-<" "<<=" "<<-" "<<<" "<+>" "</>" "###" "#_(" "..<"
+					     "..." "+++" "/==" "///" "_|_" "www" "&&" "^=" "~~" "~@" "~="
+					     "~>" "~-" "**" "*>" "*/" "||" "|}" "|]" "|=" "|>" "|-" "{|"
+					     "[|" "]#" "::" ":=" ":>" ":<" "$>" "==" "=>" "!=" "!!" ">:"
+					     ">=" ">>" ">-" "-~" "-|" "->" "--" "-<" "<~" "<*" "<|" "<:"
+					     "<$" "<=" "<>" "<-" "<<" "<+" "</" "#{" "#[" "#:" "#=" "#!"
+					     "##" "#(" "#?" "#_" "%%" ".=" ".-" ".." ".?" "+>" "++" "?:"
+					     "?=" "?." "??" ";;" "/*" "/=" "/>" "//" "__" "~~" "(*" "*)"
+					     "\\\\" "://")))
+    :straight
+    (ligature
+     :type git
+     :host github
+     :repo "mickeynp/ligature.el"
+     :files (:defaults))
+    )
+#+end_src
 * Build Emacs
 
 This Dockerfile builds and sets up Emacs and various dependencies on a Debian system during =make tangle=.
