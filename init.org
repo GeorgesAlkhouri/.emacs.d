@@ -308,13 +308,13 @@ NAME and ARGS are in `use-package'."
   (defconst sys/leader-key "SPC"
     "The default leader key.")
   
-  (defconst sys/leader-secondary-key "S-SPC"
+  (defconst sys/leader-secondary-key "C-SPC"
     "The secondary leader key.")
   
   (defconst sys/major-leader-key "SPC m"
     "The default major mode leader key.")
   
-  (defconst sys/major-leader-secondary-key "S-SPC m"
+  (defconst sys/major-leader-secondary-key "C-SPC m"
     "The secondary major mode leader key.")
   
   (defconst *sys/shell-history-file* "~/.bash_history")
