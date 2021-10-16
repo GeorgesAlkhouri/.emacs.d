@@ -6,6 +6,7 @@
  ("cfrs" . "2cb7f1cbf9292b0efe167ef372cfb5a7600564eb")
  ("company-box" . "156f65cfbf690ed84e0e84f90277d665d873ff24")
  ("company-mode" . "3eaac91b27d5041a97a0cbae32bb5b03e361d230")
+ ("csharp-mode" . "4a5114abe76b1e3859fcfe0f5b35b53f57343d47")
  ("dash.el" . "da167c51e9fd167a48d06c7c0ee8e3ac7abd9718")
  ("diminish.el" . "6ec6ebc391371418efc6c98d70b013f34af5a2ee")
  ("dockerfile-mode" . "83bc055f5bcafabd3a10655a193fe8fe8b886867")

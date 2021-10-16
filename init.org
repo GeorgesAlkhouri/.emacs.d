@@ -323,10 +323,12 @@ NAME and ARGS are in `use-package'."
   (cond (*sys/mac*
 	 (defconst *sys/font-default-height* 132)
 	 (defconst *sys/shell-executable* "/usr/local/bin/bash")
+	 (defconst *sys/omnisharp-server-path* "/usr/local/share/omnisharp-osx/run")
 	 )
 	(*sys/linux*
-	 (defconst *sys/font-default-height* 105) 
+	 (defconst *sys/font-default-height* 105)
 	 (defconst *sys/shell-executable* "/bin/bash")
+	 (defconst *sys/omnisharp-server-path* nil)
 	 ))
   
   (defun sys/activate-venv ()
@@ -809,7 +811,7 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
 	    lsp-auto-guess-root t)
       )
     :general
-    (global-major-leader :keymaps 'python-mode-map
+    (global-major-leader :keymaps '(python-mode-map csharp-mode-map)
       "l" '(:keymap lsp-command-map :wk "lsp"))
     )
   
@@ -978,6 +980,20 @@ https://github.com/ionrock/pytest-el
     :init
   ;;isort checks if in python-mode
     (add-hook 'before-save-hook 'py-isort-before-save))
+#+end_src
+*** CSharp
+
+Use lsp-mode and OmniSharp-Roslyn as a language server for C#.
+Download OmniSharp-Roslyn from https://github.com/OmniSharp/omnisharp-roslyn/releases and tell lsp-mode where to find the =lsp-csharp-server-path=.
+(Could be necessary to do ~chmod +x run~.)
+
+#+begin_src emacs-lisp
+  (use-package csharp-mode
+    :init
+    (setq  lsp-csharp-server-path *sys/omnisharp-server-path*)
+    :defer t
+    :hook (csharp-mode . lsp-deferred)
+    )
 #+end_src
 ** Themes
 
