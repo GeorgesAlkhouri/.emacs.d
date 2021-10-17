@@ -987,7 +987,7 @@ https://github.com/ionrock/pytest-el
 Use lsp-mode and OmniSharp-Roslyn as a language server for C#.
 Download OmniSharp-Roslyn from https://github.com/OmniSharp/omnisharp-roslyn/releases.
 Because OmniSharp comes with its own embedded Mono with no references to other assemblies, we also need Mono (https://www.mono-project.com) installed.
-Then tell the run script (~*sys/omnisharp-server-path*~) where to find the OmniSharp executable the path to Mono 
+Then tell the run script (~*sys/omnisharp-server-path*~) where to find the OmniSharp executable and the path to Mono 
 by setting the env variable ~LSP_MONO_BASE_DIR~ and ~LSP_OMNISHARP_EXE~ respectively.
 Also, tell lsp-mode where to find the OmniSharp executable by setting ~lsp-csharp-server-path~.
 
