@@ -26,4 +26,9 @@ dotfiles/*
 media/*
 !media/emacs.svg
 
+!util/
+util/*
+!util/omnisharp-run.sh
+
+
 
