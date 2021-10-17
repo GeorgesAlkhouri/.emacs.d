@@ -74,6 +74,7 @@
  ("straight.el" . "45eb6112b2ea1214bfbec35ea20df7a75147fc08")
  ("transient" . "be119ee43fe5f6af2469d366f6ab84204255038d")
  ("treemacs" . "dd8c9d364f4791fe4d091e78436edb4b31999222")
+ ("unity.el" . "e830e1a7bc6b0472660917ff897583be7018f759")
  ("use-package" . "a7422fb8ab1baee19adb2717b5b47b9c3812a84c")
  ("virtualenvwrapper.el" . "c7e84505db4142fd1beebf38ffe37c3f42444ca3")
  ("with-editor" . "eabf9c9bd2477e98251b84ed22c6b4d8d43603e6")

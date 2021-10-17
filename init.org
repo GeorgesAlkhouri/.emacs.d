@@ -323,12 +323,13 @@ NAME and ARGS are in `use-package'."
   (cond (*sys/mac*
 	 (defconst *sys/font-default-height* 132)
 	 (defconst *sys/shell-executable* "/usr/local/bin/bash")
-	 (defconst *sys/omnisharp-server-path* "/usr/local/share/omnisharp-osx/run")
+	 (defconst *sys/omnisharp-server-path* (expand-file-name "util/omnisharp-run.sh" user-emacs-directory))
+	 (setenv "LSP_MONO_BASE_DIR" "/usr/local/cellar/mono/6.12.0.122")
+	 (setenv "LSP_OMNISHARP_EXE" "/usr/local/share/omnisharp-osx/omnisharp/omnisharp.exe")
 	 )
 	(*sys/linux*
 	 (defconst *sys/font-default-height* 105)
 	 (defconst *sys/shell-executable* "/bin/bash")
-	 (defconst *sys/omnisharp-server-path* nil)
 	 ))
   
   (defun sys/activate-venv ()
@@ -984,17 +985,59 @@ https://github.com/ionrock/pytest-el
 *** CSharp
 
 Use lsp-mode and OmniSharp-Roslyn as a language server for C#.
-Download OmniSharp-Roslyn from https://github.com/OmniSharp/omnisharp-roslyn/releases and tell lsp-mode where to find the =lsp-csharp-server-path=.
+Download OmniSharp-Roslyn from https://github.com/OmniSharp/omnisharp-roslyn/releases.
+Because OmniSharp comes with its own embedded Mono with no references to other assemblies, we also need Mono (https://www.mono-project.com) installed.
+Then tell the run script (~*sys/omnisharp-server-path*~) where to find the OmniSharp executable the path to Mono 
+by setting the env variable ~LSP_MONO_BASE_DIR~ and ~LSP_OMNISHARP_EXE~ respectively.
+Also, tell lsp-mode where to find the OmniSharp executable by setting ~lsp-csharp-server-path~.
+
 (Could be necessary to do ~chmod +x run~.)
 
 #+begin_src emacs-lisp
   (use-package csharp-mode
+    :if (bound-and-true-p *sys/omnisharp-server-path*)
     :init
-    (setq  lsp-csharp-server-path *sys/omnisharp-server-path*)
+    (progn
+      (setq  lsp-csharp-server-path *sys/omnisharp-server-path*))
     :defer t
     :hook (csharp-mode . lsp-deferred)
+    :config
+    (progn
+      ;; todo ignore unity folder then remove line
+      (setq lsp-enable-file-watchers nil)
+      ;; (make-variable-buffer-local 'lsp-file-watch-ignored-directories)
+      ;; (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\Library\\'")
+      (setq-local lsp-auto-guess-root t)
+      )
     )
 #+end_src
+
+*** unity.el
+
+#+begin_quote
+This package provides some Emacs integration with the Unity game engine.
+Most notably, it provides the ability to open source files from Unity in Emacs or Emacsclient while still generating the solution and project files for use with lsp-mode.
+
+https://github.com/elizagamedev/unity.el
+#+end_quote
+
+Generate a code binary with ~(unity-build-code-shim)~ and select it in Unity's preferences /External Script Editor/.
+To open C# files with Emacs also add ~emacs +$(Line):$(Column) $(File)~ to  /External Script Editor Args/.
+
+#+begin_src emacs-lisp
+  (use-package unity
+    :defer t
+    :init
+    (progn
+      (add-hook 'csharp-mode-hook #'unity-setup))
+    :straight
+    (unity
+     :type git
+     :host github
+     :repo "elizagamedev/unity.el"
+     :files ("*.el" "*.c")))
+#+end_src
+
 ** Themes
 
 https://github.com/hlissner/emacs-doom-themes
