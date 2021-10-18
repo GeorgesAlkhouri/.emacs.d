@@ -12,23 +12,12 @@
 !emacs-batch-tangle.sh
 !Makefile
 
+!dotfiles/
+!media/
+!util/
+
 !straight/
 straight/*
 !straight/versions/
 straight/versions/*
 !straight/versions/default.el
-
-!dotfiles/
-dotfiles/*
-!dotfiles/.bashrc
-
-!media/
-media/*
-!media/emacs.svg
-
-!util/
-util/*
-!util/omnisharp-run.sh
-
-
-
