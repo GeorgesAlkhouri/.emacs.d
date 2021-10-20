@@ -342,13 +342,19 @@ NAME and ARGS are in `use-package'."
 	    (file-name-nondirectory
 	     (directory-file-name
 	      (file-name-directory (projectile-project-root))))))
-	(if (member project-dir (venv-get-candidates))
-	    (progn
-	      (message "Switch venv: %s" project-dir)
-	      (venv-workon project-dir))
-	  (progn
-	    (message "%s not found. venv deactivated" project-dir)
-	    (venv-deactivate))))))
+  
+	;; require is idempotent so could be evaluated multiple times
+	(require 'virtualenvwrapper)
+	(cond  ((equal project-dir venv-current-name))
+	       ((member project-dir (venv-get-candidates))
+		(progn
+		  (message "Switch venv: %s" project-dir)
+		  (venv-workon project-dir))
+		)
+	       (t
+		(progn
+		  (message "%s not found. venv deactivated" project-dir)
+		  (venv-deactivate)))))))
 #+end_src
 
 * Packages
@@ -1283,9 +1289,13 @@ https://github.com/nex3/perspective-el
       "pP" 'persp-switch)
     :config
     (progn
-      (setq persp-state-default-file  (expand-file-name "persp-save-file.el" user-emacs-directory)
+      (setq persp-state-default-file (expand-file-name "persp-save-file.el" user-emacs-directory)
 	    persp-modestring-short t)
+  
+  
+      (add-hook 'persp-switch-hook 'sys/activate-venv)
       (add-hook 'kill-emacs-hook #'persp-state-save)
+  
       (unless (equal persp-mode t)
 	(persp-mode)))
     )
