@@ -1499,6 +1499,30 @@ https://github.com/mickeynp/ligature.el
      :files (:defaults))
     )
 #+end_src
+** yasnippet
+#+begin_quote
+YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
+
+https://github.com/joaotavora/yasnippet
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :defer t
+    :init
+    (progn
+      (defun enable-yassnippet-minor-mode ()
+	(require 'yasnippet)
+	(yas-reload-all)
+	(yas-minor-mode))
+      (add-hook 'python-mode-hook 'enable-yassnippet-minor-mode)
+      (add-hook 'emacs-lisp-mode-hook 'enable-yassnippet-minor-mode)
+      )
+    :config
+    (progn
+      (setq yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory))))
+    )
+#+end_src
 * Build Emacs
 
 This Dockerfile builds and sets up Emacs and various dependencies on a Debian system during =make tangle=.
