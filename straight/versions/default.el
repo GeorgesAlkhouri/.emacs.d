@@ -56,6 +56,7 @@
  ("markdown-mode" . "862ae8addd29bf6affca1a35fd0176cb0c1392da")
  ("melpa" . "6860800b52e2c06ae339f5f65ace6a5e05ddcbbc")
  ("org" . "f33b92dea77f6679b4a5978218989dc7d6a0ed7d")
+ ("org-bullets" . "767f55feb58b840a5a04eabfc3fbbf0d257c4792")
  ("org-contrib" . "fc81309cf6756607a836f93049a9393c2967c4e0")
  ("perspective-el" . "acad4fb2cfe27feb0ecbe07e51c364bfa5ea4f47")
  ("pfuture" . "d7926de3ba0105a36cfd00811fd6278aea903eef")
@@ -78,5 +79,6 @@
  ("use-package" . "a7422fb8ab1baee19adb2717b5b47b9c3812a84c")
  ("virtualenvwrapper.el" . "c7e84505db4142fd1beebf38ffe37c3f42444ca3")
  ("with-editor" . "eabf9c9bd2477e98251b84ed22c6b4d8d43603e6")
- ("yaml-mode" . "63b637f846411806ae47e63adc06fe9427be1131"))
+ ("yaml-mode" . "63b637f846411806ae47e63adc06fe9427be1131")
+ ("yasnippet" . "5cbdbf0d2015540c59ed8ee0fcf4788effdf75b6"))
 :beta

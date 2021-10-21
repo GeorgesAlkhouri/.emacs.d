@@ -533,7 +533,6 @@ https://magit.vc/
     (transient-bind-q-to-quit))
 #+end_src
 
-
 *** magit-gitflow
 Plugin in for git-flow in magit.
 
@@ -600,7 +599,6 @@ https://github.com/sebastiencs/company-box
     :after company
     :hook (company-mode . company-box-mode))
 #+end_src
-
 
 ** helm
 #+begin_quote
@@ -780,7 +778,6 @@ Following packages are used majorly for programming
     (setq highlight-indent-guides-auto-character-face-perc 7)
     )
 #+end_src
-
 
 *** evil-nerd-commenter
 #+begin_quote
@@ -1085,9 +1082,10 @@ in doom-modeline.
   (use-package doom-modeline
     :defer t
     :config
-    (setq doom-modeline-icon (display-graphic-p))
-    (setq doom-modeline-height 30)
-    (setq doom-modeline-buffer-file-name-style 'truncate-all)
+    (setq doom-modeline-icon (display-graphic-p)
+	  doom-modeline-height 30
+	  doom-modeline-buffer-file-name-style 'truncate-all
+	  doom-modeline-buffer-encoding nil)
     :hook
     (after-init . doom-modeline-mode))
 #+end_src
@@ -1372,7 +1370,6 @@ Further todos would be to make it possible to switch projects correctly (e.g. ac
     :defer t)
 #+end_src
 
-
 ** avy
 
 #+begin_quote
@@ -1390,7 +1387,6 @@ https://github.com/abo-abo/avy
       "jo" 'avy-pop-mark)
     )
 #+end_src
-
 
 ** restart-emacs
 
@@ -1515,6 +1511,13 @@ https://github.com/joaotavora/yasnippet
       (setq yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
       (yas-reload-all))
     )
+#+end_src
+** Org
+#+begin_src emacs-lisp
+  (use-package org-bullets
+    :defer t
+    :init
+    (add-hook 'org-mode-hook #'(lambda () (org-bullets-mode t))))
 #+end_src
 * Build Emacs
 
