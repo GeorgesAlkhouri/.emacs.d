@@ -1509,18 +1509,11 @@ https://github.com/joaotavora/yasnippet
 #+begin_src emacs-lisp
   (use-package yasnippet
     :defer t
-    :init
-    (progn
-      (defun enable-yassnippet-minor-mode ()
-	(require 'yasnippet)
-	(yas-reload-all)
-	(yas-minor-mode))
-      (add-hook 'python-mode-hook 'enable-yassnippet-minor-mode)
-      (add-hook 'emacs-lisp-mode-hook 'enable-yassnippet-minor-mode)
-      )
+    :hook ((prog-mode org-mode) . yas-minor-mode)
     :config
     (progn
-      (setq yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory))))
+      (setq yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
+      (yas-reload-all))
     )
 #+end_src
 * Build Emacs
