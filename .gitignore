@@ -15,6 +15,7 @@
 !dotfiles/
 !media/
 !util/
+!snippets
 
 !straight/
 straight/*
