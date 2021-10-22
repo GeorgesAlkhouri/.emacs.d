@@ -384,13 +384,16 @@ This is a collection of Evil bindings for the parts of Emacs that Evil does not 
 https://github.com/emacs-evil/evil-collection
 #+end_quote
 #+begin_src emacs-lisp
-   (use-package evil-collection
-     :after (evil)
-     :config
-  ;;Whether to setup Evil bindings in the minibuffer.
-  (setq evil-collection-setup-minibuffer t)
-  (evil-collection-init)
-   )
+  (use-package evil-collection
+    :after evil
+    :init
+    (progn
+      ;;Whether to setup Evil bindings in the minibuffer.
+      (setq evil-collection-setup-minibuffer t))
+    :config
+    (progn
+      (evil-collection-init)
+      ))
 #+end_src
 
 ** general (key-bindings)
