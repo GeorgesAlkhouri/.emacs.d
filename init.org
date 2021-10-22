@@ -1314,7 +1314,8 @@ https://github.com/nex3/perspective-el
       (setq dashboard-items '((recents  . 5)
 			      (projects . 5))
 	    dashboard-set-heading-icons t
-	    dashboard-set-file-icons t)
+	    dashboard-set-file-icons t
+	    dashboard-center-content t)
       (dashboard-setup-startup-hook)))
 #+end_src
 
