@@ -568,12 +568,24 @@ http://company-mode.github.io/
       ;;for x11 https://emacs.stackexchange.com/a/53469
       "S-<iso-lefttab>" 'company-select-previous)
     :config
-    (setq company-tooltip-align-annotations t
-	  company-idle-delay 0.01
-	  company-dabbrev-ignore-case nil
-	  company-dabbrev-downcase nil
-	  company-minimum-prefix-length 2
-	  company-require-match nil)
+    (progn
+      (defun add-yasnippet-backend (backend)
+	"Add company-yasnippet backend to given company backend"
+	(if (and (listp backend) (member 'company-yasnippet backend))
+	    backend
+	  (append (if (consp backend) backend (list backend))
+		  '(:with company-yasnippet))))
+  
+      ;; add yasnippet-backend to all company backends
+      (setq company-backends (mapcar #'add-yasnippet-backend company-backends))
+  
+      (setq company-tooltip-align-annotations t
+	    company-idle-delay 0.01
+	    company-dabbrev-ignore-case nil
+	    company-dabbrev-downcase nil
+	    company-minimum-prefix-length 2
+	    company-require-match nil)
+      )
     )
 #+end_src
 
