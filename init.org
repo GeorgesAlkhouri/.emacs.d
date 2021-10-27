@@ -2,8 +2,6 @@
 #+STARTUP: content
 #+property: header-args :tangle init.el
 
-Idea and basics from https://github.com/progfolio/.emacs.d
-
 * An Explanation
 This is a literate configuration for =Emacs=.
 Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d/early-init.el=.
@@ -33,6 +31,9 @@ Dependencies you need to fully run all configured features:
 :PROPERTIES:
 :header-args: :tangle-mode (identity #o444) :results silent :tangle ~/.emacs.d/early-init.el
 :END:
+
+Idea and basics for tuning startup time from https://github.com/progfolio/.emacs.d
+
 Emacs 27.0 introduced an early-init file. It allows customization before package and UI initialization.
 #+begin_src emacs-lisp
   ;;; early-init.el --- Emacs pre package.el & GUI configuration -*- lexical-binding: t; no-byte-compile: t -*-
