@@ -21,6 +21,7 @@
  ("emacs-format-all-the-code" . "dfaf3e4a80d064f2a138b0a4b6a7e85263168fbf")
  ("emacs-language-id" . "906fac7d91994d02120cfb5f547c1d06cea1ad69")
  ("emacs-libvterm" . "2681120b770573044832ba8c22ccbac192e1a294")
+ ("emacs-request" . "68003b3f859724de621d0e5a8b0aae51ce708d1e")
  ("emacs-solaire-mode" . "030964f7c62696c8cfb29125df6e7649d2bf9aeb")
  ("emacs-which-key" . "4790a14683a2f3e4f72ade197c78e4c0af1cdd4b")
  ("emacs-winum" . "c5455e866e8a5f7eab6a7263e2057aff5f1118b9")
