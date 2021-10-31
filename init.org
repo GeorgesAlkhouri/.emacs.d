@@ -2,8 +2,6 @@
 #+STARTUP: content
 #+property: header-args :tangle init.el
 
-Idea and basics from https://github.com/progfolio/.emacs.d
-
 * An Explanation
 This is a literate configuration for =Emacs=.
 Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d/early-init.el=.
@@ -33,6 +31,9 @@ Dependencies you need to fully run all configured features:
 :PROPERTIES:
 :header-args: :tangle-mode (identity #o444) :results silent :tangle ~/.emacs.d/early-init.el
 :END:
+
+Idea and basics for tuning startup time from https://github.com/progfolio/.emacs.d
+
 Emacs 27.0 introduced an early-init file. It allows customization before package and UI initialization.
 #+begin_src emacs-lisp
   ;;; early-init.el --- Emacs pre package.el & GUI configuration -*- lexical-binding: t; no-byte-compile: t -*-
@@ -308,13 +309,13 @@ NAME and ARGS are in `use-package'."
   (defconst sys/leader-key "SPC"
     "The default leader key.")
   
-  (defconst sys/leader-secondary-key "S-SPC"
+  (defconst sys/leader-secondary-key "C-SPC"
     "The secondary leader key.")
   
   (defconst sys/major-leader-key "SPC m"
     "The default major mode leader key.")
   
-  (defconst sys/major-leader-secondary-key "S-SPC m"
+  (defconst sys/major-leader-secondary-key "C-SPC m"
     "The secondary major mode leader key.")
   
   (defconst *sys/shell-history-file* "~/.bash_history")
@@ -323,9 +324,12 @@ NAME and ARGS are in `use-package'."
   (cond (*sys/mac*
 	 (defconst *sys/font-default-height* 132)
 	 (defconst *sys/shell-executable* "/usr/local/bin/bash")
+	 (defconst *sys/omnisharp-server-path* (expand-file-name "util/omnisharp-run.sh" user-emacs-directory))
+	 (setenv "LSP_MONO_BASE_DIR" "/usr/local/cellar/mono/6.12.0.122")
+	 (setenv "LSP_OMNISHARP_EXE" "/usr/local/share/omnisharp-osx/omnisharp/omnisharp.exe")
 	 )
 	(*sys/linux*
-	 (defconst *sys/font-default-height* 105) 
+	 (defconst *sys/font-default-height* 105)
 	 (defconst *sys/shell-executable* "/bin/bash")
 	 ))
   
@@ -339,13 +343,19 @@ NAME and ARGS are in `use-package'."
 	    (file-name-nondirectory
 	     (directory-file-name
 	      (file-name-directory (projectile-project-root))))))
-	(if (member project-dir (venv-get-candidates))
-	    (progn
-	      (message "Switch venv: %s" project-dir)
-	      (venv-workon project-dir))
-	  (progn
-	    (message "%s not found. venv deactivated" project-dir)
-	    (venv-deactivate))))))
+  
+	;; require is idempotent so could be evaluated multiple times
+	(require 'virtualenvwrapper)
+	(cond  ((equal project-dir venv-current-name))
+	       ((member project-dir (venv-get-candidates))
+		(progn
+		  (message "Switch venv: %s" project-dir)
+		  (venv-workon project-dir))
+		)
+	       (t
+		(progn
+		  (message "%s not found. venv deactivated" project-dir)
+		  (venv-deactivate)))))))
 #+end_src
 
 * Packages
@@ -375,13 +385,16 @@ This is a collection of Evil bindings for the parts of Emacs that Evil does not 
 https://github.com/emacs-evil/evil-collection
 #+end_quote
 #+begin_src emacs-lisp
-   (use-package evil-collection
-     :after (evil)
-     :config
-  ;;Whether to setup Evil bindings in the minibuffer.
-  (setq evil-collection-setup-minibuffer t)
-  (evil-collection-init)
-   )
+  (use-package evil-collection
+    :after evil
+    :init
+    (progn
+      ;;Whether to setup Evil bindings in the minibuffer.
+      (setq evil-collection-setup-minibuffer t))
+    :config
+    (progn
+      (evil-collection-init)
+      ))
 #+end_src
 
 ** general (key-bindings)
@@ -524,7 +537,6 @@ https://magit.vc/
     (transient-bind-q-to-quit))
 #+end_src
 
-
 *** magit-gitflow
 Plugin in for git-flow in magit.
 
@@ -568,12 +580,24 @@ http://company-mode.github.io/
       ;;for x11 https://emacs.stackexchange.com/a/53469
       "S-<iso-lefttab>" 'company-select-previous)
     :config
-    (setq company-tooltip-align-annotations t
-	  company-idle-delay 0.01
-	  company-dabbrev-ignore-case nil
-	  company-dabbrev-downcase nil
-	  company-minimum-prefix-length 2
-	  company-require-match nil)
+    (progn
+      (defun add-yasnippet-backend (backend)
+	"Add company-yasnippet backend to given company backend"
+	(if (and (listp backend) (member 'company-yasnippet backend))
+	    backend
+	  (append (if (consp backend) backend (list backend))
+		  '(:with company-yasnippet))))
+  
+      ;; add yasnippet-backend to all company backends
+      (setq company-backends (mapcar #'add-yasnippet-backend company-backends))
+  
+      (setq company-tooltip-align-annotations t
+	    company-idle-delay 0.01
+	    company-dabbrev-ignore-case nil
+	    company-dabbrev-downcase nil
+	    company-minimum-prefix-length 2
+	    company-require-match nil)
+      )
     )
 #+end_src
 
@@ -591,7 +615,6 @@ https://github.com/sebastiencs/company-box
     :after company
     :hook (company-mode . company-box-mode))
 #+end_src
-
 
 ** helm
 #+begin_quote
@@ -772,7 +795,6 @@ Following packages are used majorly for programming
     )
 #+end_src
 
-
 *** evil-nerd-commenter
 #+begin_quote
 A Nerd Commenter emulation, help you comment code efficiently.
@@ -809,7 +831,7 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
 	    lsp-auto-guess-root t)
       )
     :general
-    (global-major-leader :keymaps 'python-mode-map
+    (global-major-leader :keymaps '(python-mode-map csharp-mode-map)
       "l" '(:keymap lsp-command-map :wk "lsp"))
     )
   
@@ -979,6 +1001,62 @@ https://github.com/ionrock/pytest-el
   ;;isort checks if in python-mode
     (add-hook 'before-save-hook 'py-isort-before-save))
 #+end_src
+*** CSharp
+
+Use lsp-mode and OmniSharp-Roslyn as a language server for C#.
+Download OmniSharp-Roslyn from https://github.com/OmniSharp/omnisharp-roslyn/releases.
+Because OmniSharp comes with its own embedded Mono with no references to other assemblies, we also need Mono (https://www.mono-project.com) installed.
+Then tell the run script (~*sys/omnisharp-server-path*~) where to find the OmniSharp executable and the path to Mono 
+by setting the env variable ~LSP_MONO_BASE_DIR~ and ~LSP_OMNISHARP_EXE~ respectively.
+Also, tell lsp-mode where to find the OmniSharp executable by setting ~lsp-csharp-server-path~.
+
+(Could be necessary to do ~chmod +x run~.)
+
+#+begin_src emacs-lisp
+  (use-package csharp-mode
+    :if (bound-and-true-p *sys/omnisharp-server-path*)
+    :init
+    (progn
+      (setq  lsp-csharp-server-path *sys/omnisharp-server-path*))
+    :defer t
+    :hook (csharp-mode . lsp-deferred)
+    :config
+    (progn
+      ;; todo ignore unity folder then remove line
+      (setq lsp-enable-file-watchers nil)
+      ;; (make-variable-buffer-local 'lsp-file-watch-ignored-directories)
+      ;; (add-to-list 'lsp-file-watch-ignored-directories "[/\\\\]\\Library\\'")
+      (setq-local lsp-auto-guess-root t)
+      )
+    )
+#+end_src
+
+*** unity.el
+
+#+begin_quote
+This package provides some Emacs integration with the Unity game engine.
+Most notably, it provides the ability to open source files from Unity in Emacs or Emacsclient while still generating the solution and project files for use with lsp-mode.
+
+https://github.com/elizagamedev/unity.el
+#+end_quote
+
+Generate a code binary with ~(unity-build-code-shim)~ and select it in Unity's preferences /External Script Editor/.
+To open C# files with Emacs also add ~emacs +$(Line):$(Column) $(File)~ to  /External Script Editor Args/.
+
+#+begin_src emacs-lisp
+  (use-package unity
+    :defer t
+    :init
+    (progn
+      (add-hook 'csharp-mode-hook #'unity-setup))
+    :straight
+    (unity
+     :type git
+     :host github
+     :repo "elizagamedev/unity.el"
+     :files ("*.el" "*.c")))
+#+end_src
+
 ** Themes
 
 https://github.com/hlissner/emacs-doom-themes
@@ -1020,9 +1098,10 @@ in doom-modeline.
   (use-package doom-modeline
     :defer t
     :config
-    (setq doom-modeline-icon (display-graphic-p))
-    (setq doom-modeline-height 30)
-    (setq doom-modeline-buffer-file-name-style 'truncate-all)
+    (setq doom-modeline-icon (display-graphic-p)
+	  doom-modeline-height 30
+	  doom-modeline-buffer-file-name-style 'truncate-all
+	  doom-modeline-buffer-encoding nil)
     :hook
     (after-init . doom-modeline-mode))
 #+end_src
@@ -1224,8 +1303,13 @@ https://github.com/nex3/perspective-el
       "pP" 'persp-switch)
     :config
     (progn
-      (setq persp-state-default-file  (expand-file-name "persp-save-file.el" user-emacs-directory))
+      (setq persp-state-default-file (expand-file-name "persp-save-file.el" user-emacs-directory)
+	    persp-modestring-short t)
+  
+  
+      (add-hook 'persp-switch-hook 'sys/activate-venv)
       (add-hook 'kill-emacs-hook #'persp-state-save)
+  
       (unless (equal persp-mode t)
 	(persp-mode)))
     )
@@ -1234,6 +1318,7 @@ https://github.com/nex3/perspective-el
 ** dashboard
 
 #+begin_src emacs-lisp
+  
   (use-package dashboard
     :demand t
     :init
@@ -1241,12 +1326,43 @@ https://github.com/nex3/perspective-el
       (add-hook 'dashboard-mode-hook #'(lambda () (setq-local global-hl-line-mode nil))))
     :config
     (progn
-  (setq dashboard-startup-banner
+  
+      (defun dashboard-insert-hackernews (list-size)
+	"Request LIST-SIZE number of top-stories from hackernews."
+	;; TODO implement time interval check (e.g. update every 15 min)
+  
+	;; only load one time
+	(when (equal dashboard-hackernews-init-state dashboard-hackernews-state)
+	  (hackernews-get-topstories
+	   list-size
+	   (lambda (stories)
+	     (let* ((formatted-stories (dashboard-hackernews-add-formatted-stories-alist stories)))
+	       (setq dashboard-hackernews-state formatted-stories)
+	       ;; update dashboard
+	       (let ((dashboard-force-refresh t)) (dashboard-insert-startupify-lists))
+	       ))))
+	;; TODO add short-cut
+	(dashboard-insert-section
+	 "Hackernews:"
+	 dashboard-hackernews-state
+	 list-size
+	 nil
+	 (lambda (&rest ignore)
+	   (browse-url (cdr (assoc 'url el))))
+	 (format "%s" (cdr (assoc 'formatted-string el))))
+	)
+  
+      (add-to-list 'dashboard-item-generators '(hackernews . dashboard-insert-hackernews))
+      (add-to-list 'dashboard-items '(hackernews) t)
+  
+      (setq dashboard-startup-banner
 	    (expand-file-name "emacs.svg" (expand-file-name "media" user-emacs-directory)))
       (setq dashboard-items '((recents  . 5)
-			      (projects . 5))
+			      (projects . 5)
+			      (hackernews . 20))
 	    dashboard-set-heading-icons t
-	    dashboard-set-file-icons t)
+	    dashboard-set-file-icons t
+	    dashboard-center-content t)
       (dashboard-setup-startup-hook)))
 #+end_src
 
@@ -1302,7 +1418,6 @@ Further todos would be to make it possible to switch projects correctly (e.g. ac
     :defer t)
 #+end_src
 
-
 ** avy
 
 #+begin_quote
@@ -1320,7 +1435,6 @@ https://github.com/abo-abo/avy
       "jo" 'avy-pop-mark)
     )
 #+end_src
-
 
 ** restart-emacs
 
@@ -1429,6 +1543,182 @@ https://github.com/mickeynp/ligature.el
      :files (:defaults))
     )
 #+end_src
+** yasnippet
+#+begin_quote
+YASnippet is a template system for Emacs. It allows you to type an abbreviation and automatically expand it into function templates.
+
+https://github.com/joaotavora/yasnippet
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package yasnippet
+    :defer t
+    :hook ((prog-mode org-mode) . yas-minor-mode)
+    :config
+    (progn
+      (setq yas-snippet-dirs (list (expand-file-name "snippets" user-emacs-directory)))
+      (yas-reload-all))
+    )
+#+end_src
+** Org
+#+begin_src emacs-lisp
+  (use-package org
+    :defer t
+    :init
+    (progn
+      (add-hook 'org-mode-hook 'variable-pitch-mode))
+    :config
+    (progn
+  
+      (let* ((variable-tuple
+	      (cond ((x-list-fonts "ETBembo")         '(:font "ETBembo"))
+		    ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
+		    ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
+		    ((x-list-fonts "Verdana")         '(:font "Verdana"))
+		    ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+		    (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
+	     ;; (base-font-color     (face-foreground 'default nil 'default))
+	     (headline           `(:inherit default :weight bold)))
+  
+	(custom-theme-set-faces
+	 'user
+	 `(org-level-8 ((t (,@headline ,@variable-tuple))))
+	 `(org-level-7 ((t (,@headline ,@variable-tuple))))
+	 `(org-level-6 ((t (,@headline ,@variable-tuple))))
+	 `(org-level-5 ((t (,@headline ,@variable-tuple))))
+	 `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+	 `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
+	 `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
+	 `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
+	 `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
+  
+      (custom-theme-set-faces
+       'user
+       '(org-block ((t (:inherit fixed-pitch))))
+       '(org-code ((t (:inherit fixed-pitch))))
+       '(org-document-info-keyword ((t (:inherit (shadow fixed-pitch)))))
+       '(org-indent ((t (:inherit (org-hide fixed-pitch)))))
+       '(org-meta-line ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+       '(org-property-value ((t (:inherit fixed-pitch))) t)
+       '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
+       '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
+       '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
+      ))
+  
+  ;; https://emacs.stackexchange.com/questions/28940/how-to-overwrite-properly-a-face-for-a-particular-theme
+  (use-package org-bullets
+    :defer t
+    :init
+    (add-hook 'org-mode-hook #'(lambda () (org-bullets-mode t))))
+#+end_src
+** request
+#+begin_quote
+Request.el -- Easy HTTP request for Emacs Lisp
+
+https://github.com/tkf/emacs-request
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package request
+    :commands request
+    :defer t)
+#+end_src
+** dash
+#+begin_quote
+A modern list library for Emacs
+
+https://github.com/magnars/dash.el
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package dash
+    :defer t)
+#+end_src
+* Utility
+** Hackernews Request
+
+Download top stories from  [[https://news.ycombinator.com][Hacker News]].
+
+#+begin_src emacs-lisp
+  
+  
+  (defconst hackernews-api-base "https://hacker-news.firebaseio.com")
+  (defconst hackernews-api-version "v0")
+  
+  (defun hackernews-get-topstory-ids (list-size callback)
+    "Asynchronously request hackernews topstories and clip them to LIST-SIZE if necessary and call CALLBACK when request is done."
+    (let ((result (request (format "%s/%s/topstories.json" hackernews-api-base hackernews-api-version)
+			   :type "GET"
+			   :parser 'json-read
+			   :error
+			   (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
+					  (message "Got error: %S" error-thrown)))
+			   :success
+			   (cl-function
+			    (lambda (&key data &allow-other-keys)
+			      ;; append converts vector into list
+			      (funcall callback (-slice (append data nil) 0 list-size))
+			      )))))))
+  
+  ;; TODO speed up function by executing all requests simultaneously
+  (defun hackernews-get-items (list-of-ids completed-items callback)
+    "Asynchronously request LIST-OF-IDS from hackernews.  After requests are completed call CALLBACK with COMPLETED-ITEMS."
+    (if (not list-of-ids)
+	(funcall callback completed-items)
+      (let* ((request-string (format "%s/%s/item/%s.json" hackernews-api-base hackernews-api-version (pop list-of-ids)))
+	     (result (request request-string
+			      :type "GET"
+			      :parser 'json-read
+			      :error
+			      (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
+					     (message "Got error: %S" error-thrown)))
+			      :success  (cl-function
+					 (lambda (&key data &allow-other-keys)
+					   (hackernews-get-items list-of-ids (append completed-items (list data)) callback))))))
+	)
+      )
+    )
+  
+  (defun hackernews-get-topstories (list-size callback)
+    "Asynchronously request LIST-SIZE topstories from Hackernews and call CALLBACK with stories when finished."
+    (hackernews-get-topstory-ids list-size
+				 (lambda (list-of-ids)
+				   (hackernews-get-items list-of-ids ()
+							 (lambda (items)
+							   (funcall callback items))))))
+#+end_src
+
+** Hackernews Dashboard
+
+Utility and formatting functions to display downloaded stories from Hacker News.
+
+#+begin_src emacs-lisp
+  
+  (defconst dashboard-hackernews-init-state (list '((formatted-string . "Loading...")))
+    "Initial state of dashboard hackernews items.")
+  
+  (defvar dashboard-hackernews-state dashboard-hackernews-init-state
+    "State of dashboard hackernews items.")
+  
+  (defun dashboard-hackernews-add-formatted-story (max-digit-length item)
+    "Format hackernews story ITEM to the string '[score] title' by also respecting MAX-DIGIT-LENGTH to align all score strings."
+    ;; format-string: [%MAX_DIGIT-LENGTHd] %s
+    (let* ((format-string (format "[%%%dd] %%s" max-digit-length))
+	   (formatted-string (format format-string (cdr (assoc 'score item)) (decode-coding-string (cdr (assoc 'title item)) 'utf-8))))
+      ;; Backquoting https://www.gnu.org/software/emacs/manual/html_node/elisp/Backquote.html
+      (push `(formatted-string . ,formatted-string) item)))
+  
+  (defun dashboard-hackernews-add-formatted-stories-alist (stories)
+    "Add formatted-string key and value from story title to all STORIES."
+    (let* ((max-digit-length (dashboard-hackernews-max-digit-length stories))
+	   (formatted-stories (mapcar (-partial 'dashboard-hackernews-add-formatted-story max-digit-length) stories)))
+      formatted-stories))
+  
+  (defun dashboard-hackernews-max-digit-length (stories)
+    "Return the max digit length of all scores in STORIES."
+    (-max (-flatten (mapcar (lambda (story) (length (number-to-string (cdr (assoc 'score story))))) stories))))
+#+end_src
+
 * Build Emacs
 
 This Dockerfile builds and sets up Emacs and various dependencies on a Debian system during =make tangle=.
