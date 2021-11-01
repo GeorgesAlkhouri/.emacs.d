@@ -1336,11 +1336,12 @@ https://github.com/nex3/perspective-el
 	  (hackernews-get-topstories
 	   list-size
 	   (lambda (stories)
-	     (let* ((formatted-stories (dashboard-hackernews-add-formatted-stories-alist stories)))
-	       (setq dashboard-hackernews-state formatted-stories)
-	       ;; update dashboard
-	       (let ((dashboard-force-refresh t)) (dashboard-insert-startupify-lists))
-	       ))))
+	     (when stories
+	       (let* ((formatted-stories (dashboard-hackernews-add-formatted-stories-alist stories)))
+		 (setq dashboard-hackernews-state formatted-stories)
+		 ;; update dashboard
+		 (let ((dashboard-force-refresh t)) (dashboard-insert-startupify-lists))
+		 )))))
 	;; TODO add short-cut
 	(dashboard-insert-section
 	 "Hackernews:"
@@ -1359,7 +1360,7 @@ https://github.com/nex3/perspective-el
 	    (expand-file-name "emacs.svg" (expand-file-name "media" user-emacs-directory)))
       (setq dashboard-items '((recents  . 5)
 			      (projects . 5)
-			      (hackernews . 20))
+			      (hackernews . 30))
 	    dashboard-set-heading-icons t
 	    dashboard-set-file-icons t
 	    dashboard-center-content t)
@@ -1638,7 +1639,7 @@ https://github.com/magnars/dash.el
 * Utility
 ** Hackernews Request
 
-Download top stories from  [[https://news.ycombinator.com][Hacker News]].
+Asynchronously download top stories from  [[https://news.ycombinator.com][Hacker News]].
 
 #+begin_src emacs-lisp
   
@@ -1649,42 +1650,51 @@ Download top stories from  [[https://news.ycombinator.com][Hacker News]].
   (defun hackernews-get-topstory-ids (list-size callback)
     "Asynchronously request hackernews topstories and clip them to LIST-SIZE if necessary and call CALLBACK when request is done."
     (let ((result (request (format "%s/%s/topstories.json" hackernews-api-base hackernews-api-version)
-			   :type "GET"
-			   :parser 'json-read
-			   :error
-			   (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
-					  (message "Got error: %S" error-thrown)))
-			   :success
-			   (cl-function
-			    (lambda (&key data &allow-other-keys)
-			      ;; append converts vector into list
-			      (funcall callback (-slice (append data nil) 0 list-size))
-			      )))))))
+		    :type "GET"
+		    :parser 'json-read
+		    :error
+		    (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
+				   (message "hackernews-get-topstory-ids error: %S" error-thrown)))
+		    :success
+		    (cl-function
+		     (lambda (&key data &allow-other-keys)
+		       ;; append converts vector into list
+		       (funcall callback (-slice (append data nil) 0 list-size))
+		       )))))))
   
-  ;; TODO speed up function by executing all requests simultaneously
-  (defun hackernews-get-items (list-of-ids completed-items callback)
-    "Asynchronously request LIST-OF-IDS from hackernews.  After requests are completed call CALLBACK with COMPLETED-ITEMS."
-    (if (not list-of-ids)
-	(funcall callback completed-items)
-      (let* ((request-string (format "%s/%s/item/%s.json" hackernews-api-base hackernews-api-version (pop list-of-ids)))
+  (defun hackernews-get-items (list-of-ids callback)
+    "Asynchronously request LIST-OF-IDS from hackernews.  After requests are completed call CALLBACK."
+    (setq hackernews-get-items--completed-items '())
+    (defun hackernews-get-items--callback (count-of-requests idx data callback)
+      (add-to-list 'hackernews-get-items--completed-items (list idx data) t)
+      (when (equal count-of-requests (length hackernews-get-items--completed-items))
+	(let* ((sorted-items (-sort (-on #'< #'-first-item) hackernews-get-items--completed-items))
+	       (mapped-items (-map #'-last-item sorted-items))
+	       (filtered-items (-non-nil mapped-items)))
+	  (funcall callback filtered-items)
+	  (setq hackernews-get-items--completed-items '()))
+	))
+  
+    (dotimes (idx (length list-of-ids))
+      (let* ((count-of-requests (length list-of-ids))
+	     (request-string (format "%s/%s/item/%s.json" hackernews-api-base hackernews-api-version (elt list-of-ids idx)))
 	     (result (request request-string
-			      :type "GET"
-			      :parser 'json-read
-			      :error
-			      (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
-					     (message "Got error: %S" error-thrown)))
-			      :success  (cl-function
-					 (lambda (&key data &allow-other-keys)
-					   (hackernews-get-items list-of-ids (append completed-items (list data)) callback))))))
-	)
-      )
-    )
+		       :type "GET"
+		       :parser 'json-read
+		       :error
+		       (cl-function (lambda (&rest args &key error-thrown &allow-other-keys)
+				      (message "hackernews-get-items error: %S" error-thrown)
+				      (hackernews-get-items--callback count-of-requests idx nil callback)
+				      ))
+		       :success  (cl-function
+				  (lambda (&key data &allow-other-keys)
+				    (hackernews-get-items--callback count-of-requests idx (append data nil) callback)))))))))
   
   (defun hackernews-get-topstories (list-size callback)
     "Asynchronously request LIST-SIZE topstories from Hackernews and call CALLBACK with stories when finished."
     (hackernews-get-topstory-ids list-size
 				 (lambda (list-of-ids)
-				   (hackernews-get-items list-of-ids ()
+				   (hackernews-get-items list-of-ids
 							 (lambda (items)
 							   (funcall callback items))))))
 #+end_src
