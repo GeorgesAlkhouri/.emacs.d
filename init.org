@@ -1349,7 +1349,10 @@ https://github.com/nex3/perspective-el
 	 list-size
 	 nil
 	 (lambda (&rest ignore)
-	   (browse-url (cdr (assoc 'url el))))
+	   (let ((url (cdr (assoc 'url el))))
+	     (browse-url url)
+	     (kill-new url)
+	     (message "[dashboard] copied '%s' to clipboard." url)))
 	 (format "%s" (cdr (assoc 'formatted-string el))))
 	)
   
