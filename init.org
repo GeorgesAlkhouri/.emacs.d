@@ -1737,9 +1737,93 @@ Utility and formatting functions to display downloaded stories from Hacker News.
 
 This Dockerfile builds and sets up Emacs and various dependencies on a Debian system during =make tangle=.
 
+** Emacs Build
+
+#+begin_src dockerfile :mkdirp yes :tangle docker/emacs-build/Dockerfile
+  # FROM debian:bullseye AS builder
+  
+  # ARG DEBIAN_FRONTEND=noninteractive
+  # ARG EMACS_COMMIT=a45aed9
+  # # for --shallow-since to speed up cloning
+  # # example: --shallow-since "2 months" or "yyyy-MM-ddTHH:mm:ss"
+  # ARG DATE=2021-06-01
+  # # no --depth=1 because we want specific EMACS_COMMIT, could take longer
+  
+  # RUN apt-get update
+  # RUN apt-get install -y git autoconf texinfo binutils flex bison \
+  #   libmpc-dev libmpfr-dev libgmp-dev coreutils make \
+  #   libtinfo5 texinfo libjpeg-dev libtiff-dev libgif-dev libxpm-dev \
+  #   libgtk-3-dev libgnutls28-dev libncurses5-dev libxml2-dev libxt-dev \
+  #   libjansson4 gcc-multilib g++-8 libcanberra-gtk3-module libjansson-dev \
+  #   librsvg2-dev
+  
+  
+  # WORKDIR / 
+  
+  # ARG GCC_BRANCH=releases/gcc-11
+  # RUN git clone --depth=1 git://gcc.gnu.org/git/gcc.git \
+  #   -b $GCC_BRANCH gcc
+  
+  # RUN git clone https://git.savannah.gnu.org/git/emacs.git \
+  #       -b master emacs-native --shallow-since "$DATE"
+  
+  # RUN mkdir /gcc/build
+  # WORKDIR /gcc/build
+  # RUN ../configure --enable-host-shared --enable-languages=jit \
+  #       --disable-bootstrap --enable-checking=release --prefix=/install_dir
+  # RUN make -j$(nproc)
+  # RUN make install-strip
+  
+  # ENV PATH="/install_dir/bin/:${PATH}"
+  # ENV LD_LIBRARY_PATH=/install_dir/lib
+  # ENV LIBRARY_PATH=/install_dir/lib
+  
+  
+  # WORKDIR /emacs-native/	  
+  
+  # RUN git checkout "$EMACS_COMMIT"
+  # RUN ./autogen.sh
+  # RUN ./configure --with-native-compilation --with-mailutils --with-gnutls --with-cairo --prefix=/install_dir
+  # RUN make NATIVE_FULL_AOT=1 -j"$(nproc)"
+  # RUN make install-strip
+  
+  
+  
+  FROM debian:bullseye AS builder
+  ARG DEBIAN_FRONTEND=noninteractive
+  ARG EMACS_COMMIT=a45aed9
+  # for --shallow-since to speed up cloning
+  # example: --shallow-since "2 months" or "yyyy-MM-ddTHH:mm:ss"
+  ARG DATE=2021-06-01
+  # no --depth=1 because we want specific EMACS_COMMIT, could take longer
+  
+  RUN apt-get update
+  RUN apt-get install -y git autoconf texinfo binutils flex bison \
+	libmpc-dev libmpfr-dev libgmp-dev coreutils make \
+	libtinfo5 texinfo libjpeg-dev libtiff-dev libgif-dev libxpm-dev \
+	libgtk-3-dev libgnutls28-dev libncurses5-dev libxml2-dev libxt-dev \
+	libjansson4 gcc-multilib g++-8 libcanberra-gtk3-module libjansson-dev \
+	    #not build gcc 
+	    librsvg2-dev libpng-dev gcc-10 libgccjit0 libgccjit-10-dev
+  
+  WORKDIR / 
+  
+  RUN git clone https://git.savannah.gnu.org/git/emacs.git \
+	-b master emacs-native --shallow-since "$DATE"
+  
+  WORKDIR /emacs-native/	  
+  
+  RUN git checkout "$EMACS_COMMIT"
+  RUN ./autogen.sh
+  RUN ./configure --with-native-compilation --with-mailutils --with-gnutls --with-cairo --prefix=/install_dir
+  RUN make NATIVE_FULL_AOT=1 -j"$(nproc)"
+  RUN make install-strip
+  
+ #+end_src
+ 
 ** Work Build
 
-#+begin_src dockerfile :tangle Dockerfile
+#+begin_src dockerfile :mkdirp yes :tangle docker/emacs-work/Dockerfile
   FROM debian:bullseye AS builder
   ARG DEBIAN_FRONTEND=noninteractive
   ARG EMACS_COMMIT=a45aed9
