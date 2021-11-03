@@ -1642,9 +1642,63 @@ https://github.com/magnars/dash.el
 ** centaur-tab
 #+begin_src emacs-lisp
   (use-package centaur-tabs
-    :defer 2
+    :defer (after-init . centaur-tabs-mode)
+    :hook
+    (dashboard-mode . centaur-tabs-local-mode)
+    (vterm-mode . centaur-tabs-local-mode)
+    (helpful-mode . centaur-tabs-local-mode)
     :config
-    (centaur-tabs-mode t))
+    (progn
+  
+      (defun centaur-tabs-buffer-groups ()
+	"`centaur-tabs-buffer-groups' control buffers' group rules.
+  
+  Group centaur-tabs with mode if buffer is derived from `eshell-mode'
+  `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
+  All buffer name start with * will group to \"Emacs\".
+  Other buffer group by `centaur-tabs-get-group-name' with project name."
+	(list
+	 (cond
+	  ((memq major-mode '(magit-process-mode
+			      magit-status-mode
+			      magit-diff-mode
+			      magit-log-mode
+			      magit-file-mode
+			      magit-blob-mode
+			      magit-blame-mode
+			      ))
+	   "Magit")
+	  ((and (string-equal "*" (substring (buffer-name) 0 1))
+		(not (string-match-p "*scratch*" (buffer-name))))
+	   "Emacs")
+	  ((derived-mode-p 'eshell-mode)
+	   "EShell")
+	  ((derived-mode-p 'emacs-lisp-mode)
+	   "Elisp")
+	  ((derived-mode-p 'dired-mode)
+	   "Dired")
+	  ((memq major-mode '(org-mode org-agenda-mode diary-mode))
+	   "OrgMode")
+	  (t
+	   (centaur-tabs-get-group-name (current-buffer))))))
+  
+      (setq centaur-tabs-style "bar"
+	    centaur-tabs-set-icons t
+	    centaur-tabs-gray-out-icons 'buffer
+	    centaur-tabs-set-bar 'left
+	    centaur-tabs-set-modified-marker t
+	    centaur-tabs-close-button "✕"
+	    centaur-tabs-modified-marker "⚫"
+	    centaur-tabs-cycle-scope 'tabs)
+      (centaur-tabs-headline-match)
+      (centaur-tabs-mode t))
+    :general
+    (general-def
+      "C-<tab>" 'centaur-tabs-forward
+      "C-S-<tab>" 'centaur-tabs-backward
+      "C-<iso-lefttab>" 'centaur-tabs-backward
+      "C-w" 'kill-current-buffer
+      :states '(normal)))
 #+end_src 
 * Utility
 ** Hackernews Request
