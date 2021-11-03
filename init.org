@@ -1639,6 +1639,13 @@ https://github.com/magnars/dash.el
   (use-package dash
     :defer t)
 #+end_src
+** centaur-tab
+#+begin_src emacs-lisp
+  (use-package centaur-tabs
+    :defer 2
+    :config
+    (centaur-tabs-mode t))
+#+end_src 
 * Utility
 ** Hackernews Request
 
