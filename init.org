@@ -1640,6 +1640,13 @@ https://github.com/magnars/dash.el
     :defer t)
 #+end_src
 ** centaur-tab
+
+#+begin_quote
+This projects aims to become an aesthetic, functional and efficient tabs plugin for Emacs with a lot of customization options.
+
+https://github.com/ema2159/centaur-tabs
+#+end_quote
+
 #+begin_src emacs-lisp
   (use-package centaur-tabs
     :defer (after-init . centaur-tabs-mode)
