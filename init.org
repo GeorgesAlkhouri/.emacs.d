@@ -1294,10 +1294,11 @@ The Perspective package provides multiple named workspaces (or "perspectives") i
 https://github.com/nex3/perspective-el
 #+end_quote
 
+Perspective package is essentiell for buffer organisation. Therefore we load it early and before other packages like centaur-tab.
+
 #+begin_src emacs-lisp
   (use-package perspective
-    :defer t
-    :commands persp-switch
+    :hook (after-init . persp-mode)
     :general
     (global-leader
       "pP" 'persp-switch)
@@ -1649,14 +1650,14 @@ https://github.com/ema2159/centaur-tabs
 
 #+begin_src emacs-lisp
   (use-package centaur-tabs
-    :defer (after-init . centaur-tabs-mode)
+    :after perspective
     :hook
     (dashboard-mode . centaur-tabs-local-mode)
     (vterm-mode . centaur-tabs-local-mode)
     (helpful-mode . centaur-tabs-local-mode)
     :config
     (progn
-  
+      ;; TODO group by perspective and perspective-key
       (defun centaur-tabs-buffer-groups ()
 	"`centaur-tabs-buffer-groups' control buffers' group rules.
   
