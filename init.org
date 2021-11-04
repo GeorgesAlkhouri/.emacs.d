@@ -914,10 +914,12 @@ https://github.com/lassik/emacs-format-all-the-code
     :defer t
     :config
     (progn
-      (setq python-prettify-symbols-alist '(("in" . ?∈) ("lambda" . ?λ) ("not in" . ?∉)))
-      )
+      (setq python-prettify-symbols-alist '(("in" . ?∈) ("lambda" . ?λ) ("not in" . ?∉))))
     :hook ((python-mode . semantic-mode)
-	   (python-mode . prettify-symbols-mode))
+	   (python-mode . prettify-symbols-mode)
+	   (python-mode . (lambda ()
+			    ;; disable project errors on modeline
+			    (setq-local lsp-modeline-diagnostics-enable nil))))
     :init
     (progn
       (setq semantic-default-submodes nil)
