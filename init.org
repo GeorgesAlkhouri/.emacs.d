@@ -795,6 +795,18 @@ Following packages are used majorly for programming
     )
 #+end_src
 
+*** rainbow-delimiters
+#+begin_quote
+rainbow-delimiters is a "rainbow parentheses"-like mode which highlights delimiters such as parentheses, brackets or braces according to their depth.
+
+https://github.com/Fanael/rainbow-delimiters
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :defer t
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
 *** evil-nerd-commenter
 #+begin_quote
 A Nerd Commenter emulation, help you comment code efficiently.

@@ -69,6 +69,7 @@
  ("projectile" . "ca89722f947710221d18c1b8e27b2a5811da176e")
  ("py-isort.el" . "e67306f459c47c53a65604e4eea88a3914596560")
  ("pytest-el" . "6934047242db79b1c53e9fe3e0734cc9719ed1c4")
+ ("rainbow-delimiters" . "d576e6694ad3a3e88b2bb1363305b38fa364c149")
  ("restart-emacs" . "1607da2bc657fe05ae01f7fdf26f716eafead02c")
  ("s.el" . "08661efb075d1c6b4fa812184c1e5e90c08795a9")
  ("shackle" . "4ef05b117c87e1f0d97e0ee74fd2f0bfd07a49b1")
