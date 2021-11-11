@@ -14,6 +14,8 @@ Dependencies you need to fully run all configured features:
 - vterm requirements
 - pyright, black, flake8, pylint, isort, mypy, virtualenv, virtualenvwrapper
 - shellcheck
+- hunspell
+  - also hunspell-de-de
 - git and git-flow
 
 ** Todos
@@ -1151,6 +1153,31 @@ https://github.com/hlissner/emacs-solaire-mode
        "ts" '(hydra-text-scale/body :which-key "scale text"))
      )
  #+end_src
+** ispell
+#+begin_src emacs-lisp
+  (use-package ispell
+    :init
+    (progn
+      (add-to-list 'ispell-hunspell-dictionary-alist '("deutsch-hunspell"
+						       "[[:alpha:]]"
+						       "[^[:alpha:]]"
+						       "[']"
+						       t
+						       ("-d" "de_DE"); Dictionary file name
+						       nil
+						       iso-8859-1))
+  
+      (add-to-list 'ispell-hunspell-dictionary-alist '("english-hunspell"
+						       "[[:alpha:]]"
+						       "[^[:alpha:]]"
+						       "[']"
+						       t
+						       ("-d" "en_US")
+						       nil
+						       iso-8859-1))
+      (setq ispell-program-name (executable-find "hunspell")
+	    )))
+#+end_src
 ** flyspell
 #+begin_quote
 Flyspell enables on-the-fly spell checking in Emacs by the means of a minor mode.
@@ -1163,14 +1190,14 @@ http://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html
 - TODO add cycling hydra menu for spell checking
 
 #+begin_src emacs-lisp
-   (use-feature flyspell
-    :defer t
+  (use-feature flyspell
+    :after ispell
     :hook ((prog-mode . flyspell-prog-mode)
-           (text-mode . flyspell-mode))
+	   (text-mode . flyspell-mode))
     :config
-    ;; better performance, see https://www.emacswiki.org/emacs/FlySpell#h5o-3
-    (setq flyspell-issue-message-flag nil)
-  )
+    (progn
+      ;; better performance, see https://www.emacswiki.org/emacs/FlySpell#h5o-3
+      (setq flyspell-issue-message-flag nil)))
 #+end_src
 
 ** flyspell-correct
