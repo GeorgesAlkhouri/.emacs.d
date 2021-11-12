@@ -1158,6 +1158,9 @@ https://github.com/hlissner/emacs-solaire-mode
   (use-package ispell
     :init
     (progn
+      ;; env variable is important for hunspell to find
+      ;; the dictionary
+      (setenv "DICTIONARY" "en_US")
       (add-to-list 'ispell-hunspell-dictionary-alist '("deutsch-hunspell"
 						       "[[:alpha:]]"
 						       "[^[:alpha:]]"
