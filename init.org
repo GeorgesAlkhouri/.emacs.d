@@ -14,6 +14,8 @@ Dependencies you need to fully run all configured features:
 - vterm requirements
 - pyright, black, flake8, pylint, isort, mypy, virtualenv, virtualenvwrapper
 - shellcheck
+- hunspell
+  - also hunspell-de-de
 - git and git-flow
 
 ** Todos
@@ -839,6 +841,18 @@ Following packages are used majorly for programming
     )
 #+end_src
 
+*** rainbow-delimiters
+#+begin_quote
+rainbow-delimiters is a "rainbow parentheses"-like mode which highlights delimiters such as parentheses, brackets or braces according to their depth.
+
+https://github.com/Fanael/rainbow-delimiters
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package rainbow-delimiters
+    :defer t
+    :hook (prog-mode . rainbow-delimiters-mode))
+#+end_src
 *** evil-nerd-commenter
 #+begin_quote
 A Nerd Commenter emulation, help you comment code efficiently.
@@ -958,10 +972,12 @@ https://github.com/lassik/emacs-format-all-the-code
     :defer t
     :config
     (progn
-      (setq python-prettify-symbols-alist '(("in" . ?∈) ("lambda" . ?λ) ("not in" . ?∉)))
-      )
+      (setq python-prettify-symbols-alist '(("in" . ?∈) ("lambda" . ?λ) ("not in" . ?∉))))
     :hook ((python-mode . semantic-mode)
-	   (python-mode . prettify-symbols-mode))
+	   (python-mode . prettify-symbols-mode)
+	   (python-mode . (lambda ()
+			    ;; disable project errors on modeline
+			    (setq-local lsp-modeline-diagnostics-enable nil))))
     :init
     (progn
       (setq semantic-default-submodes nil)
@@ -1181,6 +1197,34 @@ https://github.com/hlissner/emacs-solaire-mode
        "ts" '(hydra-text-scale/body :which-key "scale text"))
      )
  #+end_src
+** ispell
+#+begin_src emacs-lisp
+  (use-package ispell
+    :init
+    (progn
+      ;; env variable is important for hunspell to find
+      ;; the dictionary
+      (setenv "DICTIONARY" "en_US")
+      (add-to-list 'ispell-hunspell-dictionary-alist '("deutsch-hunspell"
+						       "[[:alpha:]]"
+						       "[^[:alpha:]]"
+						       "[']"
+						       t
+						       ("-d" "de_DE"); Dictionary file name
+						       nil
+						       iso-8859-1))
+  
+      (add-to-list 'ispell-hunspell-dictionary-alist '("english-hunspell"
+						       "[[:alpha:]]"
+						       "[^[:alpha:]]"
+						       "[']"
+						       t
+						       ("-d" "en_US")
+						       nil
+						       iso-8859-1))
+      (setq ispell-program-name (executable-find "hunspell")
+	    )))
+#+end_src
 ** flyspell
 #+begin_quote
 Flyspell enables on-the-fly spell checking in Emacs by the means of a minor mode.
@@ -1193,14 +1237,14 @@ http://www-sop.inria.fr/members/Manuel.Serrano/flyspell/flyspell.html
 - TODO add cycling hydra menu for spell checking
 
 #+begin_src emacs-lisp
-   (use-feature flyspell
-    :defer t
+  (use-feature flyspell
+    :after ispell
     :hook ((prog-mode . flyspell-prog-mode)
-           (text-mode . flyspell-mode))
+	   (text-mode . flyspell-mode))
     :config
-    ;; better performance, see https://www.emacswiki.org/emacs/FlySpell#h5o-3
-    (setq flyspell-issue-message-flag nil)
-  )
+    (progn
+      ;; better performance, see https://www.emacswiki.org/emacs/FlySpell#h5o-3
+      (setq flyspell-issue-message-flag nil)))
 #+end_src
 
 ** flyspell-correct
@@ -1338,10 +1382,11 @@ The Perspective package provides multiple named workspaces (or "perspectives") i
 https://github.com/nex3/perspective-el
 #+end_quote
 
+Perspective package is essentiell for buffer organisation. Therefore we load it early and before other packages like centaur-tab.
+
 #+begin_src emacs-lisp
   (use-package perspective
-    :defer t
-    :commands persp-switch
+    :hook (after-init . persp-mode)
     :general
     (global-leader
       "pP" 'persp-switch)
@@ -1694,11 +1739,72 @@ https://github.com/magnars/dash.el
     :defer t)
 #+end_src
 ** centaur-tab
+
+#+begin_quote
+This projects aims to become an aesthetic, functional and efficient tabs plugin for Emacs with a lot of customization options.
+
+https://github.com/ema2159/centaur-tabs
+#+end_quote
+
 #+begin_src emacs-lisp
   (use-package centaur-tabs
-    :defer 2
+    :after perspective
+    :hook
+    (dashboard-mode . centaur-tabs-local-mode)
+    (vterm-mode . centaur-tabs-local-mode)
+    (helpful-mode . centaur-tabs-local-mode)
     :config
-    (centaur-tabs-mode t))
+    (progn
+      ;; TODO group by perspective and perspective-key
+      (defun centaur-tabs-buffer-groups ()
+	"`centaur-tabs-buffer-groups' control buffers' group rules.
+  
+  Group centaur-tabs with mode if buffer is derived from `eshell-mode'
+  `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
+  All buffer name start with * will group to \"Emacs\".
+  Other buffer group by `centaur-tabs-get-group-name' with project name."
+	(list
+	 (cond
+	  ((memq major-mode '(magit-process-mode
+			      magit-status-mode
+			      magit-diff-mode
+			      magit-log-mode
+			      magit-file-mode
+			      magit-blob-mode
+			      magit-blame-mode
+			      ))
+	   "Magit")
+	  ((and (string-equal "*" (substring (buffer-name) 0 1))
+		(not (string-match-p "*scratch*" (buffer-name))))
+	   "Emacs")
+	  ((derived-mode-p 'eshell-mode)
+	   "EShell")
+	  ((derived-mode-p 'emacs-lisp-mode)
+	   "Elisp")
+	  ((derived-mode-p 'dired-mode)
+	   "Dired")
+	  ((memq major-mode '(org-mode org-agenda-mode diary-mode))
+	   "OrgMode")
+	  (t
+	   (centaur-tabs-get-group-name (current-buffer))))))
+  
+      (setq centaur-tabs-style "bar"
+	    centaur-tabs-set-icons t
+	    centaur-tabs-gray-out-icons 'buffer
+	    centaur-tabs-set-bar 'left
+	    centaur-tabs-set-modified-marker t
+	    centaur-tabs-close-button "✕"
+	    centaur-tabs-modified-marker "⚫"
+	    centaur-tabs-cycle-scope 'tabs)
+      (centaur-tabs-headline-match)
+      (centaur-tabs-mode t))
+    :general
+    (general-def
+      "C-<tab>" 'centaur-tabs-forward
+      "C-S-<tab>" 'centaur-tabs-backward
+      "C-<iso-lefttab>" 'centaur-tabs-backward
+      "C-w" 'kill-current-buffer
+      :states '(normal)))
 #+end_src 
 ** mini-frame
 #+begin_src emacs-lisp
