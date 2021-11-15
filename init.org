@@ -626,29 +626,69 @@ Helm is an Emacs framework for incremental completions and narrowing selections.
 https://github.com/emacs-helm/helm
 #+end_quote
 #+begin_src emacs-lisp
-  (use-package helm
-    :init (require 'helm-config)
-    :diminish
-    :defer 1
+  (use-package consult
+    :init
+    (progn
+  
+      ;; Optionally configure the register formatting. This improves the register
+      ;; preview for `consult-register', `consult-register-load',
+      ;; `consult-register-store' and the Emacs built-ins.
+      (setq register-preview-delay 0
+	    register-preview-function #'consult-register-format)
+  
+      ;; Optionally tweak the register preview window.
+      ;; This adds thin lines, sorting and hides the mode line of the window.
+      (advice-add #'register-preview :override #'consult-register-window)
+  
+      ;; Optionally replace `completing-read-multiple' with an enhanced version.
+      (advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
+  
+      ;; Use Consult to select xref locations with preview
+      (setq xref-show-xrefs-function #'consult-xref
+	    xref-show-definitions-function #'consult-xref)
+      )
     :config
-    (helm-mode)
+    (progn
+      ;; Optionally configure a function which returns the project root directory.
+      (setq consult-project-root-function #'projectile-project-root)
+      )
+  
     :general
-    (general-def helm-map "<tab>" 'helm-execute-persistent-action)
-    (general-def helm-map "TAB" 'helm-execute-persistent-action)
-    (general-def helm-map "C-a" 'helm-select-action)
-    (general-def helm-map "C-h" 'helm-find-files-up-one-level)
-    (general-def helm-map "C-j" 'helm-next-line)
-    (general-def helm-map "C-k" 'helm-previous-line)
     (global-leader
-      "SPC" '(helm-M-x :which-key "M-x")
-      "/"   'helm-projectile-ag
-      "ss" 'helm-occur
-      "ff" 'helm-find-files
-      "fF" 'helm-find
-      "fr" 'helm-recentf
-      "bb" 'helm-mini
-      "ji" 'helm-semantic-or-imenu)
+      "SPC" '(execute-extended-command :which-key "M-x")
+      "/" '(consult-ripgrep :wk "ripgrep")
+      "ss" '(consult-line :wk "search")
+      "bb" '(consult-buffer :which-key "buffer list")
+      "ff" '(find-file :wk "find files")
+      "fr" '(consult-recent-file :wk "recent files")
+      "ji" '(consult-imenu :wk "imenu")
+      )
+    :defer 1
     )
+  
+  ;; (use-package helm
+  ;;   :init (require 'helm-config)
+  ;;   :diminish
+  ;;   :defer 1
+  ;;   :config
+  ;;   (helm-mode)
+  ;;   :general
+  ;;   (general-def helm-map "<tab>" 'helm-execute-persistent-action)
+  ;;   (general-def helm-map "TAB" 'helm-execute-persistent-action)
+  ;;   (general-def helm-map "C-a" 'helm-select-action)
+  ;;   (general-def helm-map "C-h" 'helm-find-files-up-one-level)
+  ;;   (general-def helm-map "C-j" 'helm-next-line)
+  ;;   (general-def helm-map "C-k" 'helm-previous-line)
+  ;;   (global-leader
+  ;;     "SPC" '(helm-M-x :which-key "M-x")
+  ;;     "/"   'helm-projectile-ag
+  ;;     "ss" 'helm-occur
+  ;;     "ff" 'helm-find-files
+  ;;     "fF" 'helm-find
+  ;;     "fr" 'helm-recentf
+  ;;     "bb" 'helm-mini
+  ;;     "ji" 'helm-semantic-or-imenu)
+  ;;   )
 #+end_src
 
 *** helm-ag
@@ -657,14 +697,14 @@ helm-ag.el provides interfaces of The Silver Searcher with helm.
 
 https://github.com/emacsorphanage/helm-ag
 #+end_quote
-#+begin_src emacs-lisp :lexical t
+#+begin_src emacs-lisp :lexical t :tangle no
 (use-package helm-ag
   :commands (helm-ag helm-projectile-ag))
 #+end_src
 
 *** helm-projectile
-#+begin_src emacs-lisp
-  (use-package helm-projectile
+#+begin_src emacs-lisp :tangle no
+  (use-package helm-projectile 
     :after (helm)
     :general
     (global-leader
@@ -686,6 +726,7 @@ https://github.com/bbatsov/projectile
 #+begin_src emacs-lisp
   (use-package projectile
     :after (general)
+    :commands (projectile-project-root)
     :general
     (global-leader
       "p!" 'projectile-run-shell-command-in-root
@@ -1499,6 +1540,16 @@ https://github.com/abo-abo/avy
 		    vc-ignore-dir-regexp
 		    tramp-file-name-regexp))
   
+      ;; enable commands in minibuffer
+      (setq enable-recursive-minibuffers t)
+      ;; no auto resizing
+      (setq resize-mini-windows nil)
+  
+      ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
+      ;; Vertico commands are hidden in normal buffers.
+      (setq read-extended-command-predicate
+	    #'command-completion-default-include-p)
+  
       (add-hook 'after-init-hook #'sys/after-startup)
       (add-hook 'prog-mode-hook #'display-line-numbers-mode)
       )
@@ -1649,6 +1700,64 @@ https://github.com/magnars/dash.el
     :config
     (centaur-tabs-mode t))
 #+end_src 
+** mini-frame
+#+begin_src emacs-lisp
+  (use-package vertico
+    :hook (after-init . vertico-mode)
+    :config
+    (progn
+      ;; Grow and shrink the Vertico minibuffer
+      (setq vertico-resize t)
+      )
+    :general
+    (general-def vertico-map :keymaps 'override
+      "C-j" #'vertico-next
+      "C-k" #'vertico-previous
+      )
+    )
+  
+  (use-package mini-frame
+    :after evil
+    :hook (after-init . mini-frame-mode)
+    :config
+    (progn
+      (setq mini-frame-resize t
+	    mini-frame-show-parameters '((top . 0.2)
+					 (width . 0.8)
+					 (left . 0.5))
+	    )
+      ))
+  
+  (use-package marginalia
+    :hook (after-init . marginalia-mode))
+  
+  (use-package orderless
+    :init
+    ;; Configure a custom style dispatcher (see the Consult wiki)
+    ;; (setq orderless-style-dispatchers '(+orderless-dispatch)
+    ;;       orderless-component-separator #'orderless-escapable-split-on-space)
+    (setq completion-styles '(orderless)
+	  completion-category-overrides '((file (styles partial-completion)))))
+  
+  ;; Persist history over Emacs restarts. Vertico sorts by history position.
+  (use-package savehist
+    :hook (after-init . savehist-mode))
+  
+  
+  ;; (custom-set-variables
+  ;;  '(mini-frame-show-parameters
+  ;;    (lambda ()
+  ;;      `((top . 0.2)
+  ;;        (width . 0.8)
+  ;;        (left . 0.5)
+  ;;        (child-frame-border-width . 1))))
+  ;;  '(mini-frame-detach-on-hide nil)
+  ;;  '(mini-frame-color-shift-step 0)
+  ;;  '(mini-frame-advice-functions '(read-from-minibuffer
+  ;;                                  ;; read-string
+  ;;                                  save-some-buffers yes-or-no-p))
+  ;;  '(mini-frame-ignore-commands '()))))
+#+end_src
 * Utility
 ** Hackernews Request
 
