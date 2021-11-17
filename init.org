@@ -621,12 +621,14 @@ https://github.com/sebastiencs/company-box
     :hook (company-mode . company-box-mode))
 #+end_src
 
-** helm
+** consult
 #+begin_quote
-Helm is an Emacs framework for incremental completions and narrowing selections.
+Consult provides practical commands based on the Emacs completion function completing-read.
+Completion allows you to quickly select an item from a list of candidates.
 
-https://github.com/emacs-helm/helm
+https://github.com/minad/consult
 #+end_quote
+
 #+begin_src emacs-lisp
   (use-package consult
     :init
@@ -651,6 +653,14 @@ https://github.com/emacs-helm/helm
       )
     :config
     (progn
+  
+      (defun consult--preview-p ()
+	"Are we in a consult preview buffer?"
+	(when-let (win (active-minibuffer-window))
+	  (not (eq nil (buffer-local-value
+			'consult--preview-function
+			(window-buffer win))))))
+  
       ;; Optionally configure a function which returns the project root directory.
       (setq consult-project-root-function #'projectile-project-root)
       )
@@ -666,55 +676,6 @@ https://github.com/emacs-helm/helm
       "ji" '(consult-imenu :wk "imenu")
       )
     :defer 1
-    )
-  
-  ;; (use-package helm
-  ;;   :init (require 'helm-config)
-  ;;   :diminish
-  ;;   :defer 1
-  ;;   :config
-  ;;   (helm-mode)
-  ;;   :general
-  ;;   (general-def helm-map "<tab>" 'helm-execute-persistent-action)
-  ;;   (general-def helm-map "TAB" 'helm-execute-persistent-action)
-  ;;   (general-def helm-map "C-a" 'helm-select-action)
-  ;;   (general-def helm-map "C-h" 'helm-find-files-up-one-level)
-  ;;   (general-def helm-map "C-j" 'helm-next-line)
-  ;;   (general-def helm-map "C-k" 'helm-previous-line)
-  ;;   (global-leader
-  ;;     "SPC" '(helm-M-x :which-key "M-x")
-  ;;     "/"   'helm-projectile-ag
-  ;;     "ss" 'helm-occur
-  ;;     "ff" 'helm-find-files
-  ;;     "fF" 'helm-find
-  ;;     "fr" 'helm-recentf
-  ;;     "bb" 'helm-mini
-  ;;     "ji" 'helm-semantic-or-imenu)
-  ;;   )
-#+end_src
-
-*** helm-ag
-#+begin_quote
-helm-ag.el provides interfaces of The Silver Searcher with helm.
-
-https://github.com/emacsorphanage/helm-ag
-#+end_quote
-#+begin_src emacs-lisp :lexical t :tangle no
-(use-package helm-ag
-  :commands (helm-ag helm-projectile-ag))
-#+end_src
-
-*** helm-projectile
-#+begin_src emacs-lisp :tangle no
-  (use-package helm-projectile 
-    :after (helm)
-    :general
-    (global-leader
-      "pb" 'helm-projectile-switch-to-buffer
-      "pd" 'helm-projectile-find-dir
-      "pf" 'helm-projectile-find-file
-      "pp" 'helm-projectile-switch-project
-      "pr" 'helm-projectile-recentf)
     )
 #+end_src
 
@@ -732,6 +693,8 @@ https://github.com/bbatsov/projectile
     :general
     (global-leader
       "p!" 'projectile-run-shell-command-in-root
+      "pp" 'projectile-switch-project
+      "pf" 'projectile-find-file
       "pD" 'projectile-dired
       "pe" 'projectile-edit-dir-locals
       "pR" 'projectile-replace)
@@ -1002,10 +965,17 @@ https://github.com/anachronic/importmagic.el
 **** lsp-pyright
 #+begin_src emacs-lisp
   (use-package lsp-pyright
-  :defer t
-  :hook (python-mode . (lambda ()
-                          (require 'lsp-pyright)
-                          (lsp-deferred))))
+    :defer t
+    :init
+    (progn
+      (defun sys/lsp-start-pyright ()
+	;;Do not start lsp-mode when in consult preview
+	(unless (consult--preview-p)
+	  (require 'lsp-pyright)
+	  (lsp-deferred)))
+      )
+    :hook (python-mode . sys/lsp-start-pyright)
+    )
 #+end_src
 
 **** virtualenvwrapper
