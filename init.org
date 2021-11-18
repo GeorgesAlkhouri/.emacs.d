@@ -576,14 +576,15 @@ http://company-mode.github.io/
     :diminish
     :general
     (general-def company-active-map
-      "C-k"    'company-select-previous
-      "C-j"    'company-select-next
-      "<tab>"    'company-complete-common-or-cycle
-      "S-<tab>"    'company-select-previous
+      "C-k" 'company-select-previous
+      "C-j" 'company-select-next
+      "<tab>" 'company-complete-common-or-cycle
+      "S-<tab>" 'company-select-previous
       ;;for x11 https://emacs.stackexchange.com/a/53469
       "S-<iso-lefttab>" 'company-select-previous)
     :config
     (progn
+  
       (defun add-yasnippet-backend (backend)
 	"Add company-yasnippet backend to given company backend"
 	(if (and (listp backend) (member 'company-yasnippet backend))
@@ -843,7 +844,8 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
       ;; disable flycheck override with lsp checker in python-mode
       (setq lsp-diagnostics-disabled-modes '(python-mode)
 	    lsp-keep-workspace-alive nil
-	    lsp-auto-guess-root t)
+	    lsp-auto-guess-root t
+	    lsp-completion-provider :none)
       )
     :general
     (global-major-leader :keymaps '(python-mode-map csharp-mode-map)
