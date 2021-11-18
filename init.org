@@ -516,12 +516,11 @@ https://github.com/justbur/emacs-which-key
     :demand t
     :config
     (progn
-      ;; which-key-side-window-location 'bottom
-      (setq which-key-popup-type 'minibuffer)
+      (setq which-key-side-window-location 'bottom)
+      (setq which-key-popup-type 'side-window)
       (setq which-key-sort-order 'which-key-key-order-alpha
 	    which-key-side-window-max-width 0.33
 	    which-key-idle-delay 0.75)
-      (which-key-setup-minibuffer)
       (which-key-mode)
       )
     :diminish )
@@ -1781,7 +1780,7 @@ https://github.com/ema2159/centaur-tabs
       "C-w" 'kill-current-buffer
       :states '(normal)))
 #+end_src 
-** mini-frame
+** completion
 #+begin_src emacs-lisp
   (use-package vertico
     :hook (after-init . vertico-mode)
@@ -1807,6 +1806,8 @@ https://github.com/ema2159/centaur-tabs
 					 (width . 0.8)
 					 (left . 0.5))
 	    )
+      (add-to-list 'mini-frame-ignore-commands 'shell-command)
+      (add-to-list 'mini-frame-ignore-commands 'evil-ex)
       ))
   
   (use-package marginalia
