@@ -933,7 +933,8 @@ https://github.com/lassik/emacs-format-all-the-code
 	   (python-mode . prettify-symbols-mode)
 	   (python-mode . (lambda ()
 			    ;; disable project errors on modeline
-			    (setq-local lsp-modeline-diagnostics-enable nil))))
+			    (setq-local lsp-modeline-diagnostics-enable nil
+					lsp-headerline-breadcrumb-enable nil))))
     :init
     (progn
       (setq semantic-default-submodes nil)
@@ -1736,6 +1737,7 @@ https://github.com/ema2159/centaur-tabs
   
       (setq centaur-tabs-style "bar"
 	    centaur-tabs-set-icons t
+	    centaur-tabs-height 20
 	    centaur-tabs-gray-out-icons 'buffer
 	    centaur-tabs-set-bar 'left
 	    centaur-tabs-set-modified-marker t
