@@ -1,0 +1,6 @@
+# -*- mode: snippet -*-
+# name: Define test
+# key: deft
+# --
+def test_${1:fun}():
+    $0

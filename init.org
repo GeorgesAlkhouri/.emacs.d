@@ -14,8 +14,12 @@ Dependencies you need to fully run all configured features:
 - vterm requirements
 - pyright, black, flake8, pylint, isort, mypy, virtualenv, virtualenvwrapper
 - shellcheck
+- fonts
+  - https://github.com/tonsky/FiraCode
+  - https://github.com/JetBrains/JetBrainsMono
 - hunspell
-  - also hunspell-de-de
+  - https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff
+  - https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.dic
 - git and git-flow
 
 ** Todos
@@ -460,6 +464,7 @@ Load general before the remaining packages so they can make use of the ~:general
 	"fe" '(:ignore t :which-key "env")
 	"fed" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org")
 	"feb" '((lambda () (interactive) (find-file *sys/shell-config-file*)) :which-key ".bashrc")
+	"fey" '((lambda () (interactive) (dired (expand-file-name "snippets" user-emacs-directory))) :which-key "yasnippet folder")
 	"fep" '(straight-freeze-versions :which-key "freeze packages")
   
 	"g" '(:ignore t :wk "git")
@@ -578,14 +583,15 @@ http://company-mode.github.io/
     :diminish
     :general
     (general-def company-active-map
-      "C-k"    'company-select-previous
-      "C-j"    'company-select-next
-      "<tab>"    'company-complete-common-or-cycle
-      "S-<tab>"    'company-select-previous
+      "C-k" 'company-select-previous
+      "C-j" 'company-select-next
+      "<tab>" 'company-complete-common-or-cycle
+      "S-<tab>" 'company-select-previous
       ;;for x11 https://emacs.stackexchange.com/a/53469
       "S-<iso-lefttab>" 'company-select-previous)
     :config
     (progn
+  
       (defun add-yasnippet-backend (backend)
 	"Add company-yasnippet backend to given company backend"
 	(if (and (listp backend) (member 'company-yasnippet backend))
@@ -849,7 +855,8 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
       ;; disable flycheck override with lsp checker in python-mode
       (setq lsp-diagnostics-disabled-modes '(python-mode)
 	    lsp-keep-workspace-alive nil
-	    lsp-auto-guess-root t)
+	    lsp-auto-guess-root t
+	    lsp-completion-provider :none)
       )
     :general
     (global-major-leader :keymaps '(python-mode-map csharp-mode-map)
@@ -940,7 +947,8 @@ https://github.com/lassik/emacs-format-all-the-code
 	   (python-mode . prettify-symbols-mode)
 	   (python-mode . (lambda ()
 			    ;; disable project errors on modeline
-			    (setq-local lsp-modeline-diagnostics-enable nil))))
+			    (setq-local lsp-modeline-diagnostics-enable nil
+					lsp-headerline-breadcrumb-enable nil))))
     :init
     (progn
       (setq semantic-default-submodes nil)
@@ -1644,11 +1652,7 @@ https://github.com/joaotavora/yasnippet
     (progn
   
       (let* ((variable-tuple
-	      (cond ((x-list-fonts "ETBembo")         '(:font "ETBembo"))
-		    ((x-list-fonts "Source Sans Pro") '(:font "Source Sans Pro"))
-		    ((x-list-fonts "Lucida Grande")   '(:font "Lucida Grande"))
-		    ((x-list-fonts "Verdana")         '(:font "Verdana"))
-		    ((x-family-fonts "Sans Serif")    '(:family "Sans Serif"))
+	      (cond ((x-list-fonts "Verdana") '(:font "Fira Code"))
 		    (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
 	     ;; (base-font-color     (face-foreground 'default nil 'default))
 	     (headline           `(:inherit default :weight bold)))
@@ -1760,6 +1764,7 @@ https://github.com/ema2159/centaur-tabs
   
       (setq centaur-tabs-style "bar"
 	    centaur-tabs-set-icons t
+	    centaur-tabs-height 20
 	    centaur-tabs-gray-out-icons 'buffer
 	    centaur-tabs-set-bar 'left
 	    centaur-tabs-set-modified-marker t
