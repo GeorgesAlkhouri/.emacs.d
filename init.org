@@ -460,6 +460,7 @@ Load general before the remaining packages so they can make use of the ~:general
 	"fe" '(:ignore t :which-key "env")
 	"fed" '((lambda () (interactive) (find-file (expand-file-name "init.org" user-emacs-directory))) :which-key "init.org")
 	"feb" '((lambda () (interactive) (find-file *sys/shell-config-file*)) :which-key ".bashrc")
+	"fey" '((lambda () (interactive) (dired (expand-file-name "snippets" user-emacs-directory))) :which-key "yasnippet folder")
 	"fep" '(straight-freeze-versions :which-key "freeze packages")
   
 	"g" '(:ignore t :wk "git")
