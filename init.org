@@ -474,6 +474,8 @@ Load general before the remaining packages so they can make use of the ~:general
 	"S" '(:ignore t :wk "spelling")
 	"t" '(:ignore t :wk "themes")
   
+	"T" '(:ignore t :wk "toggle")
+  
 	"w" '(:ignore t :wk "windows")
 	"w?" 'split-window-vertically
 	"w=" 'balance-windows-area
@@ -1839,6 +1841,22 @@ https://github.com/ema2159/centaur-tabs
   ;;                                  ;; read-string
   ;;                                  save-some-buffers yes-or-no-p))
   ;;  '(mini-frame-ignore-commands '()))))
+#+end_src
+** olivetti
+#+begin_quote
+A simple Emacs minor mode for a nice writing environment.
+
+https://github.com/rnkn/olivetti
+#+end_quote
+#+begin_src emacs-lisp
+  (use-package  olivetti
+    :defer t
+    :init
+    (progn
+      (setq olivetti-body-width 0.618))
+    :general
+    (global-leader "To" '(olivetti-mode :wk "olivetti mode"))
+    )
 #+end_src
 * Utility
 ** Hackernews Request
