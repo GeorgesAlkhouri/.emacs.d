@@ -27,7 +27,6 @@ Dependencies you need to fully run all configured features:
 - env variable (DONE when started from shell)
 - add emacs application framework
 - add venv to mode-line
-- reload bash config for helm
 - let emacs setup OSH if not already setup
 - when loading saved persp file also switch project correctly to load venv
 - fix lsp which-key integration
@@ -736,26 +735,27 @@ https://github.com/akermu/emacs-libvterm
       "att" 'vterm-other-window
       "at." 'vterm
       )
-    (general-def vterm-mode-map "C-r" 'helm-vterm-search-history :states '(normal emacs))
+    ;; (general-def vterm-mode-map "C-r" 'helm-vterm-search-history :states '(normal emacs))
     (general-def vterm-mode-map "C-l" 'vterm-clear :states '(normal emacs))
     ;; copied from spacemacs
     :config
     (setq vterm-shell *sys/shell-executable*)
-    (defun vterm-make-history-candidates ()
-      (with-temp-buffer
-	(insert-file-contents *sys/shell-history-file*)
-	(reverse
-	 (delete-dups
-	  (split-string (buffer-string) "\n")))))
-    (defun helm-vterm-search-history ()
-      "Narrow down bash history with helm."
-      (interactive)
-      (cl-assert (string-equal mode-name "VTerm") nil "Not in VTerm mode")
-      (helm :sources (helm-build-sync-source "Bash history"
-		       :candidates (vterm-make-history-candidates)
-		       :action #'vterm-send-string)
-	    :buffer "*helm-bash-history*"
-	    :candidate-number-limit 10000))
+    ;; (defun vterm-make-history-candidates ()
+    ;;   (with-temp-buffer
+    ;;     (insert-file-contents *sys/shell-history-file*)
+    ;;     (reverse
+    ;;      (delete-dups
+    ;; 	(split-string (buffer-string) "\n")))))
+  
+    ;; (defun helm-vterm-search-history ()
+    ;;   "Narrow down bash history with helm."
+    ;;   (interactive)
+    ;;   (cl-assert (string-equal mode-name "VTerm") nil "Not in VTerm mode")
+    ;;   (helm :sources (helm-build-sync-source "Bash history"
+    ;; 		     :candidates (vterm-make-history-candidates)
+    ;; 		     :action #'vterm-send-string)
+    ;; 	  :buffer "*helm-bash-history*"
+    ;; 	  :candidate-number-limit 10000))
   
     (evil-set-initial-state 'vterm-mode 'emacs)
     (add-hook 'vterm-mode-hook #'(lambda () (setq-local global-hl-line-mode nil)))
@@ -870,20 +870,6 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
     :config
     (setq lsp-ui-sideline-ignore-duplicate t)
     )
-#+end_src
-
-**** helm-lsp
-
-#+begin_quote
-This package provides alternative of the build-in lsp-mode xref-appropos which provides as you type completion.
-
-https://github.com/emacs-lsp/helm-lsp
-#+end_quote
-Disabled because of [[https://github.com/emacs-lsp/helm-lsp/issues/19][issue]]
-#+begin_src emacs-lisp :tangle no
-  (use-package helm-lsp
-    :after lsp-mode
-    :commands helm-lsp-workspace-symbol)
 #+end_src
 
 *** flycheck
@@ -1242,10 +1228,6 @@ https://github.com/d12frosted/flyspell-correct
     (global-leader
       "Sc" '(flyspell-correct-wrapper :which-key "check"))
     )
-  
-  (use-package flyspell-correct-helm
-    :defer t
-    :after flyspell-correct)
 #+end_src
 
 ** winner
@@ -1305,11 +1287,10 @@ https://depp.brause.cc/shackle/
   (use-package shackle :defer t
     :commands (shackle-mode)
     :custom (shackle-rules '(("*Flycheck errors*"  :align below :size 0.15)
-                             ("*vterm*" :align below :size 0.3)
-                             ("\\`\\*helm.*?\\*\\'" :regexp t :align t :size 0.4)
-                             (magit-status-mode :select t)
-                             ))
-    :hook ((flycheck-mode global-flycheck-mode helm-mode magit-mode) . shackle-mode))
+			     ("*vterm*" :align below :size 0.3)
+			     (magit-status-mode :select t)
+			     ))
+    :hook ((flycheck-mode global-flycheck-mode magit-mode vterm-mode) . shackle-mode))
 #+end_src
 
 ** smartparens
