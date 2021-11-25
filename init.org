@@ -22,14 +22,6 @@ Dependencies you need to fully run all configured features:
   - https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.dic
 - git and git-flow
 
-** Todos
-- fix python mode when using tramp
-- env variable (DONE when started from shell)
-- add emacs application framework
-- add venv to mode-line
-- let emacs setup OSH if not already setup
-- when loading saved persp file also switch project correctly to load venv
-- fix lsp which-key integration
     
 * early-init.el and init.el
 ** early-init
