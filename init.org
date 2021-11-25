@@ -672,6 +672,9 @@ https://github.com/minad/consult
       )
   
     :general
+    (general-def :states '(normal)
+      "P" #'consult-yank-from-kill-ring
+      )
     (global-leader
       "SPC" '(execute-extended-command :which-key "M-x")
       "/" '(consult-ripgrep :wk "ripgrep")
