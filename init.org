@@ -612,7 +612,7 @@ A company front-end with icons.
 https://github.com/sebastiencs/company-box
 #+end_quote
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package company-box
     :if (display-graphic-p)
     :after company
@@ -852,7 +852,12 @@ lsp-mode aims to provide IDE-like experience by providing optional integration w
       (setq lsp-diagnostics-disabled-modes '(python-mode)
 	    lsp-keep-workspace-alive nil
 	    lsp-auto-guess-root t
-	    lsp-completion-provider :none)
+	    lsp-ui-doc-enable nil
+	    lsp-ui-doc-position 'at-point
+	    lsp-signature-function 'lsp-signature-posframe
+	    ;; disable lsp company completion provider
+	    lsp-completion-provider :none
+	    )
       )
     :general
     (global-major-leader :keymaps '(python-mode-map csharp-mode-map)
@@ -889,8 +894,14 @@ https://www.flycheck.org/en/latest/
 				    (setq-local flycheck-highlighting-mode 'lines)
 				    ;; only apply syntax check on save and mode-enabled
 				    (setq-local flycheck-check-syntax-automatically '(save mode-enabled)
-						flycheck-relevant-error-other-file-show nil)))
+						flycheck-relevant-error-other-file-show nil)
+				    ;; disable highlight for flycheck infos
+				    (face-remap-add-relative 'flycheck-info :underline nil)))
     :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el")
+    :general
+    (global-major-leader :keymaps 'prog-mode-map
+      "f" '(:ignore t :wk "flycheck")
+      "fe" '(flycheck-list-errors :wk "list errors"))
     )
 #+end_src
 
@@ -1552,7 +1563,11 @@ https://github.com/abo-abo/avy
 	    #'command-completion-default-include-p)
   
       (add-hook 'after-init-hook #'sys/after-startup)
-      (add-hook 'prog-mode-hook #'display-line-numbers-mode)
+      (add-hook 'prog-mode-hook #'(lambda ()
+				    (display-line-numbers-mode)
+				    (setq-local line-spacing 0.1
+						display-line-numbers-width 2
+						)))
       )
     )
 #+end_src
