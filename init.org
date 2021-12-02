@@ -215,25 +215,24 @@ check out your desired revision/branch.
 #+end_quote
 
 #+begin_src emacs-lisp
-(setq straight-repository-branch "develop")
-(setq straight-check-for-modifications '(check-on-save))
-(setq straight-use-package-by-default t)
-(setq straight-vc-git-default-protocol 'https)
-(setq straight-vc-git-force-protocol nil)
-(defvar bootstrap-version)
-;;(setq straight-host-usernames '((github . "progfolio")
-;;                                (gitlab . "iarchivedmywholelife")))
-(let ((bootstrap-file
-       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
-      (bootstrap-version 5))
-  (unless (file-exists-p bootstrap-file)
-    (with-current-buffer
-        (url-retrieve-synchronously
-         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
-         'silent 'inhibit-cookies)
-      (goto-char (point-max))
-      (eval-print-last-sexp)))
-  (load bootstrap-file nil 'nomessage))
+  (setq straight-repository-branch "master")
+  (setq straight-check-for-modifications '(check-on-save))
+  (setq straight-use-package-by-default t)
+  (setq straight-vc-git-default-protocol 'https)
+  (setq straight-vc-git-force-protocol nil)
+  
+  (defvar bootstrap-version)
+  (let ((bootstrap-file
+	 (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+	(bootstrap-version 5))
+    (unless (file-exists-p bootstrap-file)
+      (with-current-buffer
+	  (url-retrieve-synchronously
+	   "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+	   'silent 'inhibit-cookies)
+	(goto-char (point-max))
+	(eval-print-last-sexp)))
+    (load bootstrap-file nil 'nomessage))
 #+end_src
 
 **** Install org-contrib
@@ -583,17 +582,17 @@ http://company-mode.github.io/
       "S-<iso-lefttab>" 'company-select-previous)
     :config
     (progn
-
+  
       (defun add-yasnippet-backend (backend)
 	"Add company-yasnippet backend to given company backend"
 	(if (and (listp backend) (member 'company-yasnippet backend))
 	    backend
 	  (append (if (consp backend) backend (list backend))
 		  '(:with company-yasnippet))))
-
+  
       ;; add yasnippet-backend to all company backends
       (setq company-backends (mapcar #'add-yasnippet-backend company-backends))
-
+  
       (setq company-tooltip-align-annotations t
 	    company-idle-delay 0.1
 	    company-show-numbers t
@@ -603,10 +602,11 @@ http://company-mode.github.io/
 	    company-require-match nil)
       )
     )
-
-
+  
+  
   (use-package company-tabnine
     :defer t
+    :commands company-tabnine-install-binary
     :after company
     :config
     (progn
@@ -635,13 +635,13 @@ http://company-mode.github.io/
 	    (setq candidates-tabnine (nreverse candidates-tabnine))
 	    (nconc (seq-take candidates-tabnine 3)
 		   (seq-take candidates-lsp 6)))))
-
+  
       (defun lsp-after-open-tabnine ()
 	"Hook to attach to `lsp-after-open'."
 	(setq-local company-tabnine-max-num-results 3)
 	(add-to-list 'company-transformers 'company//sort-by-tabnine t)
 	(add-to-list 'company-backends '(company-capf :with company-tabnine :separate)))
-
+  
       (defun company-tabnine-toggle (&optional enable)
 	"Enable/Disable TabNine. If ENABLE is non-nil, definitely enable it."
 	(interactive)
@@ -1614,8 +1614,6 @@ https://github.com/abo-abo/avy
   
       ;; enable commands in minibuffer
       (setq enable-recursive-minibuffers t)
-      ;; no auto resizing
-      (setq resize-mini-windows nil)
   
       ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
       ;; Vertico commands are hidden in normal buffers.
