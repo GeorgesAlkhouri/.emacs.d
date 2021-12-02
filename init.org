@@ -235,12 +235,6 @@ check out your desired revision/branch.
     (load bootstrap-file nil 'nomessage))
 #+end_src
 
-**** Install org-contrib
-Installing it this early *should* prevent mixed Org installations.
-#+begin_src emacs-lisp
-(straight-use-package 'org-contrib)
-#+end_src
-
 *** profiling
 This function displays how long Emacs took to start.
 It's a rough way of knowing when/if I need to optimize my init file.
@@ -1740,6 +1734,7 @@ https://github.com/joaotavora/yasnippet
     :init
     (add-hook 'org-mode-hook #'(lambda () (org-bullets-mode t))))
 #+end_src
+
 ** request
 #+begin_quote
 Request.el -- Easy HTTP request for Emacs Lisp
