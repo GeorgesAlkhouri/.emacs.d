@@ -1015,7 +1015,9 @@ https://github.com/anachronic/importmagic.el
     (add-hook 'venv-postactivate-hook  #'importmagic-mode)
     :general
     (global-major-leader :keymaps 'python-mode-map
-      "i" '(importmagic-fix-imports :which-key "fix imports")))
+      "i" '(:ignore t :wk "importmagic")
+      "ii" '(importmagic-fix-symbol-at-point :wk "fix import at point")
+      "ia" '(importmagic-fix-imports :wk "fix all imports")))
 #+end_src
 
 **** lsp-pyright
