@@ -15,14 +15,13 @@ Dependencies you need to fully run all configured features:
 - pyright, black, flake8, pylint, isort, mypy, virtualenv, virtualenvwrapper
 - shellcheck
 - fonts
-  - https://github.com/tonsky/FiraCode
-  - https://github.com/JetBrains/JetBrainsMono
+  - https://github.com/JetBrains/JetBrainsMono/releases/tag/v2.242
+  - https://fonts.google.com/specimen/Gentium+Book+Basic 
 - hunspell
   - https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff
   - https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.dic
 - git and git-flow
 
-    
 * early-init.el and init.el
 ** early-init
 :PROPERTIES:
@@ -156,25 +155,10 @@ Fonts larger than the system default can cause frame resizing, which adds to sta
 (setq frame-inhibit-implied-resize t)
 #+end_src
 
-Set default and backup fonts.
-
-Font sources are:
-- https://github.com/JetBrains/JetBrainsMono/releases/tag/v2.242
-- https://github.com/tonsky/FiraCode/releases/download/5.2/Fira_Code_v5.2.zip
-  
-
-#+begin_src emacs-lisp
-  (push '(font . "JetBrains Mono") default-frame-alist)
-  (push '(font . "Fira Code") default-frame-alist)
-  (set-face-font 'default "JetBrains Mono")
-  (set-face-font 'variable-pitch "Fira Code")
-  (copy-face 'default 'fixed-pitch)
-#+end_src
 Ignore X resources.
 #+begin_src emacs-lisp
 (advice-add #'x-apply-session-resources :override #'ignore)
 #+end_src
-
 
 Taken from:
 
@@ -284,35 +268,36 @@ NAME and ARGS are in `use-package'."
   (defconst *sys/win32*
     (eq system-type 'windows-nt)
     "Are we running on a Win system?")
-  
+
   (defconst *sys/linux*
     (eq system-type 'gnu/linux)
     "Are we running on a GNU/Linux system?")
-  
+
   (defconst *sys/mac*
     (eq system-type 'darwin)
     "Are we running on a Mac system?")
-  
+
   (defconst *sys/project-home*
     "~/Devel")
-  
+
   (defconst sys/leader-key "SPC"
     "The default leader key.")
-  
+
   (defconst sys/leader-secondary-key "C-SPC"
     "The secondary leader key.")
-  
+
   (defconst sys/major-leader-key "SPC m"
     "The default major mode leader key.")
-  
+
   (defconst sys/major-leader-secondary-key "C-SPC m"
     "The secondary major mode leader key.")
-  
+
   (defconst *sys/shell-history-file* "~/.bash_history")
   (defconst *sys/shell-config-file* "~/.bashrc")
-  
+
   (cond (*sys/mac*
-	 (defconst *sys/font-default-height* 132)
+	 (defconst *sys/font-default-height* 160)
+	 (defconst *sys/font-variable-height* 180)
 	 (defconst *sys/shell-executable* "/usr/local/bin/bash")
 	 (defconst *sys/omnisharp-server-path* (expand-file-name "util/omnisharp-run.sh" user-emacs-directory))
 	 (setenv "LSP_MONO_BASE_DIR" "/usr/local/cellar/mono/6.12.0.122")
@@ -320,9 +305,10 @@ NAME and ARGS are in `use-package'."
 	 )
 	(*sys/linux*
 	 (defconst *sys/font-default-height* 105)
+	 (defconst *sys/font-variable-height* 105)
 	 (defconst *sys/shell-executable* "/bin/bash")
 	 ))
-  
+
   (defun sys/activate-venv ()
     "Auto activated venv when project folder name is in list of available venvs"
     (when
@@ -333,7 +319,7 @@ NAME and ARGS are in `use-package'."
 	    (file-name-nondirectory
 	     (directory-file-name
 	      (file-name-directory (projectile-project-root))))))
-  
+
 	;; require is idempotent so could be evaluated multiple times
 	(require 'virtualenvwrapper)
 	(cond  ((equal project-dir venv-current-name))
@@ -1571,10 +1557,17 @@ https://github.com/abo-abo/avy
   (use-feature emacs
     :init
     (progn
-  
+
       (defun sys/after-startup ()
-	(set-face-attribute 'default nil :height *sys/font-default-height*)
-	(set-face-attribute 'variable-pitch nil :height *sys/font-default-height*)
+
+	(set-face-font 'default "JetBrains Mono")
+	(set-face-font 'fixed-pitch "JetBrains Mono")
+	(set-face-font 'variable-pitch "Gentium Book Basic")
+
+	(set-face-attribute 'default nil :font "JetBrains Mono" :height *sys/font-default-height*)
+	(set-face-attribute 'fixed-pitch nil :font "JetBrains Mono")
+	(set-face-attribute 'variable-pitch nil :font "Gentium Book Basic" :height 160)
+
 	;; When buffer is closed, saves the cursor location
 	(save-place-mode t)
 	(toggle-frame-maximized)
@@ -1582,7 +1575,7 @@ https://github.com/abo-abo/avy
 	(solaire-global-mode t)
 	(load-theme 'doom-one-light t)
 	)
-  
+
       ;; always allow 'y' instead of 'yes'.
       (defalias 'yes-or-no-p 'y-or-n-p)
       ;; write over selected text on input... like all modern editors do
@@ -1599,7 +1592,7 @@ https://github.com/abo-abo/avy
       (setq vc-follow-symlinks t)
       ;; Silence native compilation compiler warnings for as they can be pretty disruptive.
       (setq native-comp-async-report-warnings-errors nil)
-  
+
       ;; Tramp config (own use-feature tramp package was to slow)
       (setq tramp-default-method "ssh")
       ;; Disable version control on tramp buffers to avoid freezes.
@@ -1607,16 +1600,18 @@ https://github.com/abo-abo/avy
 	    (format "\\(%s\\)\\|\\(%s\\)"
 		    vc-ignore-dir-regexp
 		    tramp-file-name-regexp))
-  
+
       ;; enable commands in minibuffer
       (setq enable-recursive-minibuffers t)
-  
+
       ;; Emacs 28: Hide commands in M-x which do not work in the current mode.
       ;; Vertico commands are hidden in normal buffers.
       (setq read-extended-command-predicate
 	    #'command-completion-default-include-p)
-  
+
       (add-hook 'after-init-hook #'sys/after-startup)
+      (add-hook 'text-mode-hook #'(lambda ()
+				    (setq-local line-spacing 0.1)))
       (add-hook 'prog-mode-hook #'(lambda ()
 				    (display-line-numbers-mode)
 				    (setq-local line-spacing 0.1
@@ -1697,25 +1692,22 @@ https://github.com/joaotavora/yasnippet
       (add-hook 'org-mode-hook 'variable-pitch-mode))
     :config
     (progn
-  
-      (let* ((variable-tuple
-	      (cond ((x-list-fonts "Verdana") '(:font "Fira Code"))
-		    (nil (warn "Cannot find a Sans Serif Font.  Install Source Sans Pro."))))
-	     ;; (base-font-color     (face-foreground 'default nil 'default))
-	     (headline           `(:inherit default :weight bold)))
-  
-	(custom-theme-set-faces
-	 'user
-	 `(org-level-8 ((t (,@headline ,@variable-tuple))))
-	 `(org-level-7 ((t (,@headline ,@variable-tuple))))
-	 `(org-level-6 ((t (,@headline ,@variable-tuple))))
-	 `(org-level-5 ((t (,@headline ,@variable-tuple))))
-	 `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
-	 `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
-	 `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
-	 `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
-	 `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
-  
+
+      (let* ((variable-tuple '(:font "Gentium Book Basic"))
+	       (headline           `(:inherit default :weight bold)))
+
+	  (custom-theme-set-faces
+	   'user
+	   `(org-level-8 ((t (,@headline ,@variable-tuple))))
+	   `(org-level-7 ((t (,@headline ,@variable-tuple))))
+	   `(org-level-6 ((t (,@headline ,@variable-tuple))))
+	   `(org-level-5 ((t (,@headline ,@variable-tuple))))
+	   `(org-level-4 ((t (,@headline ,@variable-tuple :height 1.1))))
+	   `(org-level-3 ((t (,@headline ,@variable-tuple :height 1.25))))
+	   `(org-level-2 ((t (,@headline ,@variable-tuple :height 1.5))))
+	   `(org-level-1 ((t (,@headline ,@variable-tuple :height 1.75))))
+	   `(org-document-title ((t (,@headline ,@variable-tuple :height 2.0 :underline nil))))))
+
       (custom-theme-set-faces
        'user
        '(org-block ((t (:inherit fixed-pitch))))
@@ -1728,8 +1720,9 @@ https://github.com/joaotavora/yasnippet
        '(org-special-keyword ((t (:inherit (font-lock-comment-face fixed-pitch)))))
        '(org-tag ((t (:inherit (shadow fixed-pitch) :weight bold :height 0.8))))
        '(org-verbatim ((t (:inherit (shadow fixed-pitch))))))
-      ))
-  
+      )
+    )
+
   ;; https://emacs.stackexchange.com/questions/28940/how-to-overwrite-properly-a-face-for-a-particular-theme
   (use-package org-bullets
     :defer t
