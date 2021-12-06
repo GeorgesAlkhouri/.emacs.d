@@ -297,15 +297,15 @@ NAME and ARGS are in `use-package'."
 
   (cond (*sys/mac*
 	 (defconst *sys/font-default-height* 160)
-	 (defconst *sys/font-variable-height* 180)
+	 (defconst *sys/font-variable-height* 160)
 	 (defconst *sys/shell-executable* "/usr/local/bin/bash")
 	 (defconst *sys/omnisharp-server-path* (expand-file-name "util/omnisharp-run.sh" user-emacs-directory))
 	 (setenv "LSP_MONO_BASE_DIR" "/usr/local/cellar/mono/6.12.0.122")
 	 (setenv "LSP_OMNISHARP_EXE" "/usr/local/share/omnisharp-osx/omnisharp/omnisharp.exe")
 	 )
 	(*sys/linux*
-	 (defconst *sys/font-default-height* 105)
-	 (defconst *sys/font-variable-height* 105)
+	 (defconst *sys/font-default-height* 110)
+	 (defconst *sys/font-variable-height* 130)
 	 (defconst *sys/shell-executable* "/bin/bash")
 	 ))
 
@@ -1173,7 +1173,7 @@ in doom-modeline.
     :defer t
     :config
     (setq doom-modeline-icon (display-graphic-p)
-	  doom-modeline-height 20
+	  doom-modeline-height 30
 	  doom-modeline-buffer-file-name-style 'truncate-all
 	  doom-modeline-buffer-encoding nil)
     :hook
@@ -1566,7 +1566,7 @@ https://github.com/abo-abo/avy
 
 	(set-face-attribute 'default nil :font "JetBrains Mono" :height *sys/font-default-height*)
 	(set-face-attribute 'fixed-pitch nil :font "JetBrains Mono")
-	(set-face-attribute 'variable-pitch nil :font "Gentium Book Basic" :height 160)
+	(set-face-attribute 'variable-pitch nil :font "Gentium Book Basic" :height *sys/font-variable-height*)
 
 	;; When buffer is closed, saves the cursor location
 	(save-place-mode t)
