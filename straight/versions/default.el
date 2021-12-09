@@ -6,6 +6,7 @@
  ("centaur-tabs" . "5860a5c40c2318797f1274ea4c6907ae77ea1ec9")
  ("cfrs" . "c1f639d7bfd3e728cf85dbe224b06a4be76158f4")
  ("company-mode" . "8b58e5895c2eaf8686de0e25c807b00fdb205c7a")
+ ("company-statistics" . "e62157d43b2c874d2edbd547c3bdfb05d0a7ae5c")
  ("company-tabnine" . "98e9e8b38b6ca289fbe265b0a7b62c7fe38ed0e2")
  ("consult" . "b93bc629ff0613c41192246d870be6f8a8824dc7")
  ("csharp-mode" . "856ecbc0a78ae3bdc2db2ae4d16be43e2d9d9c5e")

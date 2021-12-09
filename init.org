@@ -644,6 +644,14 @@ http://company-mode.github.io/
     )
 #+end_src
 
+** company-statistics
+#+begin_src emacs-lisp
+  (use-package company-statistics
+      :defer t
+      :init
+      (progn
+	(add-hook 'company-mode-hook 'company-statistics-mode)))
+#+end_src
 ** company-box
 
 #+begin_quote
@@ -936,7 +944,9 @@ https://www.flycheck.org/en/latest/
 				    (setq-local flycheck-check-syntax-automatically '(save mode-enabled)
 						flycheck-relevant-error-other-file-show nil)
 				    ;; disable highlight for flycheck infos
-				    (face-remap-add-relative 'flycheck-info :underline nil)))
+				    (face-remap-add-relative 'flycheck-info :underline nil)
+				    (face-remap-add-relative 'flycheck-warning :underline nil)
+				    ))
     :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el")
     :general
     (global-major-leader :keymaps 'prog-mode-map
@@ -1139,9 +1149,9 @@ https://github.com/hlissner/emacs-doom-themes
   (use-package doom-themes
     :config
     ;; Global settings (defaults)
-    (setq doom-themes-enable-bold t    ; if nil, bold is universally disabled
-	  doom-themes-enable-italic t
-	  doom-themes-treemacs-theme "doom-atom") ; if nil, italics is universally disabled
+    (setq doom-themes-enable-bold t ; if nil, bold is universally disabled
+	  doom-themes-enable-italic t ; if nil, italics is universally disabled
+	  doom-themes-treemacs-theme "doom-atom")
     ;; Enable flashing mode-line on errors
     (doom-themes-visual-bell-config)
     ;; Corrects (and improves) org-mode's native fontification.
@@ -1155,6 +1165,9 @@ https://github.com/hlissner/emacs-doom-themes
       "tt2" '((lambda () (interactive)
 		(load-theme 'doom-one-light t))
 	      :which-key "doom-one-light")
+      "tt3" '((lambda () (interactive)
+		(load-theme 'doom-dracula t))
+	      :which-key "doom-dracula")
       )
     )
 #+end_src
