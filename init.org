@@ -1124,7 +1124,7 @@ Most notably, it provides the ability to open source files from Unity in Emacs o
 https://github.com/elizagamedev/unity.el
 #+end_quote
 
-Generate a code binary with ~(unity-build-code-shim)~ and select it in Unity's preferences /External Script Editor/.
+Generate a code binary ([emacs-user-directory]/var/unity/) with ~(unity-build-code-shim)~ and select it in Unity's preferences /External Script Editor/.
 To open C# files with Emacs also add ~emacs +$(Line):$(Column) $(File)~ to  /External Script Editor Args/.
 
 #+begin_src emacs-lisp
@@ -1185,10 +1185,14 @@ in doom-modeline.
   (use-package doom-modeline
     :defer t
     :config
-    (setq doom-modeline-icon (display-graphic-p)
-	  doom-modeline-height 30
-	  doom-modeline-buffer-file-name-style 'truncate-all
-	  doom-modeline-buffer-encoding nil)
+    (progn
+      (setq doom-modeline-icon (display-graphic-p)
+	    doom-modeline-height 25
+	    doom-modeline-buffer-file-name-style 'truncate-all
+	    doom-modeline-buffer-encoding nil)
+      (set-face-attribute 'mode-line nil :height 140)
+      )
+
     :hook
     (after-init . doom-modeline-mode))
 #+end_src
