@@ -1911,6 +1911,28 @@ https://github.com/rnkn/olivetti
     (global-leader "To" '(olivetti-mode :wk "olivetti mode"))
     )
 #+end_src
+** nix
+
+Nix-modes uses ~nixfmt~ for formatting and ~rnix-lsp~ as language server.
+
+#+begin_src emacs-lisp
+  (use-package nix-mode
+    :defer t
+    :mode "\\.nix\\'"
+    :init
+    (progn
+      (add-hook 'nix-mode-hook 'lsp-deferred)
+      (add-hook 'before-save-hook 'nix-format-before-save))
+    :general
+    (global-major-leader :keymaps 'nix-mode-map
+      "b"
+      '(:ignore t :which-key "buffers")
+      "bf"
+      'nix-format-buffer
+      )
+    :config
+    (electric-indent-mode -1))
+#+end_src
 * Utility
 ** Hackernews Request
 

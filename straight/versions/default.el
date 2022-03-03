@@ -57,6 +57,7 @@
  ("markdown-mode" . "c3c2f0d473a3f8ca8c4ffb2ecc094d5c3541769f")
  ("melpa" . "76e7a6c9e67bcea5b681dacf6725f7e313f0c1a8")
  ("names" . "d8baba5360e5253938a25d3e005455b6d2d86971")
+ ("nix-mode" . "00b2b8da57dc411cbaa464521d6f6f5f1dd9eb87")
  ("olivetti" . "a31ac05a161a91fe5c157930b62a6c07037982ee")
  ("orderless" . "1ccf74ffdbb0dd34caa63022e92f947c09c49c86")
  ("org" . "8ca254696b002f5079e31ac12a1ad87c003f673d")
