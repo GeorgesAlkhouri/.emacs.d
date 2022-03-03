@@ -1913,7 +1913,7 @@ https://github.com/rnkn/olivetti
 #+end_src
 ** nix
 
-Nix-modes uses ~nixfmt~ for formatting and ~rnix-lsp~ as language server.
+Nix-mode uses ~nixfmt~ for formatting and ~rnix-lsp~ as language server.
 
 #+begin_src emacs-lisp
   (use-package nix-mode
