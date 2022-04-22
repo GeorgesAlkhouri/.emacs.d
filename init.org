@@ -21,6 +21,7 @@ Dependencies you need to fully run all configured features:
   - https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.aff
   - https://cgit.freedesktop.org/libreoffice/dictionaries/plain/en/en_US.dic
 - git and git-flow
+- YAML language server (rnix-lsp)
 
 * early-init.el and init.el
 ** early-init
@@ -550,7 +551,7 @@ http://company-mode.github.io/
 #+end_quote
 #+begin_src emacs-lisp
   (use-package company
-    :hook ((prog-mode) . company-mode)
+    :hook ((prog-mode yaml-mode) . company-mode)
     :diminish
     :general
     (general-def company-active-map
@@ -562,17 +563,17 @@ http://company-mode.github.io/
       "S-<iso-lefttab>" 'company-select-previous)
     :config
     (progn
-  
+
       (defun add-yasnippet-backend (backend)
 	"Add company-yasnippet backend to given company backend"
 	(if (and (listp backend) (member 'company-yasnippet backend))
 	    backend
 	  (append (if (consp backend) backend (list backend))
 		  '(:with company-yasnippet))))
-  
+
       ;; add yasnippet-backend to all company backends
       (setq company-backends (mapcar #'add-yasnippet-backend company-backends))
-  
+
       (setq company-tooltip-align-annotations t
 	    company-idle-delay 0.1
 	    company-show-numbers t
@@ -582,8 +583,8 @@ http://company-mode.github.io/
 	    company-require-match nil)
       )
     )
-  
-  
+
+
   (use-package company-tabnine
     :defer t
     :commands company-tabnine-install-binary
@@ -615,13 +616,13 @@ http://company-mode.github.io/
 	    (setq candidates-tabnine (nreverse candidates-tabnine))
 	    (nconc (seq-take candidates-tabnine 3)
 		   (seq-take candidates-lsp 6)))))
-  
+
       (defun lsp-after-open-tabnine ()
 	"Hook to attach to `lsp-after-open'."
 	(setq-local company-tabnine-max-num-results 3)
 	(add-to-list 'company-transformers 'company//sort-by-tabnine t)
 	(add-to-list 'company-backends '(company-capf :with company-tabnine :separate)))
-  
+
       (defun company-tabnine-toggle (&optional enable)
 	"Enable/Disable TabNine. If ENABLE is non-nil, definitely enable it."
 	(interactive)
@@ -932,6 +933,7 @@ https://www.flycheck.org/en/latest/
     :init
     (add-hook 'emacs-lisp-mode-hook #'flycheck-mode)
     (add-hook 'sh-mode-hook #'flycheck-mode)
+    (add-hook 'yaml-mode-hook #'flycheck-mode)
     (add-hook 'python-mode-hook #'(lambda ()
 				    (flycheck-mode)
 				    ;; checker setup locally for python-mode
@@ -949,7 +951,7 @@ https://www.flycheck.org/en/latest/
 				    ))
     :custom (flycheck-emacs-lisp-load-path 'inherit "necessary with straight.el")
     :general
-    (global-major-leader :keymaps 'prog-mode-map
+    (global-major-leader :keymaps '(prog-mode-map yaml-mode-map)
       "f" '(:ignore t :wk "flycheck")
       "fe" '(flycheck-list-errors :wk "list errors"))
     )
@@ -1398,6 +1400,9 @@ Show matching delimiters highlighted.
 #+begin_src emacs-lisp
   (use-package yaml-mode
     :defer t
+    :mode ("\\.\\(yml\\|yaml\\)\\'" . yaml-mode)
+    :init
+    (add-hook 'yaml-mode-hook #'lsp)
     )
 #+end_src
 
@@ -1646,6 +1651,12 @@ https://github.com/abo-abo/avy
     :mode "Dockerfile\\'")
 #+end_src
 
+** docker-compose-mode
+
+#+begin_src emacs-lisp
+  (use-package docker-compose-mode
+    :defer t)
+#+end_src
 ** unicode
 
 Packages for better unicode support.
