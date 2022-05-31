@@ -307,7 +307,12 @@ NAME and ARGS are in `use-package'."
 	(*sys/linux*
 	 (defconst *sys/font-default-height* 110)
 	 (defconst *sys/font-variable-height* 130)
-	 (defconst *sys/shell-executable* "/bin/bash")
+	 ;; get bash path without new line
+	 ;; TODO assert that paths exists
+	 ;; From POSIX specs (https://pubs.opengroup.org/onlinepubs/009695399/utilities/sh.html)
+	 ;; Applications should note that the standard PATH to the shell
+	 ;; cannot be assumed to be either /bin/sh or /usr/bin/sh
+	 (defconst *sys/shell-executable* (shell-command-to-string "printf %s \"$(command -v bash)\""))
 	 ))
 
   (defun sys/activate-venv ()
