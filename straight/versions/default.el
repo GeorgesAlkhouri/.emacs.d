@@ -22,7 +22,7 @@
  ("emacs-epc" . "e1bfa5ca163273859336e3cc89b4b6460f7f8cda")
  ("emacs-format-all-the-code" . "6200b91d9151b3177a676d30edd948266292bcc1")
  ("emacs-language-id" . "906fac7d91994d02120cfb5f547c1d06cea1ad69")
- ("emacs-libvterm" . "2681120b770573044832ba8c22ccbac192e1a294")
+ ("emacs-libvterm" . "b44723552f86407d528c4a6c8057382c061b008e")
  ("emacs-mini-frame" . "57a049b9e1ea4a9b65e82fc10c8c7e70a042f636")
  ("emacs-request" . "3336eaa97de923f74b90dda3e35985e122d40805")
  ("emacs-solaire-mode" . "87c2efd11b4b71e000d8a464eb694852e22aa0e7")

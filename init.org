@@ -774,10 +774,6 @@ https://github.com/akermu/emacs-libvterm
 #+end_quote
 #+begin_src emacs-lisp
   (use-package vterm
-    :straight (:post-build (cl-letf (((symbol-function #'pop-to-buffer)
-				      (lambda (buffer) (with-current-buffer buffer (message (buffer-string))))))
-			     (setq vterm-always-compile-module t)
-			     (require 'vterm)))
     :commands (vterm vterm-other-window)
     :general
     (global-leader "at" '(:ignore t :which-key "terminal")
@@ -795,7 +791,7 @@ https://github.com/akermu/emacs-libvterm
     ;;     (reverse
     ;;      (delete-dups
     ;; 	(split-string (buffer-string) "\n")))))
-  
+
     ;; (defun helm-vterm-search-history ()
     ;;   "Narrow down bash history with helm."
     ;;   (interactive)
@@ -805,7 +801,7 @@ https://github.com/akermu/emacs-libvterm
     ;; 		     :action #'vterm-send-string)
     ;; 	  :buffer "*helm-bash-history*"
     ;; 	  :candidate-number-limit 10000))
-  
+
     (evil-set-initial-state 'vterm-mode 'emacs)
     (add-hook 'vterm-mode-hook #'(lambda () (setq-local global-hl-line-mode nil)))
     )
@@ -1656,12 +1652,6 @@ https://github.com/abo-abo/avy
     :mode "Dockerfile\\'")
 #+end_src
 
-** docker-compose-mode
-
-#+begin_src emacs-lisp
-  (use-package docker-compose-mode
-    :defer t)
-#+end_src
 ** unicode
 
 Packages for better unicode support.
