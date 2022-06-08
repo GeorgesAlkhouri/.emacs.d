@@ -999,7 +999,30 @@ https://github.com/lassik/emacs-format-all-the-code
     :init
     (progn
       (setq semantic-default-submodes nil)
-      ))
+
+      (defun doq-region ()
+	"Doc the Python function content using `doq'"
+	(interactive)
+	(shell-command-on-region
+	 ;; beginning and end of buffer
+	 (point-min)
+	 (point-max)
+	 ;; command and parameters
+	 "doq"
+	 ;; output buffer
+	 (current-buffer)
+	 ;; replace?
+	 t
+	 ;; name of the error buffer
+	 ;; "*Doq Error Buffer*"
+	 ;; show error buffer?
+	 t))
+      )
+    :general
+    (global-major-leader :keymaps 'python-mode-map
+      "D" '(doq-region :wk "Add docstring to region"))
+    )
+
 #+end_src
 
 **** importmagic.el
