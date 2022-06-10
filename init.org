@@ -1005,16 +1005,16 @@ https://github.com/lassik/emacs-format-all-the-code
 	(interactive)
 	(shell-command-on-region
 	 ;; beginning and end of buffer
-	 (point-min)
-	 (point-max)
+	 (region-beginning)
+	 (region-end)
 	 ;; command and parameters
 	 "doq"
 	 ;; output buffer
 	 (current-buffer)
-	 ;; replace?
-	 t
+	 ;; replace and put no mark
+	 'no-mark
 	 ;; name of the error buffer
-	 ;; "*Doq Error Buffer*"
+	 "*Doq Error Buffer*"
 	 ;; show error buffer?
 	 t))
       )
