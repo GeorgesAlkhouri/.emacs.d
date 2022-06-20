@@ -1190,10 +1190,10 @@ in doom-modeline.
     :config
     (progn
       (setq doom-modeline-icon (display-graphic-p)
-	    doom-modeline-height 25
 	    doom-modeline-buffer-file-name-style 'truncate-all
 	    doom-modeline-buffer-encoding nil)
-      (set-face-attribute 'mode-line nil :height 140)
+      (set-face-attribute 'mode-line nil :family "JetBrains Mono" :height 100)
+      (set-face-attribute 'mode-line-inactive nil :family "JetBrains Mono" :height 100)
       )
 
     :hook
@@ -1796,7 +1796,7 @@ https://github.com/ema2159/centaur-tabs
       ;; TODO group by perspective and perspective-key
       (defun centaur-tabs-buffer-groups ()
 	"`centaur-tabs-buffer-groups' control buffers' group rules.
-  
+
   Group centaur-tabs with mode if buffer is derived from `eshell-mode'
   `emacs-lisp-mode' `dired-mode' `org-mode' `magit-mode'.
   All buffer name start with * will group to \"Emacs\".
@@ -1825,17 +1825,18 @@ https://github.com/ema2159/centaur-tabs
 	   "OrgMode")
 	  (t
 	   (centaur-tabs-get-group-name (current-buffer))))))
-  
+
+      (centaur-tabs-change-fonts "JetBrains Mono" 100)
       (setq centaur-tabs-style "bar"
 	    centaur-tabs-set-icons t
-	    centaur-tabs-height 15
+	    ;; centaur-tabs-height 15
 	    centaur-tabs-gray-out-icons 'buffer
 	    centaur-tabs-set-bar 'left
 	    centaur-tabs-set-modified-marker t
 	    centaur-tabs-close-button "✕"
 	    centaur-tabs-modified-marker "⚫"
 	    centaur-tabs-cycle-scope 'tabs)
-      (centaur-tabs-headline-match)
+      ;; (centaur-tabs-headline-match)
       (centaur-tabs-mode t))
     :general
     (general-def
@@ -1860,7 +1861,7 @@ https://github.com/ema2159/centaur-tabs
       "C-k" #'vertico-previous
       )
     )
-  
+
   (use-package mini-frame
     :after evil
     :hook (after-init . mini-frame-mode)
@@ -1877,7 +1878,8 @@ https://github.com/ema2159/centaur-tabs
     (progn
       (setq mini-frame-resize t
 	    mini-frame-detach-on-hide nil
-	    mini-frame-color-shift-step 0
+	    ;; Remove frame border
+	    ;; mini-frame-color-shift-step 0
 	    mini-frame-show-parameters '((top . 0.2)
 					 (width . 0.8)
 					 (left . 0.5))
@@ -1885,10 +1887,10 @@ https://github.com/ema2159/centaur-tabs
       (add-to-list 'mini-frame-ignore-commands 'shell-command)
       (add-to-list 'mini-frame-ignore-commands 'evil-ex)
       ))
-  
+
   (use-package marginalia
     :hook (after-init . marginalia-mode))
-  
+
   (use-package orderless
     :init
     ;; Configure a custom style dispatcher (see the Consult wiki)
@@ -1896,7 +1898,7 @@ https://github.com/ema2159/centaur-tabs
     ;;       orderless-component-separator #'orderless-escapable-split-on-space)
     (setq completion-styles '(orderless)
 	  completion-category-overrides '((file (styles partial-completion)))))
-  
+
   ;; Persist history over Emacs restarts. Vertico sorts by history position.
   (use-package savehist
     :hook (after-init . savehist-mode))
@@ -1938,6 +1940,22 @@ Nix-mode uses ~nixfmt~ for formatting and ~rnix-lsp~ as language server.
       )
     :config
     (electric-indent-mode -1))
+#+end_src
+
+** direnv
+
+#+begin_quote
+This package provides direnv integration for emacs.
+
+https://github.com/wbolster/emacs-direnv
+#+end_quote
+
+#+begin_src emacs-lisp
+  (use-package direnv
+    :hook (after-init . direnv-mode)
+    :config
+    (direnv-mode)
+    )
 #+end_src
 * Utility
 ** Hackernews Request
