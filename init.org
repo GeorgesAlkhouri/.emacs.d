@@ -1425,12 +1425,13 @@ Perspective package is essentiell for buffer organisation. Therefore we load it 
     :config
     (progn
       (setq persp-state-default-file (expand-file-name "persp-save-file.el" user-emacs-directory)
-	    persp-modestring-short t)
-  
-  
+	    persp-modestring-short t
+	    persp-mode-prefix-key "")
+
+
       (add-hook 'persp-switch-hook 'sys/activate-venv)
       (add-hook 'kill-emacs-hook #'persp-state-save)
-  
+
       (unless (equal persp-mode t)
 	(persp-mode)))
     )
@@ -1940,6 +1941,12 @@ Nix-mode uses ~nixfmt~ for formatting and ~rnix-lsp~ as language server.
       )
     :config
     (electric-indent-mode -1))
+#+end_src
+
+** docker-tramp
+#+begin_src emacs-lisp
+  (use-package docker-tramp
+    :defer t)
 #+end_src
 
 ** direnv
