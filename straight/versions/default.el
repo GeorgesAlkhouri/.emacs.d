@@ -13,6 +13,7 @@
  ("csharp-mode" . "fa06dfa206812476217ada6c4178de34ff1efc42")
  ("dash.el" . "0ac1ecf6b56eb67bb81a3cf70f8d4354b5782341")
  ("diminish.el" . "6b7e837b0cf0129e9d7d6abae48093cf599bb9e8")
+ ("docker-tramp.el" . "930d7b46c180d8a13240a028c1b40af84f2a3219")
  ("dockerfile-mode" . "b63a3d12b7dea0cb9efc7f78d7ad5672ceab2a3f")
  ("doom-modeline" . "b4ba497760976faab6d275157830fa6ec07d30b9")
  ("el-get" . "bf3dba444dcd240b8cb358a0850c8c5a92606134")
