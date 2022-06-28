@@ -1008,7 +1008,7 @@ https://github.com/lassik/emacs-format-all-the-code
 	 (region-beginning)
 	 (region-end)
 	 ;; command and parameters
-	 "doq"
+	 "doq --omit self"
 	 ;; output buffer
 	 (current-buffer)
 	 ;; replace and put no mark
