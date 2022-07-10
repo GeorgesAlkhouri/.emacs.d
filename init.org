@@ -1887,6 +1887,9 @@ https://github.com/ema2159/centaur-tabs
     )
 
   (use-package mini-frame
+    ;; workaround for strange behavior with wayland
+    ;; https://github.com/muffinmad/emacs-mini-frame/issues/60
+    :if (not (string= (getenv "XDG_SESSION_TYPE") "wayland"))
     :after evil
     :hook (after-init . mini-frame-mode)
     :init
