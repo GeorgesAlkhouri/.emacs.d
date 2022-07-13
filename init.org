@@ -26,7 +26,7 @@ Dependencies you need to fully run all configured features:
 * early-init.el and init.el
 ** early-init
 :PROPERTIES:
-:header-args: :tangle-mode (identity #o444) :results silent :tangle ~/.emacs.d/early-init.el
+:header-args: :tangle-mode (identity #o444) :results silent :tangle early-init.el
 :END:
 
 Idea and basics for tuning startup time from https://github.com/progfolio/.emacs.d
