@@ -1953,13 +1953,13 @@ Nix-mode uses ~nixfmt~ for formatting and ~rnix-lsp~ as language server.
     :init
     (progn
       (add-hook 'nix-mode-hook 'lsp-deferred)
-      (add-hook 'before-save-hook 'nix-format-before-save))
+      (add-hook 'before-save-hook 'format-all-mode))
     :general
     (global-major-leader :keymaps 'nix-mode-map
       "b"
       '(:ignore t :which-key "buffers")
       "bf"
-      'nix-format-buffer
+      'format-all-buffer
       )
     :config
     (electric-indent-mode -1))

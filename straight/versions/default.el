@@ -22,7 +22,7 @@
  ("emacs-deferred" . "2239671d94b38d92e9b28d4e12fd79814cfb9c16")
  ("emacs-direnv" . "416ed17efa93503b37eba196a14f967e0899bce4")
  ("emacs-epc" . "e1bfa5ca163273859336e3cc89b4b6460f7f8cda")
- ("emacs-format-all-the-code" . "828280eaf3b46112e17746a7d03235570a633425")
+ ("emacs-format-all-the-code" . "aa22b06283382baf73d78064fcfd6c2f075ead5c")
  ("emacs-language-id" . "cbd5b8fffa8c09f86d8b77f8d3f5e6f4ccd82bc4")
  ("emacs-libvterm" . "3155a477b43c1567d754768f5be79296440ebaf8")
  ("emacs-mini-frame" . "57a049b9e1ea4a9b65e82fc10c8c7e70a042f636")
