@@ -4,7 +4,7 @@
 
 * An Explanation
 This is a literate configuration for =Emacs=.
-Tangling this file creates two Elisp files, =~/.emacs.d/init.el= and =~/.emacs.d/early-init.el=.
+Tangling this file creates two Elisp files, =init.el= and =early-init.el=.
 
 Start with =make tangle= to create the init.el and early-init.el from this org file.
 
@@ -1812,6 +1812,7 @@ https://github.com/ema2159/centaur-tabs
 #+begin_src emacs-lisp
   (use-package centaur-tabs
     :after perspective
+    :if (< emacs-major-version 29)
     :hook
     (dashboard-mode . centaur-tabs-local-mode)
     (vterm-mode . centaur-tabs-local-mode)
