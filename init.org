@@ -969,8 +969,9 @@ https://github.com/lassik/emacs-format-all-the-code
 #+begin_src emacs-lisp
   (use-package format-all
     :defer t
-    :commands format-all-buffer
-    ;; Format elisp
+    :init
+    (add-hook 'prog-mode-hook 'format-all-mode)
+    :hook (prog-mode . format-all-ensure-formatter)
     :general
     (global-major-leader
       :keymaps
@@ -1952,9 +1953,9 @@ Nix-mode uses ~nixfmt~ for formatting and ~rnix-lsp~ as language server.
     :defer t
     :mode "\\.nix\\'"
     :init
-    (progn
-      (add-hook 'nix-mode-hook 'lsp-deferred)
-      (add-hook 'before-save-hook 'format-all-mode))
+    (add-hook 'nix-mode-hook #'(lambda ()
+				 (setq-local format-all-formatters '(("Nix" alejandra)))
+				 (lsp-deferred)))
     :general
     (global-major-leader :keymaps 'nix-mode-map
       "b"
@@ -1963,7 +1964,8 @@ Nix-mode uses ~nixfmt~ for formatting and ~rnix-lsp~ as language server.
       'format-all-buffer
       )
     :config
-    (electric-indent-mode -1))
+    (electric-indent-mode -1)
+    )
 #+end_src
 
 ** docker-tramp
