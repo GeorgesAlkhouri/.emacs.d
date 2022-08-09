@@ -683,40 +683,38 @@ https://github.com/minad/consult
 
 #+begin_src emacs-lisp
   (use-package consult
+    :hook (completion-list-mode . consult-preview-at-point-mode)
     :init
     (progn
-  
+
       ;; Optionally configure the register formatting. This improves the register
       ;; preview for `consult-register', `consult-register-load',
       ;; `consult-register-store' and the Emacs built-ins.
-      (setq register-preview-delay 0
+      (setq register-preview-delay 0.5
 	    register-preview-function #'consult-register-format)
-  
+
       ;; Optionally tweak the register preview window.
       ;; This adds thin lines, sorting and hides the mode line of the window.
       (advice-add #'register-preview :override #'consult-register-window)
-  
-      ;; Optionally replace `completing-read-multiple' with an enhanced version.
-      (advice-add #'completing-read-multiple :override #'consult-completing-read-multiple)
-  
+
       ;; Use Consult to select xref locations with preview
       (setq xref-show-xrefs-function #'consult-xref
 	    xref-show-definitions-function #'consult-xref)
       )
     :config
     (progn
-  
+
       (defun consult--preview-p ()
 	"Are we in a consult preview buffer?"
 	(when-let (win (active-minibuffer-window))
 	  (not (eq nil (buffer-local-value
 			'consult--preview-function
 			(window-buffer win))))))
-  
+
       ;; Optionally configure a function which returns the project root directory.
       (setq consult-project-root-function #'projectile-project-root)
       )
-  
+
     :general
     (general-def :states '(normal)
       "P" #'consult-yank-from-kill-ring
