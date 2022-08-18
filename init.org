@@ -728,7 +728,8 @@ https://github.com/bbatsov/projectile
       "pD" 'projectile-dired
       "pe" 'projectile-edit-dir-locals
       "pR" 'projectile-replace
-      "pS" 'projectile-discover-projects-in-search-path)
+      "pS" 'projectile-discover-projects-in-search-path
+      "pt" 'projectile-run-vterm)
     :config
     (progn
       (defun sys/switch-project-action ()
@@ -1519,7 +1520,7 @@ Further todos would be to make it possible to switch projects correctly (e.g. ac
 	(treemacs-load-theme 'all-the-icons)))
     :general
     (global-leader
-      "pt" 'sys/treemacs-project-toggle))
+      "pT" 'sys/treemacs-project-toggle))
   
   (use-package treemacs-all-the-icons
     :if (display-graphic-p)
