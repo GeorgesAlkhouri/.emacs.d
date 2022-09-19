@@ -1771,7 +1771,6 @@ https://github.com/ema2159/centaur-tabs
 #+begin_src emacs-lisp
   (use-package centaur-tabs
     :after perspective
-    :if (< emacs-major-version 29)
     :hook
     (dashboard-mode . centaur-tabs-local-mode)
     (vterm-mode . centaur-tabs-local-mode)
@@ -1818,9 +1817,11 @@ https://github.com/ema2159/centaur-tabs
 	    centaur-tabs-set-bar 'left
 	    centaur-tabs-set-modified-marker t
 	    centaur-tabs-close-button "✕"
-	    centaur-tabs-modified-marker "⚫"
+	    centaur-tabs-modified-marker "⚠"
 	    centaur-tabs-cycle-scope 'tabs)
       ;; (centaur-tabs-headline-match)
+      ;; (centaur-tabs-group-by-projectile-project)
+      ;; (centaur-tabs-buffer-groups)
       (centaur-tabs-mode t))
     :general
     (general-def
