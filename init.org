@@ -91,8 +91,9 @@ Prevent the *scratch* buffer from loading a mode.
 *** file-name-handler-alist
 Skipping a bunch of regular expression searching in the =file-name-handler-alist= should improve start time.
 #+begin_src emacs-lisp
-(defvar default-file-name-handler-alist file-name-handler-alist)
-(setq file-name-handler-alist nil)
+  (defvar default-file-name-handler-alist file-name-handler-alist)
+  (when  (< emacs-major-version 29)
+    (setq file-name-handler-alist nil))
 #+end_src
 
 *** gc-cons threshold
@@ -1775,6 +1776,7 @@ https://github.com/ema2159/centaur-tabs
     (dashboard-mode . centaur-tabs-local-mode)
     (vterm-mode . centaur-tabs-local-mode)
     (helpful-mode . centaur-tabs-local-mode)
+    (projectile-mode . centaur-tabs-local-mode)
     :config
     (progn
       ;; TODO group by perspective and perspective-key
