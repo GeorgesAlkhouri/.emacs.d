@@ -1424,56 +1424,59 @@ Perspective package is essentiell for buffer organisation. Therefore we load it 
 
 #+begin_src emacs-lisp
 
-    (use-package dashboard
-      :demand t
-      :if (< emacs-major-version 29)
-      :init
-      (progn
-	(add-hook 'dashboard-mode-hook #'(lambda () (setq-local global-hl-line-mode nil))))
-      :config
-      (progn
+  (use-package dashboard
+    :demand t
+    :after all-the-icons
+    ;; :if (< emacs-major-version 29)
+    :init
+    (progn
+      (add-hook 'dashboard-mode-hook #'(lambda () (setq-local global-hl-line-mode nil))))
+    :config
+    (progn
 
-	(defun dashboard-insert-hackernews (list-size)
-	  "Request LIST-SIZE number of top-stories from hackernews."
-	  ;; TODO implement time interval check (e.g. update every 15 min)
+      (defun dashboard-insert-hackernews (list-size)
+	"Request LIST-SIZE number of top-stories from hackernews."
+	;; TODO implement time interval check (e.g. update every 15 min)
 
-	  ;; only load one time
-	  (when (equal dashboard-hackernews-init-state dashboard-hackernews-state)
-	    (hackernews-get-topstories
-	     list-size
-	     (lambda (stories)
-	       (when stories
-		 (let* ((formatted-stories (dashboard-hackernews-add-formatted-stories-alist stories)))
-		   (setq dashboard-hackernews-state formatted-stories)
-		   ;; update dashboard
-		   (let ((dashboard-force-refresh t)) (dashboard-insert-startupify-lists))
-		   )))))
-	  ;; TODO add short-cut
-	  (dashboard-insert-section
-	   "Hackernews:"
-	   dashboard-hackernews-state
+	;; only load one time
+	(when (equal dashboard-hackernews-init-state dashboard-hackernews-state)
+	  (hackernews-get-topstories
 	   list-size
-	   nil
-	   (lambda (&rest ignore)
-	     (let ((url (cdr (assoc 'url el))))
-	       (browse-url url)
-	       (kill-new url)
-	       (message "[dashboard] copied '%s' to clipboard." url)))
-	   (format "%s" (cdr (assoc 'formatted-string el))))
-	  )
+	   (lambda (stories)
+	     (when stories
+	       (let* ((formatted-stories (dashboard-hackernews-add-formatted-stories-alist stories)))
+		 (setq dashboard-hackernews-state formatted-stories)
+		 ;; update dashboard
+		 (let ((dashboard-force-refresh t)) (dashboard-insert-startupify-lists))
+		 )))))
+	;; TODO add short-cut
+	(dashboard-insert-section
+	 "Hackernews:"
+	 dashboard-hackernews-state
+	 list-size
+	 nil
+	 (lambda (&rest ignore)
+	   (let ((url (cdr (assoc 'url el))))
+	     (browse-url url)
+	     (kill-new url)
+	     (message "[dashboard] copied '%s' to clipboard." url)))
+	 (format "%s" (cdr (assoc 'formatted-string el))))
+	)
 
-	  (add-to-list 'dashboard-item-generators '(hackernews . dashboard-insert-hackernews))
-	  (add-to-list 'dashboard-items '(hackernews) t)
+      ;; (add-to-list 'dashboard-item-generators '(hackernews . dashboard-insert-hackernews))
+      ;; (add-to-list 'dashboard-items '(hackernews) t)
 
-	(setq dashboard-startup-banner
-	      (expand-file-name "emacs.svg" (expand-file-name "media" user-emacs-directory)))
-	(setq dashboard-items '((recents  . 5)
-				(projects . 5)
-				(hackernews . 30))
-	      dashboard-set-heading-icons t
-	      dashboard-set-file-icons t
-	      dashboard-center-content t)
-	(dashboard-setup-startup-hook)))
+      (setq dashboard-startup-banner
+	    (expand-file-name "emacs.svg" (expand-file-name "media" user-emacs-directory)))
+      (setq dashboard-items '((recents  . 5)
+			      (projects . 5)
+			      ;; (hackernews . 30)
+			      )
+	    dashboard-set-heading-icons t
+	    dashboard-set-file-icons t
+	    dashboard-center-content t)
+      (dashboard-setup-startup-hook)
+      (dashboard-refresh-buffer)))
 #+end_src
 
 ** all-the-icons
