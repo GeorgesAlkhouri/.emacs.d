@@ -1581,6 +1581,7 @@ https://github.com/abo-abo/avy
 	(toggle-frame-maximized)
 	(global-hl-line-mode t)
 	(solaire-global-mode t)
+	(global-auto-revert-mode t)
 	(load-theme 'doom-one-light t)
 	)
 
