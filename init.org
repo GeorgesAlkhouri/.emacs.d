@@ -629,7 +629,7 @@ http://company-mode.github.io/
 #+end_src
 
 ** company-statistics
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package company-statistics
       :defer t
       :init
@@ -644,7 +644,7 @@ A company front-end with icons.
 https://github.com/sebastiencs/company-box
 #+end_quote
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle yes
   (use-package company-box
     :if (display-graphic-p)
     :after company
