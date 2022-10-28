@@ -629,12 +629,15 @@ http://company-mode.github.io/
 #+end_src
 
 ** company-statistics
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle yes
   (use-package company-statistics
-      :defer t
-      :init
-      (progn
-	(add-hook 'company-mode-hook 'company-statistics-mode)))
+    :defer t
+    :config
+    (progn
+      (setq company-statistics-size 10000))
+    :init
+    (progn
+      (add-hook 'company-mode-hook 'company-statistics-mode)))
 #+end_src
 ** company-box
 
@@ -781,7 +784,11 @@ https://github.com/akermu/emacs-libvterm
     ;; 	  :candidate-number-limit 10000))
 
     (evil-set-initial-state 'vterm-mode 'emacs)
-    (add-hook 'vterm-mode-hook #'(lambda () (setq-local global-hl-line-mode nil)))
+    (add-hook 'vterm-mode-hook #'(lambda ()
+				   (setq-local global-hl-line-mode nil)
+				   (setq buffer-face-mode-face '(:family "MesloLGS NF"))
+				   (buffer-face-mode)
+				   ))
     )
 #+end_src
 
