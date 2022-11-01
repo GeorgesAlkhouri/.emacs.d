@@ -1163,6 +1163,9 @@ https://github.com/hlissner/emacs-doom-themes
       "tt3" '((lambda () (interactive)
 		(load-theme 'doom-dracula t))
 	      :which-key "doom-dracula")
+      "tt4" '((lambda () (interactive)
+		(load-theme 'doom-solarized-dark-high-contrast t))
+	      :which-key "doom-solarized-dark-high-contrast")
       )
     )
 #+end_src
@@ -1592,7 +1595,7 @@ https://github.com/abo-abo/avy
 	(global-hl-line-mode t)
 	(solaire-global-mode t)
 	(global-auto-revert-mode t)
-	(load-theme 'doom-one-light t)
+	(load-theme 'doom-solarized-dark-high-contrast t)
 	)
 
       ;; always allow 'y' instead of 'yes'.
