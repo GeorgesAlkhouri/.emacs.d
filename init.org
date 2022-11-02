@@ -1186,7 +1186,8 @@ in doom-modeline.
     (progn
       (setq doom-modeline-icon (display-graphic-p)
 	    doom-modeline-buffer-file-name-style 'truncate-all
-	    doom-modeline-buffer-encoding nil)
+	    doom-modeline-buffer-encoding nil
+	    doom-modeline-vcs-max-length 30)
       (set-face-attribute 'mode-line nil :family "JetBrains Mono" :height 100)
       (set-face-attribute 'mode-line-inactive nil :family "JetBrains Mono" :height 100)
       )
@@ -1595,7 +1596,7 @@ https://github.com/abo-abo/avy
 	(global-hl-line-mode t)
 	(solaire-global-mode t)
 	(global-auto-revert-mode t)
-	(load-theme 'doom-solarized-dark-high-contrast t)
+	(load-theme 'doom-one-light t)
 	)
 
       ;; always allow 'y' instead of 'yes'.
